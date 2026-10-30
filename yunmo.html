@@ -134,6 +134,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <tr><td>세호 (FE·수집)</td><td>"화면에 보였다"(impression)의 기준</td><td><span class="task">#7</span> <span class="task">#8</span></td><td>STEP 1</td></tr>
       <tr><td>세호 (FE·수집)</td><td>모든 이벤트에 <code>event_id</code>, <code>position</code>, <code>request_id</code>, <code>model_version</code> 싣기</td><td><span class="task">#9</span></td><td>STEP 2</td></tr>
       <tr><td>세호 (FE·수집)</td><td>익명 사용자 ID 처리, 봇을 수집에서 막을지 정제에서 표시할지</td><td><span class="task">#8</span></td><td>STEP 2, 4</td></tr>
+      <tr><td>세호 (FE·수집)</td><td>구독·좋아요 버튼과 <code>subscribe</code>/<code>unsubscribe</code>, <code>like</code>/<code>unlike</code> 이벤트</td><td><span class="task">#7</span> <span class="task">#8</span></td><td>STEP 2</td></tr>
+      <tr><td>태원 (뉴스)</td><td>Cloud SQL <code>subscriptions</code>·<code>likes</code> 테이블, 기사 메타에 <code>publisher_id</code>, 추론 서버 요청에 구독 언론사 목록 넣기</td><td><span class="task">#4</span> <span class="task">#6</span></td><td>STEP 2, 11</td></tr>
       <tr><td>태원 (뉴스)</td><td>기사 메타에 카테고리·세부 태그·<code>published_at</code>·자극도 점수 넣기</td><td><span class="task">#4</span> <span class="task">#18</span></td><td>STEP 3</td></tr>
       <tr><td>태원 (뉴스)</td><td>기사 임베딩은 피처 DAG에서 계산하는 안에 동의하는지 (뉴스 쪽은 제목·본문·카테고리·<code>published_at</code>만 Cloud SQL에 정확히 저장)</td><td><span class="task">#5</span> <span class="task">#6</span></td><td>STEP 3</td></tr>
       <tr><td>장주현 (인프라)</td><td>서빙용 피처 파일의 GCS 경로·권한, BigQuery 파티션·스캔 비용 기준</td><td><span class="task">#2</span> <span class="task">#22</span></td><td>STEP 3, 4</td></tr>
@@ -213,20 +215,35 @@ table.wbs tr:target td { background: var(--decide-soft); }
 
 <section id="s2">
   <h2><span class="step">STEP 2</span>피처에서 이벤트 거꾸로 확인 <span class="task">#11</span> <span class="task">#8</span></h2>
-  <p>만들고 싶은 피처에서 출발해 필요한 이벤트와 필드를 거꾸로 뽑는다. 이 목록을 세호 님의 수집 행동 정의(<span class="task">#8</span>)와 맞춰 본다. 양방향 작업이라 한 번에 끝나지 않고 몇 번 오간다.</p>
+  <p>만들고 싶은 피처(왼쪽 칸)에서 출발해 필요한 이벤트와 필드를 거꾸로 뽑는다. 이 목록을 세호 님의 수집 행동 정의(<span class="task">#8</span>)와 맞춰 본다. 양방향 작업이라 한 번에 끝나지 않고 몇 번 오간다.</p>
   <div class="tbl"><table>
-    <thead><tr><th>이벤트</th><th>언제 생기나</th><th>이 이벤트가 있어야 만드는 피처</th><th>꼭 필요한 필드</th></tr></thead>
+    <thead><tr><th>묶음</th><th>만들 피처</th><th>필요한 이벤트·데이터</th><th>꼭 필요한 필드</th><th>보내 줄 곳</th></tr></thead>
     <tbody>
-      <tr><td><code>impression</code></td><td>기사 카드가 화면에 보일 때</td><td>CTR(분모), 이미 본 횟수, 학습 데이터의 정답 0</td><td><code>position</code>, <code>request_id</code></td></tr>
-      <tr><td><code>click</code></td><td>기사 카드를 눌렀을 때</td><td>CTR(분자), 카테고리 선호, 최근 클릭, 사용자 임베딩</td><td><code>article_id</code>, <code>position</code></td></tr>
-      <tr><td><code>read_end</code></td><td>기사 페이지를 떠날 때</td><td>체류 시간, 낚시 클릭 구분, 봇 탐지</td><td><code>dwell_ms</code></td></tr>
-      <tr><td><code>visit</code></td><td>세션이 시작될 때</td><td>시간대별 방문 비율, 활동 일수</td><td><code>session_id</code></td></tr>
-      <tr><td>기사 메타</td><td>기사가 발행될 때 (Cloud SQL)</td><td>카테고리, 경과 시간, 기사 임베딩, 자극도</td><td><code>category</code>, <code>published_at</code>, 본문</td></tr>
+      <tr><td>사용자</td><td>카테고리별 클릭 비율(30일)</td><td>click + 기사 메타</td><td><code>article_id</code>, <code>category</code></td><td>세호 · 태원</td></tr>
+      <tr><td>사용자</td><td>최근 클릭 5개의 카테고리 분포</td><td>click</td><td><code>article_id</code>, <code>event_time</code></td><td>세호</td></tr>
+      <tr><td>사용자</td><td>사용자 임베딩</td><td>click + 기사 임베딩</td><td><code>article_id</code></td><td>세호</td></tr>
+      <tr><td>사용자</td><td>시간대별 방문 비율</td><td>visit</td><td><code>session_id</code>, <code>event_time</code></td><td>세호</td></tr>
+      <tr><td>사용자</td><td>전체 CTR, 활동 일수</td><td>impression, click</td><td><code>request_id</code>, <code>event_time</code></td><td>세호</td></tr>
+      <tr><td>사용자</td><td>카테고리별 좋아요 비율</td><td>like / unlike + 기사 메타</td><td><code>article_id</code>, <code>action</code></td><td>세호 · 태원</td></tr>
+      <tr><td>기사</td><td>카테고리, 세부 태그</td><td>기사 메타</td><td><code>category</code>, 세부 태그</td><td>태원</td></tr>
+      <tr><td>기사</td><td>발행 후 경과 시간</td><td>기사 메타</td><td><code>published_at</code></td><td>태원</td></tr>
+      <tr><td>기사</td><td>최근 1시간 클릭 수·CTR</td><td>impression, click</td><td><code>article_id</code>, <code>event_time</code></td><td>세호</td></tr>
+      <tr><td>기사</td><td>최근 1시간 좋아요 수</td><td>like / unlike</td><td><code>article_id</code>, <code>action</code>, <code>event_time</code></td><td>세호</td></tr>
+      <tr><td>기사</td><td>제목·본문 임베딩</td><td>기사 메타</td><td>제목, 본문</td><td>태원</td></tr>
+      <tr><td>기사</td><td>자극도 점수</td><td>기사 메타</td><td>자극도 점수</td><td>태원</td></tr>
+      <tr><td>사용자×기사</td><td>임베딩 코사인 유사도</td><td>위 두 임베딩</td><td>없음 (계산값)</td><td>윤모</td></tr>
+      <tr><td>사용자×기사</td><td>이 사용자의 해당 카테고리 CTR</td><td>impression, click + 기사 메타</td><td><code>article_id</code>, <code>category</code></td><td>세호 · 태원</td></tr>
+      <tr><td>사용자×기사</td><td>이 기사를 이미 본 횟수</td><td>impression</td><td><code>article_id</code></td><td>세호</td></tr>
+      <tr><td>사용자×기사</td><td>이 기사 언론사를 구독 중인가(0/1)</td><td>구독 상태 (Cloud SQL) + 기사 메타</td><td><code>publisher_id</code></td><td>태원</td></tr>
+      <tr><td>문맥</td><td>요청 시각(시, 요일), 노출 위치</td><td>impression</td><td><code>event_time</code>, <code>position</code></td><td>세호</td></tr>
     </tbody>
   </table></div>
+  <p>이렇게 뽑은 이벤트는 <code>impression</code>, <code>click</code>, <code>read_end</code>, <code>visit</code>, <code>subscribe</code>/<code>unsubscribe</code>, <code>like</code>/<code>unlike</code>이다. <code>read_end</code>는 위 피처에는 없지만 체류 시간 지표(STEP 1)와 봇 탐지(STEP 4)에 쓴다.</p>
+  <p>구독과 좋아요는 누르는 즉시 화면에 보여야 하므로 두 길로 보낸다. 뉴스 WAS가 Cloud SQL의 <code>subscriptions</code>, <code>likes</code> 테이블에 바로 쓰고(현재 상태), 같은 순간 로깅 서버에도 이벤트를 남긴다(피처용 기록). 추천 순서에도 바로 반영하려면 뉴스 WAS가 추론 서버를 부를 때 구독 언론사 목록을 함께 넘긴다(STEP 11).</p>
   <p>모든 사용자 이벤트에 공통으로 필요한 필드는 <code>event_id</code>, <code>user_id</code>(또는 익명 ID), <code>session_id</code>, <code>event_time</code>, <code>model_version</code>이다.</p>
   <div class="flags">
-    <div class="flag"><span class="tag decide">결정 필요</span><p>익명 사용자 처리(<span class="task">#8</span>). 쿠키 기반 익명 ID를 사용자처럼 다룰지, 세션 피처만 쓸지 정해야 한다. 로그인 후 익명 기록을 합칠지도 함께 정한다.</p></div>
+    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>익명 독자 식별은 <a href="seho.html">세호 님 안</a>을 따른다. 브라우저 쿠키에 임의 토큰을 넣고 서버가 그 토큰으로 <code>reader_id</code>를 찾는다. 이 <code>reader_id</code>를 사용자로 다룬다. 다만 같은 사람도 휴대폰과 PC, 시크릿 창에서는 다른 독자가 되므로 피처는 "브라우저 단위"다. 회원가입이 후속 범위라 로그인 후 기록 합치기는 MVP에서 다루지 않는다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>구독·좋아요를 넣기로 했다. 세호 님 화면 안에는 좋아요가 아직 후속 범위로 적혀 있어 버튼·이벤트(<span class="task">#8</span>)를 다시 맞춰야 하고, 태원 님 쪽에는 <code>subscriptions</code>·<code>likes</code> 테이블과 기사 메타의 <code>publisher_id</code>가 필요하다(<span class="task">#4</span> <span class="task">#6</span>).</p></div>
     <div class="flag"><span class="tag risk">예상 문제</span><p>프론트엔드가 <code>request_id</code>와 <code>position</code>을 모든 노출 이벤트에 실어 보내야 한다. 빠지면 피드백 연결과 위치 편향 보정이 둘 다 안 된다.</p></div>
     <div class="flag"><span class="tag unsure">불확실·어려움</span><p>모델이 원하는 이벤트와 수집 쪽이 만들 수 있는 이벤트가 다를 수 있다. 우선순위는 impression, click, read_end, visit 순서로 제안한다.</p></div>
   </div>
@@ -234,7 +251,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 
 <section id="s3">
   <h2><span class="step">STEP 3</span>피처 설계와 피처 정의서 <span class="task">#11</span> <span class="task">#15</span></h2>
-  <p>피처는 네 묶음 14개로 시작한다. 대부분 하루나 1시간 단위 배치로 만든다. 실시간이 가장 필요한 것은 "최근 클릭 5개"이고, 나중에 스트림으로 바꿀 첫 후보로 둔다.</p>
+  <p>피처는 네 묶음 17개로 시작한다. 구독·좋아요 피처 3개는 2026-10-31에 추가했다. 대부분 하루나 1시간 단위 배치로 만든다. 실시간이 가장 필요한 것은 "최근 클릭 5개"이고, 나중에 스트림으로 바꿀 첫 후보로 둔다.</p>
   <div class="tbl"><table>
     <thead><tr><th>묶음</th><th>피처</th><th>왜 필요한가</th><th>원본</th><th>갱신</th></tr></thead>
     <tbody>
@@ -243,14 +260,17 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <tr><td>사용자</td><td>사용자 임베딩 (최근 클릭 기사 임베딩 평균)</td><td>카테고리보다 세밀한 관심</td><td>click, 기사 임베딩</td><td>하루</td></tr>
       <tr><td>사용자</td><td>시간대별 방문 비율</td><td>출퇴근형·저녁형 접속 패턴</td><td>visit</td><td>하루</td></tr>
       <tr><td>사용자</td><td>전체 CTR, 활동 일수</td><td>자주 누르는 사람과 안 누르는 사람 보정</td><td>impression, click</td><td>하루</td></tr>
+      <tr><td>사용자</td><td>카테고리별 좋아요 비율</td><td>클릭보다 강한 선호 신호</td><td>like, 기사 메타</td><td>하루</td></tr>
       <tr><td>기사</td><td>카테고리, 세부 태그</td><td>기본 주제 신호</td><td>기사 메타</td><td>발행 시</td></tr>
       <tr><td>기사</td><td>발행 후 경과 시간</td><td>뉴스는 신선도가 크게 작용</td><td>기사 메타</td><td>요청 시</td></tr>
       <tr><td>기사</td><td>최근 1시간 클릭 수·CTR</td><td>지금 뜨는 기사, 인기순 baseline</td><td>impression, click</td><td>1시간</td></tr>
+      <tr><td>기사</td><td>최근 1시간 좋아요 수</td><td>읽고 나서도 좋았던 기사</td><td>like</td><td>1시간</td></tr>
       <tr><td>기사</td><td>제목·본문 임베딩</td><td>내용 비교의 기반</td><td>기사 본문</td><td>발행 시</td></tr>
       <tr><td>기사</td><td>자극도 점수</td><td>낚시성 제목 영향 확인</td><td>뉴스 생성</td><td>발행 시</td></tr>
       <tr><td>사용자×기사</td><td>사용자·기사 임베딩 코사인 유사도</td><td>핵심 개인화 신호</td><td>두 임베딩</td><td>요청 시</td></tr>
       <tr><td>사용자×기사</td><td>이 사용자의 해당 카테고리 CTR</td><td>카테고리 선호의 강도</td><td>impression, click</td><td>하루</td></tr>
       <tr><td>사용자×기사</td><td>이 기사를 이미 본 횟수</td><td>반복 노출 피로</td><td>impression</td><td>1시간</td></tr>
+      <tr><td>사용자×기사</td><td>이 기사 언론사를 구독 중인가(0/1)</td><td>독자가 직접 고른 선호, 누르는 즉시 반영</td><td>구독 상태(Cloud SQL), 기사 메타</td><td>요청 시</td></tr>
       <tr><td>문맥</td><td>요청 시각(시, 요일), 노출 위치</td><td>시간대 취향, 위치 편향 보정</td><td>impression</td><td>요청 시</td></tr>
     </tbody>
   </table></div>
