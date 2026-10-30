@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>작업 나열표 28개</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f6f7f8; --surface: #ffffff; --line: #d9dde2; --fg: #1d2329; --muted: #5d6873;
+  --accent: #1f6f8b; --hl: #fdf1d8;
+  --body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  --mono: "JetBrains Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15191d; --surface: #1d2328; --line: #343c44; --fg: #e6e9ec; --muted: #9aa5b0; --accent: #6cc3dc; --hl: #3a2e14; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #15191d; --surface: #1d2328; --line: #343c44; --fg: #e6e9ec; --muted: #9aa5b0; --accent: #6cc3dc; --hl: #3a2e14; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.7 var(--body); margin: 0; }
+.wrap { max-width: 1000px; margin: 0 auto; padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+.back { font-size: 13px; color: var(--accent); text-decoration: none; }
+.back:hover, .back:focus-visible { text-decoration: underline; }
+h1 { font-size: 26px; margin: 0; text-wrap: balance; }
+p { margin: 0; color: var(--muted); max-width: 72ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 720px; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; font-weight: 500; color: var(--muted); }
+td:first-child { font: 500 12px var(--mono); color: var(--muted); white-space: nowrap; }
+tr.ours td { font-weight: 700; }
+tr:target td { background: var(--hl); }
+tr { scroll-margin-top: 24px; }
+</style>
+<style>
+.people { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap:10px; }
+.person { display:block; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px 14px; color:var(--fg); text-decoration:none; }
+.person:hover, .person:focus-visible { border-color: var(--accent); }
+.person b { display:block; font-size:15px; }
+.person span { font-size:12.5px; color:var(--muted); }
+.person i { font-style:normal; font-size:11.5px; color:var(--accent); }
+td a { color: var(--accent); }
+section { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:18px 20px; display:grid; gap:10px; min-width:0; }
+section h2 { font-size:17px; margin:0; }
+.todo { border:1px dashed var(--line); border-radius:8px; padding:10px 12px; color:var(--muted); font-size:14px; }
+.banner { background:var(--hl); border-radius:8px; padding:8px 12px; font-size:13.5px; color:var(--fg); max-width:none; }
+ul { margin:0; padding-left:20px; }
+nav.top { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:13px; }
+nav.top a { color: var(--accent); text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 공동 청사진 대문</a>
+  <h1>작업 나열표 (28개)</h1>
+  <p>출처: 장주현 님이 10/29 팀에 공유한 「작업 나열표 · 병렬 구간 · WBS 골격 (팀 공유용 초안)」 4절. 담당 칸은 확정이 아니라 회의에서 나온 말 기준이다. 처리·피처·모델 파트의 작업은 굵게 표시했다.</p>
+  <h2 style="font-size:16px;margin:8px 0 0">사람별 페이지</h2>
+  <div class="people"><a class="person" href="yunmo.html"><b>윤모</b><span>처리·피처·모델 · #11 #12 #13 #23</span><br><i>피처 정의서·DAG·CTR 모델</i></a><a class="person" href="juhyun.html"><b>장주현</b><span>인프라 · #1 #2 #3 #16 #21 #24</span><br><i>청사진·인프라 구성도·툴 카탈로그</i></a><a class="person" href="taewon.html"><b>태원</b><span>뉴스 생성·서비스 · #4 #5 #6</span><br><i>뼈대</i></a><a class="person" href="seho.html"><b>세호</b><span>FE·사용자 데이터·수집 · #7 #8 #9</span><br><i>프론트엔드 청사진 초안 v0.6</i></a></div>
+  <div class="card"><table>
+    <thead><tr><th>#</th><th>영역</th><th>작업</th><th>산출물</th><th>의존</th><th>후보(회의 발언 기준)</th></tr></thead>
+    <tbody>
+      <tr id="t1"><td>1</td><td>인프라</td><td>GCP 계정·프로젝트, Terraform(GKE, GCS, BigQuery, Cloud SQL)</td><td>tf 폴더</td><td>없음</td><td><a href="juhyun.html">장주현</a></td></tr>
+      <tr id="t2"><td>2</td><td>인프라</td><td>Helm: Airflow, 로깅 서버, Redis/Valkey, 추론 서버</td><td>helm values</td><td>1</td><td><a href="juhyun.html">장주현</a></td></tr>
+      <tr id="t3"><td>3</td><td>인프라</td><td>배포 파이프라인, 계정 교체 절차</td><td>README</td><td>1</td><td><a href="juhyun.html">장주현</a></td></tr>
+      <tr id="t4"><td>4</td><td>뉴스 생성</td><td>기사 메타데이터 스키마(신문사 카테고리 형식)</td><td>필드 정의서</td><td>없음</td><td><a href="taewon.html">태원</a></td></tr>
+      <tr id="t5"><td>5</td><td>뉴스 생성</td><td>LLM 기사 생성·에이전트 검수</td><td>생성 스크립트</td><td>4, 키</td><td><a href="taewon.html">태원</a></td></tr>
+      <tr id="t6"><td>6</td><td>뉴스 서비스</td><td>뉴스 DB(Cloud SQL), 뉴스 백엔드·서빙 WAS API(피드, 상세)</td><td>API 명세, DB 스키마</td><td>4</td><td><a href="taewon.html">태원</a></td></tr>
+      <tr id="t7"><td>7</td><td>FE</td><td>피드·상세 화면, 노출 정보 결정</td><td>화면 안</td><td>6</td><td><a href="seho.html">세호(프론트 안)</a></td></tr>
+      <tr id="t8"><td>8</td><td>사용자 데이터</td><td>수집할 행동 정의, 익명 사용자 처리</td><td>이벤트 목록</td><td>없음</td><td><a href="seho.html">세호</a></td></tr>
+      <tr id="t9"><td>9</td><td>수집</td><td>이벤트 스키마, 로깅 서버, GCS 5분 파티션</td><td>스키마 문서, 서버</td><td>8</td><td><a href="seho.html">세호(수집 확인)</a></td></tr>
+      <tr id="t10"><td>10</td><td>사용자 데이터</td><td>가상 독자(합성 데이터 → 페르소나 에이전트)</td><td>생성 스크립트</td><td>7, 8, 17</td><td>R&amp;R 논의</td></tr>
+      <tr id="t11" class="ours"><td>11</td><td>처리·피처</td><td>피처 목록과 필요한 이벤트 거꾸로 확인</td><td>피처 정의서</td><td>8 (양방향)</td><td><a href="yunmo.html">윤모</a></td></tr>
+      <tr id="t12" class="ours"><td>12</td><td>처리·피처</td><td>정제·집계·피처 DAG</td><td>DAG</td><td>9, 11</td><td><a href="yunmo.html">윤모</a></td></tr>
+      <tr id="t13" class="ours"><td>13</td><td>모델</td><td>baseline(인기순), CTR 모델, 평가</td><td>노트북, 지표</td><td>12</td><td><a href="yunmo.html">윤모(평가)</a></td></tr>
+      <tr id="t14"><td>14</td><td>서빙</td><td>추론 서버(후보 10~20개 점수화), 피드 연결</td><td>서버</td><td>13, 6</td><td>R&amp;R 논의</td></tr>
+      <tr id="t15"><td>15</td><td>공통</td><td>청사진 한 장, DB 형식·피처 공유 방식 합의, WBS</td><td>문서</td><td>4, 8, 11</td><td>전원</td></tr>
+      <tr id="t16"><td>16</td><td>공통·인프라</td><td>로컬 개발 환경 compose 베이스(Postgres, Redis, Airflow, 폴더형 GCS)</td><td>compose 파일, README</td><td>없음</td><td><a href="juhyun.html">장주현(제안)</a></td></tr>
+      <tr id="t17"><td>17</td><td>사용자 데이터</td><td>페르소나 정의(Nemotron 활용), 시뮬레이션 규칙</td><td>페르소나 정의서</td><td>없음</td><td>R&amp;R 논의</td></tr>
+      <tr id="t18"><td>18</td><td>뉴스 생성</td><td>기사 세부 태그(MVP, 적정 개수)</td><td>태그 체계</td><td>4</td><td>R&amp;R 논의</td></tr>
+      <tr id="t19"><td>19</td><td>사용자 데이터</td><td>학습용 최소 데이터 확보(양·기간 정의)</td><td>샘플·본 데이터</td><td>10</td><td>R&amp;R 논의</td></tr>
+      <tr id="t20"><td>20</td><td>서빙</td><td>추천 결과 전달 방식 결정(요청 시 계산 / 미리 저장)</td><td>결정 메모</td><td>14</td><td>팀 합의</td></tr>
+      <tr id="t21"><td>21</td><td>인프라</td><td>CI/CD·GitOps, Secret·IAM</td><td>파이프라인</td><td>1</td><td><a href="juhyun.html">장주현</a></td></tr>
+      <tr id="t22"><td>22</td><td>인프라·처리</td><td>모니터링 최소, 비용·스캔량(파티션 설계)</td><td>설정, 점검표</td><td>1, 12</td><td>R&amp;R 논의</td></tr>
+      <tr id="t23" class="ours"><td>23</td><td>모델</td><td>평가 지표 정의(CTR 먼저, nDCG@K는 이후)</td><td>지표 문서</td><td>11</td><td><a href="yunmo.html">윤모(평가)</a></td></tr>
+      <tr id="t24"><td>24</td><td>인프라</td><td>계정 교체 리허설(6주쯤, 약 12/10)</td><td>리허설 결과</td><td>1~3</td><td><a href="juhyun.html">장주현</a></td></tr>
+      <tr id="t25"><td>25</td><td>발표</td><td>중간발표 자료(아키텍처 그림, 기사 샘플, 페르소나 정의서, 이벤트 스키마, BigQuery 원본·집계 테이블, baseline 피드), 11/19(예정)</td><td>발표 자료</td><td>4~14 일부</td><td>전원</td></tr>
+      <tr id="t26"><td>26</td><td>발표</td><td>최종 발표·데모 영상(필수), 12/17(예정)</td><td>발표 자료, 영상</td><td>전체</td><td>전원</td></tr>
+      <tr id="t27"><td>27</td><td>공통</td><td>상호 리뷰·설명 연습(12/6~12/12, 제안)</td><td>리뷰 기록</td><td>전체</td><td>전원</td></tr>
+      <tr id="t28"><td>28</td><td>공통</td><td>통합 테스트(클릭 → 원본 → 배치 → 피처 → 서빙, 클라우드 환경)</td><td>점검 결과</td><td>1~14</td><td>전원</td></tr>
+    </tbody>
+  </table></div>
+  <a class="back" href="index.html">← 공동 청사진 대문</a>
+</div>
+</body>
+</html>

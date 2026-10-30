@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>뉴스 추천 공동 청사진</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cover page, title block then a grid of part cards in pipeline order */
+:root{--bg:#f4f6f5;--surface:#ffffff;--line:#d7dedb;--fg:#1c2622;--muted:#5a6a63;--accent:#1f6f5a;--accent-soft:#e2f1ea;--todo:#8a5a00;--todo-soft:#fdf1d8;--body:"Noto Sans KR","Malgun Gothic",sans-serif;--mono:"JetBrains Mono",Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141917;--surface:#1c2320;--line:#33403a;--fg:#e4ebe7;--muted:#9bb0a7;--accent:#6fd0b0;--accent-soft:#163a30;--todo:#f0c070;--todo-soft:#3a2e14;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141917;--surface:#1c2320;--line:#33403a;--fg:#e4ebe7;--muted:#9bb0a7;--accent:#6fd0b0;--accent-soft:#163a30;--todo:#f0c070;--todo-soft:#3a2e14;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 var(--body)}
+.wrap{max-width:980px;margin:0 auto;padding-block:48px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:6px 0 10px;text-wrap:balance}
+.lead{margin:0;color:var(--muted);max-width:64ch}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.flow span{border:1px solid var(--line);border-radius:6px;padding:2px 8px;background:var(--surface)}
+.flow i{font-style:normal;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+a.card{display:grid;gap:6px;align-content:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;color:var(--fg);text-decoration:none;min-width:0}
+a.card:hover,a.card:focus-visible{border-color:var(--accent)}
+.card .area{font:500 12px var(--mono);color:var(--accent)}
+.card b{font-size:18px}
+.card .who{font-size:13px;color:var(--muted)}
+.card p{margin:0;font-size:14px}
+.card .tasks{font:12px var(--mono);color:var(--muted)}
+.state{justify-self:start;font-size:12px;font-weight:500;border-radius:999px;padding:1px 9px;background:var(--accent-soft);color:var(--accent)}
+.state.todo{background:var(--todo-soft);color:var(--todo)}
+a.wide{grid-column:1/-1}
+.note{font-size:13px;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SKP AI DE 1기 · 개인화 뉴스 추천 · 2026-10-30</div>
+    <h1>뉴스 추천 공동 청사진</h1>
+    <p class="lead">팀원 각자가 맡은 영역의 청사진을 한곳에 모았다. 데이터가 한 바퀴 도는 순서대로 배치했고, 각 페이지는 작성자의 원본을 그대로 옮겼다.</p>
+  </header>
+
+  <div class="flow" aria-label="데이터 흐름">
+    <span>기사 생성</span><i>→</i><span>화면·행동 수집</span><i>→</i><span>원본 저장</span><i>→</i><span>정제·피처</span><i>→</i><span>모델·추론</span><i>→</i><span>다시 화면</span><i>·</i><span>바닥: 인프라</span>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="taewon.html"><span class="area">뉴스 생성·서비스</span><b>기사와 뉴스 서버</b><span class="who">태원</span><p>기사 메타데이터 스키마, LLM 기사 생성·검수, 뉴스 DB와 WAS API</p><span class="tasks">#4 #5 #6</span><span class="state todo">작성 예정</span></a>
+    <a class="card" href="seho.html"><span class="area">프론트엔드·행동 수집</span><b>화면과 이벤트</b><span class="who">세호</span><p>화면 구성, 비로그인 재방문 식별, 노출·클릭·체류 수집, API 계약, CTR 라벨 제안</p><span class="tasks">#7 #8 #9</span><span class="state">초안 v0.6</span></a>
+    <a class="card" href="yunmo.html"><span class="area">처리·피처·모델</span><b>피처와 추천 모델</b><span class="who">윤모</span><p>피처 정의서, 정제·집계·피처 DAG, baseline과 CTR 모델, 평가 지표</p><span class="tasks">#11 #12 #13 #23</span><span class="state">초안</span></a>
+    <a class="card" href="juhyun.html"><span class="area">인프라</span><b>청사진 정리와 인프라</b><span class="who">장주현</span><p>멘토 청사진 6단계 정리, 인프라 구성도, 인프라 툴 카탈로그 84개</p><span class="tasks">#1 #2 #3 #16 #21 #24</span><span class="state">v2</span></a>
+    <a class="card wide" href="wbs.html"><span class="area">공통</span><b>작업 나열표 28개</b><span class="who">장주현 님 10/29 WBS 기준</span><p>영역별 작업, 산출물, 의존 관계, 담당 후보. 사람별 페이지로 이동할 수 있다.</p></a>
+  </div>
+  <p class="note">담당과 내용은 팀 합의 전 초안이다. 페이지 사이에 서로 다른 판단이 있으면 그대로 두었다.</p>
+</div>
+
+</body>
+</html>
