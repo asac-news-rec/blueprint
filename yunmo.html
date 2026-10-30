@@ -93,7 +93,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 <div class="wrap">
 <nav class="toc" aria-label="상위 이동" style="border:0;padding:0"><a href="index.html">← 공동 청사진 대문</a><a href="wbs.html">작업 나열표</a></nav>
 <header>
-  <div class="meta">SKP AI DE 1기 · 뉴스 추천 · 처리·피처·모델 파트 (윤모) · 2026-10-30 초안</div>
+  <div class="meta">SKP AI DE 1기 · 뉴스 추천 · 처리·피처·모델 파트 (윤모) · 2026-10-31 수정</div>
   <h1>추천 모델 청사진</h1>
   <p>행동 로그를 피처로 만들고, 그 피처로 "이 독자에게 지금 보여 줄 기사"를 고르는 부분의 설계안이다. 바쁘면 <a href="#asks">팀원별로 필요한 것</a>과 <a href="#index">표시 모아보기</a>만 봐도 된다. 본문은 설계 순서대로 적었다.</p>
   <p class="src-note">작업 번호(<span class="task">#12</span> 같은 표시)는 장주현 님이 10/29에 공유한 「작업 나열표 · 병렬 구간 · WBS 골격」의 작업 28개 번호다. 번호를 누르면 <a href="wbs.html">작업 나열표 페이지</a>의 해당 작업으로 이동한다.</p>
@@ -110,7 +110,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 
 <section id="mine">
   <h2>이 파트가 맡는 일</h2>
-  <p>처리·피처·모델 파트는 작업표의 #11, #12, #13, #23을 맡는다. 아래 STEP에서 각 작업을 어떻게 할지 설명한다.</p>
+  <p>처리·피처·모델 파트는 작업표의 #11, #12, #13, #23과 #14 중 추론 서버 코드를 맡는다. 아래 STEP에서 각 작업을 어떻게 할지 설명한다.</p>
   <div class="tbl"><table>
     <thead><tr><th>작업표</th><th>작업</th><th>산출물</th><th>설명 위치</th></tr></thead>
     <tbody>
@@ -118,7 +118,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <tr><td><span class="task">#11</span></td><td>피처 목록과 필요한 이벤트 거꾸로 확인</td><td>피처 정의서</td><td>STEP 2, 3</td></tr>
       <tr><td><span class="task">#12</span></td><td>정제·집계·피처 DAG</td><td>DAG</td><td>STEP 4</td></tr>
       <tr><td><span class="task">#13</span></td><td>baseline(인기순), CTR 모델, 평가</td><td>노트북, 지표</td><td>STEP 6~10</td></tr>
-      <tr><td>맞물림</td><td><span class="task">#8</span> 행동 정의 · <span class="task">#9</span> 수집 · <span class="task">#14</span> 추론 서버 · <span class="task">#15</span> 피처 공유 방식 · <span class="task">#19</span> 최소 데이터 · <span class="task">#20</span> 전달 방식 · <span class="task">#22</span> 파티션·비용 · <span class="task">#28</span> 통합 테스트</td><td>합의 메모</td><td>각 STEP의 표시</td></tr>
+      <tr><td><span class="task">#14</span></td><td>추론 서버 코드: 피처 파일과 모델을 불러 후보 10~20개를 점수화하는 FastAPI 서버와 컨테이너 이미지 (GKE 배포는 장주현 님 <span class="task">#2</span>, 뉴스 WAS에서 부르는 부분은 태원 님 <span class="task">#6</span>)</td><td>서버 코드, 이미지, API 명세</td><td>STEP 11</td></tr>
+      <tr><td>맞물림</td><td><span class="task">#8</span> 행동 정의 · <span class="task">#9</span> 수집 · <span class="task">#14</span> 피드 연결 · <span class="task">#15</span> 피처 공유 방식 · <span class="task">#19</span> 최소 데이터 · <span class="task">#20</span> 전달 방식 · <span class="task">#22</span> 파티션·비용 · <span class="task">#28</span> 통합 테스트</td><td>합의 메모</td><td>각 STEP의 표시</td></tr>
       <tr><td><span class="task">#25</span></td><td>중간발표(11/19 예정)에서 이 파트가 보여 줄 것</td><td>BigQuery 원본·집계 테이블, baseline 피드</td><td>STEP 4, 8</td></tr>
     </tbody>
   </table></div>
@@ -137,7 +138,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <tr><td>태원 (뉴스)</td><td>기사 임베딩은 피처 DAG에서 계산하는 안에 동의하는지 (뉴스 쪽은 제목·본문·카테고리·<code>published_at</code>만 Cloud SQL에 정확히 저장)</td><td><span class="task">#5</span> <span class="task">#6</span></td><td>STEP 3</td></tr>
       <tr><td>장주현 (인프라)</td><td>서빙용 피처 파일의 GCS 경로·권한, BigQuery 파티션·스캔 비용 기준</td><td><span class="task">#2</span> <span class="task">#22</span></td><td>STEP 3, 4</td></tr>
       <tr><td>장주현 (인프라)</td><td>GPU 사용 가능 범위, 프로젝트 ID·버킷 이름을 설정값으로 받기 (계정 교체 대비)</td><td><span class="task">#21</span> <span class="task">#24</span></td><td>STEP 8, 12</td></tr>
-      <tr><td>전원</td><td>추론 서버 담당 확정 (WBS Q2 추천: 윤모 주담당, 이후 장주현 합류), 요청 시 점수화 확정 (WBS Q3)</td><td><span class="task">#14</span> <span class="task">#20</span></td><td>STEP 11</td></tr>
+      <tr><td>전원</td><td>추론 서버 분담 확인: 점수화 코드·이미지는 윤모, GKE 배포(<span class="task">#2</span> Helm)는 장주현, 뉴스 WAS에서 호출·실패 시 인기순 대체 피드는 태원. 요청 시 점수화 확정 (WBS Q3)</td><td><span class="task">#14</span> <span class="task">#20</span></td><td>STEP 11</td></tr>
       <tr><td>전원</td><td>가상 독자 담당, 학습용 데이터 양·기간</td><td><span class="task">#10</span> <span class="task">#17</span> <span class="task">#19</span></td><td>STEP 5</td></tr>
       <tr><td>전원</td><td>발표에서 내세울 대표 지표 (CTR로 제안)</td><td><span class="task">#23</span></td><td>STEP 1</td></tr>
     </tbody>
@@ -499,7 +500,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 
 <section id="s11">
   <h2><span class="step">STEP 11</span>서빙 연결 <span class="task">#14</span> <span class="task">#20</span></h2>
-  <p>WBS 문서의 추천대로 1차는 <b>요청 시 점수화</b>다(Q3). 뉴스 WAS와 추론 서버는 따로 두고 HTTP로 주고받는다(Q4). 추론 서버 담당은 "윤모 주담당, 인프라 작업 후 장주현 합류"가 추천안이며 팀 확정 전이다(Q2).</p>
+  <p>WBS 문서의 추천대로 1차는 <b>요청 시 점수화</b>다(Q3). 뉴스 WAS와 추론 서버는 따로 두고 HTTP로 주고받는다(Q4). 추론 서버는 세 부분으로 나눈다(Q2 추천안을 나눈 것). 점수화 코드·API·컨테이너 이미지는 윤모가 맡는다. 이 이미지를 GKE에 띄우는 Helm 설정은 장주현 님의 <span class="task">#2</span> 작업이다. 뉴스 WAS에서 추론 서버를 부르고, 실패하면 인기순 피드로 대신하는 부분은 태원 님 쪽이다.</p>
   <div class="tbl"><table>
     <thead><tr><th></th><th>요청 시 점수화 <span class="tag pick">1차 선택</span></th><th>미리 계산해 저장 <span class="tag ext">확장</span></th></tr></thead>
     <tbody>
@@ -521,7 +522,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <p>모델 파일은 GCS에 버전별 폴더로 올린다. 응답에는 <code>request_id</code>와 <code>model_version</code>을 실어 노출 이벤트로 돌아오게 한다.</p>
   <div class="flags">
-    <div class="flag"><span class="tag decide">결정 필요</span><p>요청 시 점수화(<span class="task">#20</span>)와 추론 서버 담당(<span class="task">#14</span>)은 추천안이다. 팀 확정이 필요하고, "후보 10~20개 요청 시 점수화로 충분한가"를 10/31에 멘토님께 한 줄 확인한다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>요청 시 점수화(<span class="task">#20</span>)는 추천안이다. 추론 서버 코드(<span class="task">#14</span>)는 윤모가 맡기로 했고, 배포·호출 분담은 장주현·태원 님 확인이 필요하다. 그리고 "후보 10~20개 요청 시 점수화로 충분한가"를 10/31에 멘토님께 한 줄 확인한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>뉴스 WAS ↔ 추론 서버 요청·응답 형식(후보 목록, <code>user_id</code>, 점수, <code>request_id</code>, <code>model_version</code>)을 계약으로 먼저 정해야 둘이 따로 개발할 수 있다.</p></div>
     <div class="flag"><span class="tag risk">예상 문제</span><p>피처 파일을 다시 불러오는 시점에 서버가 잠깐 멈추거나 옛 피처를 쓸 수 있다. 새 파일을 다 읽은 뒤에 교체하는 방식으로 만든다.</p></div>
     <div class="flag"><span class="tag unsure">불확실·어려움</span><p>학습 도구와 서빙 런타임이 다를 때 어떤 패키징이 적절한지 멘토님 의견을 듣는다.</p></div>
