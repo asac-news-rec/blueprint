@@ -68,7 +68,7 @@ nav.top a { color: var(--accent); text-decoration:none; }
 
   <section><h2>다른 파트가 요청한 것</h2>
     <p>처리·피처·모델 파트가 이 파트에 요청하거나 같이 정하자고 한 항목이다.</p>
-    <ul><li>기사 메타에 카테고리·세부 태그(#18)·published_at·자극도 점수 넣기</li><li>기사 임베딩은 피처 DAG가 매시 새 기사만 계산하는 안 (처리·피처·모델 파트 담당). 뉴스 쪽은 제목·본문·카테고리·published_at을 Cloud SQL에 정확히 저장 — 동의 여부 확인</li><li>후보 10~20개를 뉴스 WAS가 고를지, 추론 서버가 고를지</li><li>뉴스 WAS ↔ 추론 서버 요청·응답 형식 (WBS Q4: 서버 분리 추천)</li></ul>
+    <ul><li>기사 메타에 카테고리·세부 태그(#18)·published_at·자극도 점수 넣기</li><li>기사 제목·본문·카테고리·published_at을 Cloud SQL에 정확히 저장 (기사 임베딩은 처리·피처·모델 파트가 피처 DAG에서 계산하므로 이 파트 작업이 아니다)</li><li>후보 10~20개를 뉴스 WAS가 고를지, 추론 서버가 고를지</li><li>뉴스 WAS ↔ 추론 서버 요청·응답 형식 (WBS Q4: 서버 분리 추천)</li></ul>
   </section>
 
   <section><h2>결정 필요 · 예상 문제 · 불확실</h2><div class="todo">작성 예정</div></section>
