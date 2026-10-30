@@ -38,7 +38,6 @@ header p { margin: 0; color: var(--muted); max-width: 68ch; }
 .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
 .tag.risk { background: var(--risk-soft); color: var(--risk); }
 .tag.decide { background: var(--decide-soft); color: var(--decide); }
-.tag.unsure { background: var(--unsure-soft); color: var(--unsure); }
 .tag.pick { background: var(--pick-soft); color: var(--pick); }
 .tag.cmp { background: var(--accent-soft); color: var(--accent); }
 .tag.ext { border: 1px solid var(--line); color: var(--muted); }
@@ -84,6 +83,23 @@ a.task:hover, a.task:focus-visible { background: var(--accent-soft); }
 table.wbs td:first-child { font: 500 12px var(--mono); color: var(--muted); }
 table.wbs tr.ours td { font-weight: 700; }
 table.wbs tr:target td { background: var(--decide-soft); }
+.qa-term { text-decoration: underline dotted var(--accent); text-underline-offset: 3px; }
+.qa-btn { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin: 0 2px; padding: 0; vertical-align: -3px; border: 0; border-radius: 50%; background: var(--accent-soft); color: var(--accent); cursor: pointer; }
+.qa-btn:hover, .qa-btn:focus-visible, .qa-btn[aria-expanded="true"] { background: var(--accent); color: var(--surface); }
+.qa-btn svg { width: 11px; height: 11px; }
+#qa-panel { position: fixed; top: 0; right: 0; z-index: 10; width: min(400px, 100vw); height: 100vh; height: 100dvh; overflow-y: auto; background: var(--surface); border-left: 1px solid var(--line); padding: 20px 22px 40px; display: grid; align-content: start; gap: 14px; transform: translateX(100%); visibility: hidden; transition: transform .2s ease, visibility .2s; }
+#qa-panel.open { transform: none; visibility: visible; }
+#qa-panel .qa-head { display: flex; align-items: center; justify-content: space-between; font: 500 12px var(--mono); color: var(--muted); }
+#qa-panel button.close { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 6px; padding: 2px 10px; cursor: pointer; font: inherit; }
+#qa-panel .qa-q { font-size: 16px; font-weight: 700; margin: 0; line-height: 1.5; }
+#qa-panel .qa-a { margin: 0; font-size: 14.5px; }
+#qa-panel .qa-from { font-size: 12px; color: var(--muted); }
+#qa-panel .qa-from a { color: var(--accent); }
+#qa-panel ol { font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 12px; padding-left: 20px; }
+#qa-panel ol a { color: var(--fg); text-decoration: none; }
+#qa-panel ol a:hover, #qa-panel ol a:focus-visible, #qa-panel ol li.on a { color: var(--accent); }
+#qa-open { position: fixed; right: 16px; bottom: 16px; z-index: 9; border: 1px solid var(--accent); background: var(--surface); color: var(--accent); border-radius: 999px; padding: 6px 14px; font: 500 13px var(--body); cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { #qa-panel { transition: none; } }
 @media (max-width: 520px) { section { padding: 18px 16px; } header h1 { font-size: 24px; } .flag { grid-template-columns: 1fr; gap: 2px; } }
 </style>
 </head>
@@ -98,7 +114,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <p>행동 로그를 피처로 만들고, 그 피처로 "이 독자에게 지금 보여 줄 기사"를 고르는 부분의 설계안이다. 바쁘면 <a href="#asks">팀원별로 필요한 것</a>과 <a href="#index">표시 모아보기</a>만 봐도 된다. 본문은 설계 순서대로 적었다.</p>
   <p class="src-note">작업 번호(<span class="task">#12</span> 같은 표시)는 장주현 님이 10/29에 공유한 「작업 나열표 · 병렬 구간 · WBS 골격」의 작업 28개 번호다. 번호를 누르면 <a href="wbs.html">작업 나열표 페이지</a>의 해당 작업으로 이동한다.</p>
   <div class="legend">
-    <span class="tag risk">예상 문제</span><span class="tag decide">결정 필요</span><span class="tag unsure">불확실·어려움</span>
+    <span class="tag decide">결정 필요</span><span class="tag risk">문제·불확실</span>
     <span class="tag pick">1차 선택</span><span class="tag cmp">비교군</span><span class="tag ext">확장</span><span class="tag hold">보류</span>
     <span class="counts" id="counts"></span>
   </div>
@@ -209,7 +225,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>CTR의 분모가 되는 "노출"의 기준을 세호 님과 맞춰야 한다. 화면에 일부만 보인 카드도 노출로 셀지에 따라 CTR이 크게 달라진다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>최적화 목표를 클릭 하나로 둘지, 체류 시간을 섞을지 정해야 한다. 클릭만 쫓으면 자극적인 제목이 위로 올라온다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>합성 데이터에서 나온 성능 숫자는 실제 독자에게서의 성능을 뜻하지 않는다. 발표에서 어떻게 해석할지 멘토님께 확인한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>합성 데이터에서 나온 성능 숫자는 실제 독자에게서의 성능을 뜻하지 않는다. 발표에서 어떻게 해석할지 멘토님께 확인한다.</p></div>
   </div>
 </section>
 
@@ -263,17 +279,17 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>익명 독자 식별은 <a href="seho.html">세호 님 안</a>을 따른다. 브라우저 쿠키에 임의 토큰을 넣고 서버가 그 토큰으로 <code>reader_id</code>를 찾는다. 이 <code>reader_id</code>를 사용자로 다룬다. 다만 같은 사람도 휴대폰과 PC, 시크릿 창에서는 다른 독자가 되므로 피처는 "브라우저 단위"다. 회원가입이 후속 범위라 로그인 후 기록 합치기는 MVP에서 다루지 않는다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>익명 독자 식별은 <a href="seho.html">세호 님 안</a>을 따른다. 브라우저 쿠키에 임의 토큰을 넣고 서버가 그 토큰으로 <code>reader_id</code>를 찾는다. 이 <code>reader_id</code>를 사용자로 다룬다. 다만 같은 사람도 휴대폰과 PC, 시크릿 창에서는 다른 독자가 되므로 피처는 "브라우저 단위"다. 회원가입이 후속 범위라 로그인 후 기록 합치기는 MVP에서 다루지 않는다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>구독·좋아요를 넣기로 했다. 세호 님 화면 안에는 좋아요가 아직 후속 범위로 적혀 있어 버튼·이벤트(<span class="task">#8</span>)를 다시 맞춰야 하고, 태원 님 쪽에는 <code>subscriptions</code>·<code>likes</code> 테이블과 기사 메타의 <code>publisher_id</code>가 필요하다(<span class="task">#4</span> <span class="task">#6</span>).</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>프론트엔드가 <code>request_id</code>와 <code>position</code>을 모든 노출 이벤트에 실어 보내야 한다. 빠지면 피드백 연결과 위치 편향 보정이 둘 다 안 된다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>모델이 원하는 이벤트와 수집 쪽이 만들 수 있는 이벤트가 다를 수 있다. 우선순위는 impression, click, read_end, visit 순서로 제안한다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>학습-서빙 피처 불일치. 학습은 BigQuery SQL로, 서빙은 다른 코드로 피처를 만들면 값이 어긋난다. 학습과 서빙이 같은 피처 테이블을 읽게 한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>프론트엔드가 <code>request_id</code>와 <code>position</code>을 모든 노출 이벤트에 실어 보내야 한다. 빠지면 피드백 연결과 위치 편향 보정이 둘 다 안 된다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>모델이 원하는 이벤트와 수집 쪽이 만들 수 있는 이벤트가 다를 수 있다. 우선순위는 impression, click, read_end, visit 순서로 제안한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>학습-서빙 피처 불일치. 학습은 BigQuery SQL로, 서빙은 다른 코드로 피처를 만들면 값이 어긋난다. 학습과 서빙이 같은 피처 테이블을 읽게 한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>피처 공유 방식(<span class="task">#15</span>). BigQuery 피처 테이블 스키마와 서빙용 피처 파일의 경로·컬럼을 추론 서버 담당과 합의해야 한다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>Memorystore(Redis)의 용도는 멘토 답을 기다리는 중이다(WBS Q8). 답을 받기 전까지 MVP는 배치 피처 파일로 가고, 실시간 피처가 필요해지면 Redis를 붙인다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>Memorystore(Redis)의 용도는 멘토 답을 기다리는 중이다(WBS Q8). 답을 받기 전까지 MVP는 배치 피처 파일로 가고, 실시간 피처가 필요해지면 Redis를 붙인다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>기사 임베딩 담당. 처리·피처·모델 파트의 피처 DAG가 매시 새 기사만 계산하는 안을 추천한다(STEP 3 <code>embed_articles</code>). 임베딩 모델은 모델 쪽이 실험하며 바꾸는 입력이라 같은 파트가 맡는 편이 낫고, 뉴스 쪽은 기사 메타만 정확히 주면 된다. 태원 님 동의가 필요하다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>새 기사는 최대 1시간 늦게 임베딩이 생긴다. 그동안은 최신순·인기순 후보 생성이 새 기사를 후보에 넣어 준다. 더 빨라야 하면 실행 주기를 10분으로 줄인다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>새 기사는 최대 1시간 늦게 임베딩이 생긴다. 그동안은 최신순·인기순 후보 생성이 새 기사를 후보에 넣어 준다. 더 빨라야 하면 실행 주기를 10분으로 줄인다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>기사 세부 태그(<span class="task">#18</span>)와 자극도 점수를 기사 메타에 넣을 수 있는지 태원 님과 확인한다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>단기 관심 피처를 실시간으로 만들 가치가 있는지 아직 모른다. 배치 버전과 비교해 효과가 있을 때만 스트림으로 바꾼다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>단기 관심 피처를 실시간으로 만들 가치가 있는지 아직 모른다. 배치 버전과 비교해 효과가 있을 때만 스트림으로 바꾼다.</p></div>
   </div>
 </section>
 
@@ -320,13 +336,13 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag risk">예상 문제</span><p>늦게 도착하는 데이터. 5분 파티션이 늦게 올라오면 이미 집계한 시간이 틀어진다. 매시 실행 때 직전 몇 시간을 함께 다시 처리하는 창이 필요하다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>로깅 서버 재전송이나 클라이언트 재시도로 같은 이벤트가 두 번 들어올 수 있다. <code>event_id</code>로 지우지 않으면 클릭 수와 CTR이 부풀려진다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>스캔 비용. 매일 30일 창을 새로 계산하면 읽는 양이 계속 커진다. 하루 집계를 쌓아 두고 더하는 방식으로 줄인다(<span class="task">#22</span>).</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>늦게 도착하는 데이터. 5분 파티션이 늦게 올라오면 이미 집계한 시간이 틀어진다. 매시 실행 때 직전 몇 시간을 함께 다시 처리하는 창이 필요하다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>로깅 서버 재전송이나 클라이언트 재시도로 같은 이벤트가 두 번 들어올 수 있다. <code>event_id</code>로 지우지 않으면 클릭 수와 CTR이 부풀려진다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>스캔 비용. 매일 30일 창을 새로 계산하면 읽는 양이 계속 커진다. 하루 집계를 쌓아 두고 더하는 방식으로 줄인다(<span class="task">#22</span>).</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>GCS → BigQuery 적재 방식. load job으로 복사할지, 외부 테이블로 바로 읽을지 정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>SQL을 Airflow에 직접 둘지 dbt로 관리할지 정한다. dbt는 테스트와 문서가 편하지만 배울 것이 늘어난다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>봇·이상 행동 기준과 처리 위치. 수집 단계에서 막을지, 정제 단계에서 표시만 할지 세호 님과 정한다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>로컬 compose의 폴더형 GCS와 실제 GCS는 경로와 권한 방식이 다르다. 저장소 접근 부분을 한 곳에 모아 두어야 옮길 때 덜 고친다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>로컬 compose의 폴더형 GCS와 실제 GCS는 경로와 권한 방식이 다르다. 저장소 접근 부분을 한 곳에 모아 두어야 옮길 때 덜 고친다.</p></div>
   </div>
 </section>
 
@@ -358,10 +374,10 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag risk">예상 문제</span><p>Pub/Sub은 "최소 한 번 전달"이다. ack가 정해진 시간(기본 10초) 안에 오지 않으면 같은 메시지를 다시 보내서 중복이 생긴다. 지금 clean 단계의 <code>event_id</code> 중복 제거를 그대로 쓴다. <code>event_id</code>는 클릭 순간에 만들어야 하고, Pub/Sub의 <code>message_id</code>로 대신하면 안 된다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>메시지 순서는 보장되지 않는다. 도착 순서가 아니라 <code>event_time</code>으로 정렬한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>Pub/Sub은 "최소 한 번 전달"이다. ack가 정해진 시간(기본 10초) 안에 오지 않으면 같은 메시지를 다시 보내서 중복이 생긴다. 지금 clean 단계의 <code>event_id</code> 중복 제거를 그대로 쓴다. <code>event_id</code>는 클릭 순간에 만들어야 하고, Pub/Sub의 <code>message_id</code>로 대신하면 안 된다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>메시지 순서는 보장되지 않는다. 도착 순서가 아니라 <code>event_time</code>으로 정렬한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>도입 시점. 배치 "최근 클릭 5개"와 실시간 버전을 비교해 CTR 차이가 확인될 때만 붙이는 것을 제안한다. 비용과 운영 부담이 늘어나기 때문이다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>수집 경로를 바꾸면 누락·지연을 다시 검증해야 한다. 가상 독자가 보낸 이벤트 목록과 BigQuery에 도착한 목록을 대조해 누락 수, 중복 수, 도착 지연을 잰다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>수집 경로를 바꾸면 누락·지연을 다시 검증해야 한다. 가상 독자가 보낸 이벤트 목록과 BigQuery에 도착한 목록을 대조해 누락 수, 중복 수, 도착 지연을 잰다.</p></div>
   </div>
 </section>
 
@@ -378,9 +394,9 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>최소 데이터 양과 기간(<span class="task">#19</span>). 데이터를 10%, 30%, 100%로 늘려 학습해 보고, 성능이 더 오르지 않는 지점을 최소량으로 잡는 방법을 제안한다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>가상 독자의 클릭 확률은 우리가 정한 공식이다. 모델은 그 공식을 다시 배우는 것이라, 잘 맞혀도 "연결이 제대로 됐다"는 증거일 뿐이다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>피드백 루프를 돌리면 모델이 보여 준 기사에만 클릭 기록이 쌓인다. 노출 편향이 생기므로 일정 비율은 무작위나 baseline 추천을 섞어야 한다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>MIND는 영어 기사이고 연구 목적 라이선스다. 코드 점검과 비교에만 쓰고 서비스 화면에는 쓰지 않는다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>가상 독자의 클릭 확률은 우리가 정한 공식이다. 모델은 그 공식을 다시 배우는 것이라, 잘 맞혀도 "연결이 제대로 됐다"는 증거일 뿐이다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>피드백 루프를 돌리면 모델이 보여 준 기사에만 클릭 기록이 쌓인다. 노출 편향이 생기므로 일정 비율은 무작위나 baseline 추천을 섞어야 한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>MIND는 영어 기사이고 연구 목적 라이선스다. 코드 점검과 비교에만 쓰고 서비스 화면에는 쓰지 않는다.</p></div>
   </div>
 </section>
 
@@ -393,10 +409,10 @@ table.wbs tr:target td { background: var(--decide-soft); }
     <li><b>빼는 데이터.</b> 페르소나 컬럼은 학습에 넣지 않는다. 정제 단계에서 봇으로 표시된 사용자도 빼고, 몇 명을 뺐는지 기록한다.</li>
   </ol>
   <div class="flags">
-    <div class="flag"><span class="tag risk">예상 문제</span><p>데이터 누수. 노출 이후의 클릭이 피처에 섞이면 학습 성능은 높게 나오지만 서비스에서는 맞지 않는다. 조인 날짜 규칙을 테스트로 고정한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>데이터 누수. 노출 이후의 클릭이 피처에 섞이면 학습 성능은 높게 나오지만 서비스에서는 맞지 않는다. 조인 날짜 규칙을 테스트로 고정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>라벨 기준. 체류 시간이 아주 짧은 클릭을 0으로 볼지 실험으로 정한다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>클래스 불균형. CTR이 낮으면 0이 1보다 훨씬 많다. 음성 샘플링 비율과 확률 보정 방법이 필요하다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>위치 편향. 위에 있어서 눌린 효과를 빼야 기사 자체의 매력을 배운다. 학습 때 위치를 피처로 넣고 서빙 때 1번 자리로 고정하는 방법을 쓰지만 효과는 실험해 봐야 안다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>클래스 불균형. CTR이 낮으면 0이 1보다 훨씬 많다. 음성 샘플링 비율과 확률 보정 방법이 필요하다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>위치 편향. 위에 있어서 눌린 효과를 빼야 기사 자체의 매력을 배운다. 학습 때 위치를 피처로 넣고 서빙 때 1번 자리로 고정하는 방법을 쓰지만 효과는 실험해 봐야 안다.</p></div>
   </div>
 </section>
 
@@ -416,8 +432,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag risk">예상 문제</span><p>새 기사 콜드 스타트. 뉴스는 몇 시간 안에 가치가 떨어진다. 클릭 기반 방법(CF, ALS)은 새 기사를 다루지 못하므로 내용 기반 방법이 필요하다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>신규·익명 사용자 콜드 스타트. 클릭 기록이 없으면 인기순으로 대체한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>새 기사 콜드 스타트. 뉴스는 몇 시간 안에 가치가 떨어진다. 클릭 기반 방법(CF, ALS)은 새 기사를 다루지 못하므로 내용 기반 방법이 필요하다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>신규·익명 사용자 콜드 스타트. 클릭 기록이 없으면 인기순으로 대체한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>방법별로 후보를 몇 개씩 가져와 합칠지 정해야 한다. 후보가 10~20개뿐이라 이 비율이 결과를 크게 바꾼다.</p></div>
   </div>
 </section>
@@ -444,9 +460,9 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>목적 함수. 클릭 여부를 맞히는 binary로 할지, 노출 목록 안의 순서를 맞추는 LambdaRank로 할지 비교해서 고른다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>딥러닝 모델은 합성 데이터 규모로 충분히 학습되는지 모른다. MIND-small에서 먼저 돌려 보고 GBDT와 차이가 있을 때만 가져온다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>GPU 비용. 뉴스 전용 딥러닝 모델을 학습하려면 GPU가 필요하다. 크레딧 범위 안에서 가능한지 장주현 님과 확인한다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>모델 고르기에 시간을 많이 쓰지 말라는 멘토 조언이 있었다. 비교군은 같은 학습 데이터로 한 번씩만 돌리고 피처 개선에 시간을 더 쓴다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>딥러닝 모델은 합성 데이터 규모로 충분히 학습되는지 모른다. MIND-small에서 먼저 돌려 보고 GBDT와 차이가 있을 때만 가져온다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>GPU 비용. 뉴스 전용 딥러닝 모델을 학습하려면 GPU가 필요하다. 크레딧 범위 안에서 가능한지 장주현 님과 확인한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>모델 고르기에 시간을 많이 쓰지 말라는 멘토 조언이 있었다. 비교군은 같은 학습 데이터로 한 번씩만 돌리고 피처 개선에 시간을 더 쓴다.</p></div>
   </div>
 </section>
 
@@ -483,8 +499,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <p>결과는 BigQuery 위 대시보드에서 <code>model_version</code>별, 페르소나별, 위치별 CTR로 본다. 실험 기록은 MLflow 또는 Vertex AI Experiments로 남긴다.</p>
   <div class="flags">
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>오프라인 지표가 올라도 온라인 CTR이 함께 오르지 않을 수 있다. 두 숫자를 같이 보여 줘야 한다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>기록된 로그로 하는 평가는 이전 모델이 보여 준 기사만 평가할 수 있다. 새 모델이 다른 기사를 고르면 정답이 없어 정확한 비교가 어렵다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>오프라인 지표가 올라도 온라인 CTR이 함께 오르지 않을 수 있다. 두 숫자를 같이 보여 줘야 한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>기록된 로그로 하는 평가는 이전 모델이 보여 준 기사만 평가할 수 있다. 새 모델이 다른 기사를 고르면 정답이 없어 정확한 비교가 어렵다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>A/B 그룹을 나누는 방식. <code>user_id</code> 해시로 고정할지, 실험 기간과 그룹 비율을 어떻게 할지 정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>실험 기록 도구로 MLflow를 쓸지 Vertex AI Experiments를 쓸지 정한다.</p></div>
   </div>
@@ -516,8 +532,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>요청 시 점수화(<span class="task">#20</span>)는 추천안이다. 추론 서버 코드(<span class="task">#14</span>)는 윤모가 맡기로 했고, 배포·호출 분담은 장주현·태원 님 확인이 필요하다. 그리고 "후보 10~20개 요청 시 점수화로 충분한가"를 10/31에 멘토님께 한 줄 확인한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>뉴스 WAS ↔ 추론 서버 요청·응답 형식(후보 목록, <code>user_id</code>, 점수, <code>request_id</code>, <code>model_version</code>)을 계약으로 먼저 정해야 둘이 따로 개발할 수 있다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>피처 파일을 다시 불러오는 시점에 서버가 잠깐 멈추거나 옛 피처를 쓸 수 있다. 새 파일을 다 읽은 뒤에 교체하는 방식으로 만든다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>학습 도구와 서빙 런타임이 다를 때 어떤 패키징이 적절한지 멘토님 의견을 듣는다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>피처 파일을 다시 불러오는 시점에 서버가 잠깐 멈추거나 옛 피처를 쓸 수 있다. 새 파일을 다 읽은 뒤에 교체하는 방식으로 만든다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>학습 도구와 서빙 런타임이 다를 때 어떤 패키징이 적절한지 멘토님 의견을 듣는다.</p></div>
   </div>
 </section>
 
@@ -530,9 +546,9 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </ul>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>재학습 주기. 매일로 할지, 성능이 떨어질 때만 할지 정한다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>새 모델이 더 나쁠 때 되돌릴 방법이 필요하다. 이전 버전 파일을 남겨 두고 버전 값만 바꾸면 되돌릴 수 있게 한다.</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>계정 교체(<span class="task">#24</span>) 때 프로젝트 ID와 버킷 이름이 바뀐다. DAG와 SQL에 이름을 직접 쓰지 않고 설정값으로 빼 둔다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>합성 데이터는 분포가 거의 바뀌지 않아 드리프트 감지를 시연하기 어렵다. 가상 독자 페르소나 비율을 중간에 바꾸는 실험이 필요하다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>새 모델이 더 나쁠 때 되돌릴 방법이 필요하다. 이전 버전 파일을 남겨 두고 버전 값만 바꾸면 되돌릴 수 있게 한다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>계정 교체(<span class="task">#24</span>) 때 프로젝트 ID와 버킷 이름이 바뀐다. DAG와 SQL에 이름을 직접 쓰지 않고 설정값으로 빼 둔다.</p></div>
+    <div class="flag"><span class="tag risk">문제·불확실</span><p>합성 데이터는 분포가 거의 바뀌지 않아 드리프트 감지를 시연하기 어렵다. 가상 독자 페르소나 비율을 중간에 바꾸는 실험이 필요하다.</p></div>
   </div>
 </section>
 
@@ -570,7 +586,7 @@ var TASKS = {"1": "GCP 계정·프로젝트, Terraform", "2": "Helm: Airflow, �
   });
 })();
 (function () {
-  var kinds = [["decide", "결정 필요"], ["risk", "예상 문제"], ["unsure", "불확실·어려움"]];
+  var kinds = [["decide", "결정 필요"], ["risk", "문제·불확실"]];
   var body = document.getElementById("index-body");
   var counts = [];
   kinds.forEach(function (k) {
@@ -594,6 +610,85 @@ var TASKS = {"1": "GCP 계정·프로젝트, Terraform", "2": "Helm: Airflow, �
     g.appendChild(h); g.appendChild(ol); body.appendChild(g);
   });
   document.getElementById("counts").textContent = counts.join(" · ");
+})();
+</script>
+
+
+<button type="button" id="qa-open" aria-controls="qa-panel">질문 모아보기</button>
+<aside id="qa-panel" aria-label="질문과 답" aria-hidden="true">
+  <div class="qa-head"><span id="qa-count"></span><button type="button" class="close" id="qa-close">닫기</button></div>
+  <p class="qa-q" id="qa-q"></p>
+  <p class="qa-a" id="qa-a"></p>
+  <div class="qa-from" id="qa-from"></div>
+  <ol id="qa-list"></ol>
+</aside>
+<script>
+/* Question bubbles: each item wraps the first matching term in its section and opens the side panel */
+var QA = [{"sec": "overview", "sel": null, "term": "추론 서버", "q": "피드를 여는 즉시 후보 10~20개에 점수를 지연 없이 매길 수 있나?", "a": "가능하다. 일반적인 대략치로 후보 조회 수 ms~10ms, 메모리의 피처 조회 1ms 미만, LightGBM 20줄 점수 1ms 안팎, 서버 사이 통신 수 ms라 합쳐 수십 ms다. 조건은 두 가지다. 피처 파일은 서버가 켜질 때 메모리에 올려 두고(요청마다 GCS에서 읽으면 그것만 100ms를 넘는다), 기사 임베딩처럼 무거운 계산은 DAG에서 미리 한다."}, {"sec": "overview", "sel": null, "term": "Redis는", "q": "Redis를 처음부터 안 쓰는 건 비싸서인가?", "a": "비용이 주된 이유는 아니다. 가상 독자 수천 명 × 피처 17개는 수 MB라 추론 서버 메모리에 다 들어가고, 피처는 매시간 배치로 바뀌어 실시간으로 쓸 일이 없다. Redis를 넣으면 배포, 장애 처리, DAG의 적재 작업, 파일과 값이 다를 때의 확인이 늘어난다. 사용자가 많아 메모리에 안 들어가거나 \"방금 누른 기사\" 같은 실시간 피처를 쓸 때 추가한다(WBS Q8)."}, {"sec": "s1", "sel": null, "term": "CTR", "q": "한 사람에게 A 기사는 한 번만 뜨는데, 사용자×기사 CTR은 어떻게 재나?", "a": "직접 잴 수 없다. 노출 한 번의 결과는 눌렀다(1)와 안 눌렀다(0)뿐이다. 모델은 비슷한 사람이 비슷한 기사를 본 수많은 노출(1건 = 1줄)에서 배워 클릭 확률(pCTR)을 예측한다. 맞는지는 묶어서 본다. 0.1로 예측한 노출 1,000건 중 약 100건이 눌렸는지(보정), 눌린 것에 더 높은 점수를 줬는지(AUC)다. 지표로서의 CTR은 모델 버전별로 묶어 추천 시스템 전체를 검증하는 숫자다."}, {"sec": "s1", "sel": null, "term": "AUC", "q": "AUC는 무엇을 재나?", "a": "눌린 노출과 안 눌린 노출을 하나씩 짝지었을 때 눌린 쪽에 더 높은 점수를 준 비율이다. 1.0은 항상 맞힘, 0.5는 무작위다. 서비스에 내보내기 전에 과거 기록으로 모델만 잰다. 학습은 앞 기간, 평가는 뒤 기간으로 시간을 나눠야 모델이 미래 기록을 미리 본 효과가 생기지 않는다."}, {"sec": "s2", "sel": null, "term": "구독과 좋아요는", "q": "구독·좋아요는 바로 보여야 하는데 로깅 서버를 거치나?", "a": "두 길로 보낸다. 화면 반영은 뉴스 WAS가 Cloud SQL 테이블에 바로 쓰는 길이라 로깅 서버를 거치지 않는다. 피처는 같은 순간 로깅 서버에 남긴 이벤트로 만들어 1시간 뒤 반영된다. 추천 순서에도 바로 반영하려면 WAS가 추론 서버 요청에 구독 언론사 목록을 함께 넘긴다. 클릭은 \"일어난 일\"이고 구독은 켜고 끄는 \"현재 상태\"라 다르게 다룬다."}, {"sec": "s2", "sel": null, "term": "쿠키", "q": "쿠키와 캐시는 다른가? 둘 다 수집하면 되지 않나?", "a": "쿠키는 사이트가 브라우저에 저장시키고 요청마다 서버로 다시 보내는 작은 값이다. 캐시는 브라우저가 받은 이미지·JS 파일의 사본이라 서버로 가지 않고 식별에 쓸 수 없다. 독자 식별은 쿠키 토큰을 서버가 reader_id로 바꾸는 방식이다. 쿠키는 브라우저 단위라 같은 사람도 휴대폰과 PC에서는 다른 독자가 되고, 이것은 무엇을 더 수집해도 풀리지 않는다. 로그인이 있어야 풀린다."}, {"sec": "s2", "sel": null, "term": "기사 임베딩 담당", "q": "기사 임베딩은 누가 하나? 내 파트인가?", "a": "이 청사진은 처리·피처·모델 파트(윤모)가 피처 DAG의 embed_articles 작업으로 매시 새 기사만 계산하는 안을 제안한다. 임베딩 모델은 실험하며 바꾸는 모델 입력이라 같은 파트가 맡는 편이 낫다. 뉴스 쪽(태원)은 제목·본문·카테고리·published_at을 Cloud SQL에 정확히 저장하면 된다. 태원 님 동의를 받아야 확정이다."}, {"sec": "s3", "sel": null, "term": "봇", "q": "정제 단계에서 봇 기록은 왜 빼나?", "a": "봇(검색엔진 수집기, 서버 상태 점검기)은 기사를 많이 열고 거의 누르지 않는다. 그대로 두면 CTR의 분모가 부풀고, 아무도 안 보는 기사가 인기 기사처럼 보인다. 단, 우리가 만든 가상 독자는 학습 데이터 자체라 빼면 안 된다. 가상 독자 기록은 따로 표시해 두고 외부 봇만 지운다."}, {"sec": "s3", "sel": null, "term": "export_serving", "q": "DAG가 피처 파일을 새로 만들면 메모리에 올려 둔 피처는 어떻게 바뀌나?", "a": "DAG는 기존 파일을 덮어쓰지 않고 features/v14/처럼 새 이름으로 저장한 뒤, 마지막에 LATEST 파일에 v14라고 적는다. 추론 서버는 몇 분마다 LATEST만 확인하고, 바뀌었으면 요청 처리와 별도로 새 표를 만든 뒤 한 번에 교체한다. 교체하는 동안 요청은 옛 표로 처리돼 멈추지 않는다. 모델 파일도 같은 방식이다."}, {"sec": "s3", "sel": null, "term": "Airflow", "q": "Airflow를 GKE에 직접 설치하는 것과 MWAA·Cloud Composer는 뭐가 다른가?", "a": "MWAA(AWS)와 Cloud Composer(GCP)는 클라우드가 Airflow 설치·업그레이드·재시작을 대신 한다. 대신 안 써도 환경 유지비가 나온다. 직접 설치는 Helm으로 우리가 운영하고 설정을 전부 바꿀 수 있으며, 노드 비용만 나간다. DAG 코드는 거의 같다. 우리가 직접 설치하는 이유는 멘토 방침(Airflow·ML 부품은 직접 설치, 쿠버네티스 경험)이다."}, {"sec": "s3b", "sel": null, "term": "Pub/Sub", "q": "로깅 서버가 있으면 Pub/Sub은 안 넣어도 되나?", "a": "MVP에는 넣지 않는다. 로깅 서버가 이벤트를 받아 GCS에 5분 단위 파일로 쓰고, 피처가 매시간 배치라 이것으로 충분하다. Pub/Sub은 \"최근 클릭 5개\" 같은 실시간 피처가 필요해질 때 로깅 서버와 저장 사이에 넣는다. 그때는 같은 메시지가 두 번 올 수 있어서, 클릭 순간 만든 event_id로 중복을 거른다."}, {"sec": "s10", "sel": null, "term": "세 부분", "q": "추론 서버는 누가 만드나? \"#2 Helm에 추론 서버가 들어 있다\"는 무슨 뜻인가?", "a": "세 부분으로 나눈다. 점수화 코드·FastAPI·컨테이너 이미지는 윤모가 맡는다. 그 이미지를 GKE에 띄우는 Helm 설정은 장주현 님 작업 #2에 이미 들어 있다. 뉴스 WAS에서 추론 서버를 부르고, 실패하면 인기순 피드로 대신하는 부분은 태원 님 쪽이다."}, {"sec": "s10", "sel": null, "term": "Helm", "q": "Helm은 뭐고 GKE는 뭔가?", "a": "GKE는 구글이 운영해 주는 쿠버네티스다. 쿠버네티스는 컨테이너를 여러 서버(노드, 실제로는 VM)에 띄우고, 죽으면 다시 띄우고, 개수를 늘리고, 새 버전을 하나씩 바꿔 끼우는 시스템이다. 비용은 노드 VM이 켜져 있는 시간만큼 나간다. Helm은 쿠버네티스에 프로그램을 설치하는 도구로, 차트(설정 파일 묶음)를 받아 values.yaml에 적은 값만 바꿔 설치·업그레이드한다."}, {"sec": "s10", "sel": null, "term": "GKE + FastAPI", "q": "쿠버네티스는 언제부터 필요하고, Cloud Run과는 어떻게 다른가?", "a": "계속 켜져 있는 서버가 여러 개이고 재시작·확장·교체를 한곳에서 하고 싶을 때 필요하다. Cloud Run은 이미지를 등록(배포)하면 주소가 생기고, 그 주소로 요청이 오면 컨테이너를 켜서 처리하고 그 자리에서 응답을 돌려준다. 요청이 없으면 0개로 줄인다. 그래서 요청→응답형(WAS, 추론 서버)에는 맞고, Airflow 스케줄러처럼 스스로 계속 도는 프로그램에는 맞지 않는다."}, {"sec": null, "sel": "header .src-note", "term": "작업 번호", "q": "WBS가 뭔가?", "a": "Work Breakdown Structure, 작업 분해표다. 프로젝트 일을 작은 작업으로 쪼개 번호·산출물·의존·담당을 적은 표다. 우리 팀 것은 장주현 님이 10/29에 만든 28개 작업 표(작업 나열표)이고, \"WBS Q2\" 같은 표기는 그 문서 끝의 질문 목록 번호다."}];
+(function () {
+  var ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 2h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7l-3.5 3V11H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/></svg>';
+  var panel = document.getElementById("qa-panel"), list = document.getElementById("qa-list");
+  var btns = [], current = -1, opener = null;
+  function root(it) { return it.sel ? document.querySelector(it.sel) : document.getElementById(it.sec); }
+  function wrap(it, i) {
+    var r = root(it); if (!r) return null;
+    var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) { return n.parentNode.closest("svg, script, .qa-term, a.task, .tag") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }
+    });
+    var n;
+    while ((n = w.nextNode())) {
+      var k = n.nodeValue.indexOf(it.term);
+      if (k < 0) continue;
+      var rest = n.splitText(k); rest.splitText(it.term.length);
+      var span = document.createElement("span"); span.className = "qa-term"; span.textContent = it.term;
+      rest.replaceWith(span);
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "qa-btn"; b.innerHTML = ICON;
+      b.setAttribute("aria-label", "질문: " + it.q); b.setAttribute("aria-controls", "qa-panel"); b.setAttribute("aria-expanded", "false");
+      b.addEventListener("click", function () { opener = b; show(i); });
+      span.after(b);
+      return b;
+    }
+    return null;
+  }
+  function where(it) {
+    var r = root(it); var sec = r && r.closest("section");
+    if (!sec) return "머리말";
+    var st = sec.querySelector(".step"), h = sec.querySelector("h2"), name = "";
+    h.childNodes.forEach(function (c) { if (c.nodeType === 3) name += c.textContent; });
+    return (st ? st.textContent + " " : "") + (name.trim() || h.textContent.trim());
+  }
+  function show(i) {
+    var it = QA[i]; current = i;
+    document.getElementById("qa-q").textContent = it.q;
+    document.getElementById("qa-a").textContent = it.a;
+    document.getElementById("qa-count").textContent = "질문 " + (i + 1) + " / " + QA.length;
+    var from = document.getElementById("qa-from"); from.textContent = "위치: " + where(it) + " · ";
+    if (btns[i]) {
+      var go = document.createElement("a"); go.href = "#"; go.textContent = "본문에서 보기";
+      go.addEventListener("click", function (e) { e.preventDefault(); btns[i].scrollIntoView({ block: "center" }); btns[i].focus(); });
+      from.appendChild(go);
+    }
+    list.querySelectorAll("li").forEach(function (li, j) { li.classList.toggle("on", j === i); });
+    btns.forEach(function (b, j) { if (b) b.setAttribute("aria-expanded", j === i ? "true" : "false"); });
+    panel.classList.add("open"); panel.setAttribute("aria-hidden", "false");
+    document.getElementById("qa-close").focus();
+  }
+  function hide() {
+    panel.classList.remove("open"); panel.setAttribute("aria-hidden", "true");
+    btns.forEach(function (b) { if (b) b.setAttribute("aria-expanded", "false"); });
+    if (opener) opener.focus();
+  }
+  QA.forEach(function (it, i) {
+    btns.push(wrap(it, i));
+    var li = document.createElement("li"), a = document.createElement("a");
+    a.href = "#"; a.textContent = it.q;
+    a.addEventListener("click", function (e) { e.preventDefault(); show(i); });
+    li.appendChild(a); list.appendChild(li);
+  });
+  document.getElementById("qa-open").addEventListener("click", function () { opener = this; show(current < 0 ? 0 : current); });
+  document.getElementById("qa-close").addEventListener("click", hide);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && panel.classList.contains("open")) hide(); });
 })();
 </script>
 
