@@ -95,10 +95,6 @@ table.wbs tr:target td { background: var(--decide-soft); }
 #qa-panel .qa-a { margin: 0; font-size: 14.5px; }
 #qa-panel .qa-from { font-size: 12px; color: var(--muted); }
 #qa-panel .qa-from a { color: var(--accent); }
-#qa-panel ol { font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 12px; padding-left: 20px; }
-#qa-panel ol a { color: var(--fg); text-decoration: none; }
-#qa-panel ol a:hover, #qa-panel ol a:focus-visible, #qa-panel ol li.on a { color: var(--accent); }
-#qa-open { position: fixed; right: 16px; bottom: 16px; z-index: 9; border: 1px solid var(--accent); background: var(--surface); color: var(--accent); border-radius: 999px; padding: 6px 14px; font: 500 13px var(--body); cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { #qa-panel { transition: none; } }
 @media (max-width: 520px) { section { padding: 18px 16px; } header h1 { font-size: 24px; } .flag { grid-template-columns: 1fr; gap: 2px; } }
 </style>
@@ -133,6 +129,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <tr><td><span class="task">#23</span></td><td>평가 지표 정의 (CTR 먼저, nDCG@K는 이후)</td><td>지표 문서</td><td>STEP 1</td></tr>
       <tr><td><span class="task">#11</span></td><td>피처 목록과 필요한 이벤트 거꾸로 확인</td><td>피처 정의서</td><td>STEP 2</td></tr>
       <tr><td><span class="task">#12</span></td><td>정제·집계·피처 DAG</td><td>DAG</td><td>STEP 3</td></tr>
+      <tr><td><span class="task">#12</span></td><td>기사 임베딩: 피처 DAG의 <code>embed_articles</code>가 매시 새 기사만 계산 (뉴스 쪽은 기사 메타만 저장)</td><td><code>feat.article_embedding</code></td><td>STEP 2, 3</td></tr>
       <tr><td><span class="task">#13</span></td><td>baseline(인기순), CTR 모델, 평가</td><td>노트북, 지표</td><td>STEP 5~9</td></tr>
       <tr><td><span class="task">#14</span></td><td>추론 서버 코드: 피처 파일과 모델을 불러 후보 10~20개를 점수화하는 FastAPI 서버와 컨테이너 이미지 (GKE 배포는 장주현 님 <span class="task">#2</span>, 뉴스 WAS에서 부르는 부분은 태원 님 <span class="task">#6</span>)</td><td>서버 코드, 이미지, API 명세</td><td>STEP 10</td></tr>
       <tr><td>맞물림</td><td><span class="task">#8</span> 행동 정의 · <span class="task">#9</span> 수집 · <span class="task">#14</span> 피드 연결 · <span class="task">#15</span> 피처 공유 방식 · <span class="task">#19</span> 최소 데이터 · <span class="task">#20</span> 전달 방식 · <span class="task">#22</span> 파티션·비용 · <span class="task">#28</span> 통합 테스트</td><td>합의 메모</td><td>각 STEP의 표시</td></tr>
@@ -153,7 +150,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <tr><td>세호 (FE·수집)</td><td>구독·좋아요 버튼과 <code>subscribe</code>/<code>unsubscribe</code>, <code>like</code>/<code>unlike</code> 이벤트</td><td><span class="task">#7</span> <span class="task">#8</span></td><td>STEP 2</td></tr>
       <tr><td>태원 (뉴스)</td><td>Cloud SQL <code>subscriptions</code>·<code>likes</code> 테이블, 기사 메타에 <code>publisher_id</code>, 추론 서버 요청에 구독 언론사 목록 넣기</td><td><span class="task">#4</span> <span class="task">#6</span></td><td>STEP 2, 10</td></tr>
       <tr><td>태원 (뉴스)</td><td>기사 메타에 카테고리·세부 태그·<code>published_at</code>·자극도 점수 넣기</td><td><span class="task">#4</span> <span class="task">#18</span></td><td>STEP 2</td></tr>
-      <tr><td>태원 (뉴스)</td><td>기사 임베딩은 피처 DAG에서 계산하는 안에 동의하는지 (뉴스 쪽은 제목·본문·카테고리·<code>published_at</code>만 Cloud SQL에 정확히 저장)</td><td><span class="task">#5</span> <span class="task">#6</span></td><td>STEP 2</td></tr>
+      <tr><td>태원 (뉴스)</td><td>기사 제목·본문·카테고리·<code>published_at</code>을 Cloud SQL에 정확히 저장 (기사 임베딩은 처리·피처·모델 파트가 계산)</td><td><span class="task">#5</span> <span class="task">#6</span></td><td>STEP 2</td></tr>
       <tr><td>장주현 (인프라)</td><td>서빙용 피처 파일의 GCS 경로·권한, BigQuery 파티션·스캔 비용 기준</td><td><span class="task">#2</span> <span class="task">#22</span></td><td>STEP 2, 3</td></tr>
       <tr><td>장주현 (인프라)</td><td>GPU 사용 가능 범위, 프로젝트 ID·버킷 이름을 설정값으로 받기 (계정 교체 대비)</td><td><span class="task">#21</span> <span class="task">#24</span></td><td>STEP 7, 11</td></tr>
       <tr><td>전원</td><td>추론 서버 분담 확인: 점수화 코드·이미지는 윤모, GKE 배포(<span class="task">#2</span> Helm)는 장주현, 뉴스 WAS에서 호출·실패 시 인기순 대체 피드는 태원. 요청 시 점수화 확정 (WBS Q3)</td><td><span class="task">#14</span> <span class="task">#20</span></td><td>STEP 10</td></tr>
@@ -286,7 +283,6 @@ table.wbs tr:target td { background: var(--decide-soft); }
     <div class="flag"><span class="tag risk">문제·불확실</span><p>학습-서빙 피처 불일치. 학습은 BigQuery SQL로, 서빙은 다른 코드로 피처를 만들면 값이 어긋난다. 학습과 서빙이 같은 피처 테이블을 읽게 한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>피처 공유 방식(<span class="task">#15</span>). BigQuery 피처 테이블 스키마와 서빙용 피처 파일의 경로·컬럼을 추론 서버 담당과 합의해야 한다.</p></div>
     <div class="flag"><span class="tag risk">문제·불확실</span><p>Memorystore(Redis)의 용도는 멘토 답을 기다리는 중이다(WBS Q8). 답을 받기 전까지 MVP는 배치 피처 파일로 가고, 실시간 피처가 필요해지면 Redis를 붙인다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>기사 임베딩 담당. 처리·피처·모델 파트의 피처 DAG가 매시 새 기사만 계산하는 안을 추천한다(STEP 3 <code>embed_articles</code>). 임베딩 모델은 모델 쪽이 실험하며 바꾸는 입력이라 같은 파트가 맡는 편이 낫고, 뉴스 쪽은 기사 메타만 정확히 주면 된다. 태원 님 동의가 필요하다.</p></div>
     <div class="flag"><span class="tag risk">문제·불확실</span><p>새 기사는 최대 1시간 늦게 임베딩이 생긴다. 그동안은 최신순·인기순 후보 생성이 새 기사를 후보에 넣어 준다. 더 빨라야 하면 실행 주기를 10분으로 줄인다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>기사 세부 태그(<span class="task">#18</span>)와 자극도 점수를 기사 메타에 넣을 수 있는지 태원 님과 확인한다.</p></div>
     <div class="flag"><span class="tag risk">문제·불확실</span><p>단기 관심 피처를 실시간으로 만들 가치가 있는지 아직 모른다. 배치 버전과 비교해 효과가 있을 때만 스트림으로 바꾼다.</p></div>
@@ -614,20 +610,18 @@ var TASKS = {"1": "GCP 계정·프로젝트, Terraform", "2": "Helm: Airflow, �
 </script>
 
 
-<button type="button" id="qa-open" aria-controls="qa-panel">질문 모아보기</button>
 <aside id="qa-panel" aria-label="질문과 답" aria-hidden="true">
   <div class="qa-head"><span id="qa-count"></span><button type="button" class="close" id="qa-close">닫기</button></div>
   <p class="qa-q" id="qa-q"></p>
   <p class="qa-a" id="qa-a"></p>
   <div class="qa-from" id="qa-from"></div>
-  <ol id="qa-list"></ol>
 </aside>
 <script>
 /* Question bubbles: each item wraps the first matching term in its section and opens the side panel */
-var QA = [{"sec": "overview", "sel": null, "term": "추론 서버", "q": "피드를 여는 즉시 후보 10~20개에 점수를 지연 없이 매길 수 있나?", "a": "가능하다. 일반적인 대략치로 후보 조회 수 ms~10ms, 메모리의 피처 조회 1ms 미만, LightGBM 20줄 점수 1ms 안팎, 서버 사이 통신 수 ms라 합쳐 수십 ms다. 조건은 두 가지다. 피처 파일은 서버가 켜질 때 메모리에 올려 두고(요청마다 GCS에서 읽으면 그것만 100ms를 넘는다), 기사 임베딩처럼 무거운 계산은 DAG에서 미리 한다."}, {"sec": "overview", "sel": null, "term": "Redis는", "q": "Redis를 처음부터 안 쓰는 건 비싸서인가?", "a": "비용이 주된 이유는 아니다. 가상 독자 수천 명 × 피처 17개는 수 MB라 추론 서버 메모리에 다 들어가고, 피처는 매시간 배치로 바뀌어 실시간으로 쓸 일이 없다. Redis를 넣으면 배포, 장애 처리, DAG의 적재 작업, 파일과 값이 다를 때의 확인이 늘어난다. 사용자가 많아 메모리에 안 들어가거나 \"방금 누른 기사\" 같은 실시간 피처를 쓸 때 추가한다(WBS Q8)."}, {"sec": "s1", "sel": null, "term": "CTR", "q": "한 사람에게 A 기사는 한 번만 뜨는데, 사용자×기사 CTR은 어떻게 재나?", "a": "직접 잴 수 없다. 노출 한 번의 결과는 눌렀다(1)와 안 눌렀다(0)뿐이다. 모델은 비슷한 사람이 비슷한 기사를 본 수많은 노출(1건 = 1줄)에서 배워 클릭 확률(pCTR)을 예측한다. 맞는지는 묶어서 본다. 0.1로 예측한 노출 1,000건 중 약 100건이 눌렸는지(보정), 눌린 것에 더 높은 점수를 줬는지(AUC)다. 지표로서의 CTR은 모델 버전별로 묶어 추천 시스템 전체를 검증하는 숫자다."}, {"sec": "s1", "sel": null, "term": "AUC", "q": "AUC는 무엇을 재나?", "a": "눌린 노출과 안 눌린 노출을 하나씩 짝지었을 때 눌린 쪽에 더 높은 점수를 준 비율이다. 1.0은 항상 맞힘, 0.5는 무작위다. 서비스에 내보내기 전에 과거 기록으로 모델만 잰다. 학습은 앞 기간, 평가는 뒤 기간으로 시간을 나눠야 모델이 미래 기록을 미리 본 효과가 생기지 않는다."}, {"sec": "s2", "sel": null, "term": "구독과 좋아요는", "q": "구독·좋아요는 바로 보여야 하는데 로깅 서버를 거치나?", "a": "두 길로 보낸다. 화면 반영은 뉴스 WAS가 Cloud SQL 테이블에 바로 쓰는 길이라 로깅 서버를 거치지 않는다. 피처는 같은 순간 로깅 서버에 남긴 이벤트로 만들어 1시간 뒤 반영된다. 추천 순서에도 바로 반영하려면 WAS가 추론 서버 요청에 구독 언론사 목록을 함께 넘긴다. 클릭은 \"일어난 일\"이고 구독은 켜고 끄는 \"현재 상태\"라 다르게 다룬다."}, {"sec": "s2", "sel": null, "term": "쿠키", "q": "쿠키와 캐시는 다른가? 둘 다 수집하면 되지 않나?", "a": "쿠키는 사이트가 브라우저에 저장시키고 요청마다 서버로 다시 보내는 작은 값이다. 캐시는 브라우저가 받은 이미지·JS 파일의 사본이라 서버로 가지 않고 식별에 쓸 수 없다. 독자 식별은 쿠키 토큰을 서버가 reader_id로 바꾸는 방식이다. 쿠키는 브라우저 단위라 같은 사람도 휴대폰과 PC에서는 다른 독자가 되고, 이것은 무엇을 더 수집해도 풀리지 않는다. 로그인이 있어야 풀린다."}, {"sec": "s2", "sel": null, "term": "기사 임베딩 담당", "q": "기사 임베딩은 누가 하나? 내 파트인가?", "a": "이 청사진은 처리·피처·모델 파트(윤모)가 피처 DAG의 embed_articles 작업으로 매시 새 기사만 계산하는 안을 제안한다. 임베딩 모델은 실험하며 바꾸는 모델 입력이라 같은 파트가 맡는 편이 낫다. 뉴스 쪽(태원)은 제목·본문·카테고리·published_at을 Cloud SQL에 정확히 저장하면 된다. 태원 님 동의를 받아야 확정이다."}, {"sec": "s3", "sel": null, "term": "봇", "q": "정제 단계에서 봇 기록은 왜 빼나?", "a": "봇(검색엔진 수집기, 서버 상태 점검기)은 기사를 많이 열고 거의 누르지 않는다. 그대로 두면 CTR의 분모가 부풀고, 아무도 안 보는 기사가 인기 기사처럼 보인다. 단, 우리가 만든 가상 독자는 학습 데이터 자체라 빼면 안 된다. 가상 독자 기록은 따로 표시해 두고 외부 봇만 지운다."}, {"sec": "s3", "sel": null, "term": "export_serving", "q": "DAG가 피처 파일을 새로 만들면 메모리에 올려 둔 피처는 어떻게 바뀌나?", "a": "DAG는 기존 파일을 덮어쓰지 않고 features/v14/처럼 새 이름으로 저장한 뒤, 마지막에 LATEST 파일에 v14라고 적는다. 추론 서버는 몇 분마다 LATEST만 확인하고, 바뀌었으면 요청 처리와 별도로 새 표를 만든 뒤 한 번에 교체한다. 교체하는 동안 요청은 옛 표로 처리돼 멈추지 않는다. 모델 파일도 같은 방식이다."}, {"sec": "s3", "sel": null, "term": "Airflow", "q": "Airflow를 GKE에 직접 설치하는 것과 MWAA·Cloud Composer는 뭐가 다른가?", "a": "MWAA(AWS)와 Cloud Composer(GCP)는 클라우드가 Airflow 설치·업그레이드·재시작을 대신 한다. 대신 안 써도 환경 유지비가 나온다. 직접 설치는 Helm으로 우리가 운영하고 설정을 전부 바꿀 수 있으며, 노드 비용만 나간다. DAG 코드는 거의 같다. 우리가 직접 설치하는 이유는 멘토 방침(Airflow·ML 부품은 직접 설치, 쿠버네티스 경험)이다."}, {"sec": "s3b", "sel": null, "term": "Pub/Sub", "q": "로깅 서버가 있으면 Pub/Sub은 안 넣어도 되나?", "a": "MVP에는 넣지 않는다. 로깅 서버가 이벤트를 받아 GCS에 5분 단위 파일로 쓰고, 피처가 매시간 배치라 이것으로 충분하다. Pub/Sub은 \"최근 클릭 5개\" 같은 실시간 피처가 필요해질 때 로깅 서버와 저장 사이에 넣는다. 그때는 같은 메시지가 두 번 올 수 있어서, 클릭 순간 만든 event_id로 중복을 거른다."}, {"sec": "s10", "sel": null, "term": "세 부분", "q": "추론 서버는 누가 만드나? \"#2 Helm에 추론 서버가 들어 있다\"는 무슨 뜻인가?", "a": "세 부분으로 나눈다. 점수화 코드·FastAPI·컨테이너 이미지는 윤모가 맡는다. 그 이미지를 GKE에 띄우는 Helm 설정은 장주현 님 작업 #2에 이미 들어 있다. 뉴스 WAS에서 추론 서버를 부르고, 실패하면 인기순 피드로 대신하는 부분은 태원 님 쪽이다."}, {"sec": "s10", "sel": null, "term": "Helm", "q": "Helm은 뭐고 GKE는 뭔가?", "a": "GKE는 구글이 운영해 주는 쿠버네티스다. 쿠버네티스는 컨테이너를 여러 서버(노드, 실제로는 VM)에 띄우고, 죽으면 다시 띄우고, 개수를 늘리고, 새 버전을 하나씩 바꿔 끼우는 시스템이다. 비용은 노드 VM이 켜져 있는 시간만큼 나간다. Helm은 쿠버네티스에 프로그램을 설치하는 도구로, 차트(설정 파일 묶음)를 받아 values.yaml에 적은 값만 바꿔 설치·업그레이드한다."}, {"sec": "s10", "sel": null, "term": "GKE + FastAPI", "q": "쿠버네티스는 언제부터 필요하고, Cloud Run과는 어떻게 다른가?", "a": "계속 켜져 있는 서버가 여러 개이고 재시작·확장·교체를 한곳에서 하고 싶을 때 필요하다. Cloud Run은 이미지를 등록(배포)하면 주소가 생기고, 그 주소로 요청이 오면 컨테이너를 켜서 처리하고 그 자리에서 응답을 돌려준다. 요청이 없으면 0개로 줄인다. 그래서 요청→응답형(WAS, 추론 서버)에는 맞고, Airflow 스케줄러처럼 스스로 계속 도는 프로그램에는 맞지 않는다."}, {"sec": null, "sel": "header .src-note", "term": "작업 번호", "q": "WBS가 뭔가?", "a": "Work Breakdown Structure, 작업 분해표다. 프로젝트 일을 작은 작업으로 쪼개 번호·산출물·의존·담당을 적은 표다. 우리 팀 것은 장주현 님이 10/29에 만든 28개 작업 표(작업 나열표)이고, \"WBS Q2\" 같은 표기는 그 문서 끝의 질문 목록 번호다."}];
+var QA = [{"sec": "overview", "sel": null, "term": "추론 서버", "q": "피드를 여는 즉시 후보 10~20개에 점수를 지연 없이 매길 수 있나?", "a": "가능하다. 일반적인 대략치로 후보 조회 수 ms~10ms, 메모리의 피처 조회 1ms 미만, LightGBM 20줄 점수 1ms 안팎, 서버 사이 통신 수 ms라 합쳐 수십 ms다. 조건은 두 가지다. 피처 파일은 서버가 켜질 때 메모리에 올려 두고(요청마다 GCS에서 읽으면 그것만 100ms를 넘는다), 기사 임베딩처럼 무거운 계산은 DAG에서 미리 한다."}, {"sec": "overview", "sel": null, "term": "Redis는", "q": "Redis를 처음부터 안 쓰는 건 비싸서인가?", "a": "비용이 주된 이유는 아니다. 가상 독자 수천 명 × 피처 17개는 수 MB라 추론 서버 메모리에 다 들어가고, 피처는 매시간 배치로 바뀌어 실시간으로 쓸 일이 없다. Redis를 넣으면 배포, 장애 처리, DAG의 적재 작업, 파일과 값이 다를 때의 확인이 늘어난다. 사용자가 많아 메모리에 안 들어가거나 \"방금 누른 기사\" 같은 실시간 피처를 쓸 때 추가한다(WBS Q8)."}, {"sec": "s1", "sel": null, "term": "CTR", "q": "한 사람에게 A 기사는 한 번만 뜨는데, 사용자×기사 CTR은 어떻게 재나?", "a": "직접 잴 수 없다. 노출 한 번의 결과는 눌렀다(1)와 안 눌렀다(0)뿐이다. 모델은 비슷한 사람이 비슷한 기사를 본 수많은 노출(1건 = 1줄)에서 배워 클릭 확률(pCTR)을 예측한다. 맞는지는 묶어서 본다. 0.1로 예측한 노출 1,000건 중 약 100건이 눌렸는지(보정), 눌린 것에 더 높은 점수를 줬는지(AUC)다. 지표로서의 CTR은 모델 버전별로 묶어 추천 시스템 전체를 검증하는 숫자다."}, {"sec": "s1", "sel": null, "term": "AUC", "q": "AUC는 무엇을 재나?", "a": "눌린 노출과 안 눌린 노출을 하나씩 짝지었을 때 눌린 쪽에 더 높은 점수를 준 비율이다. 1.0은 항상 맞힘, 0.5는 무작위다. 서비스에 내보내기 전에 과거 기록으로 모델만 잰다. 학습은 앞 기간, 평가는 뒤 기간으로 시간을 나눠야 모델이 미래 기록을 미리 본 효과가 생기지 않는다."}, {"sec": "s2", "sel": null, "term": "구독과 좋아요는", "q": "구독·좋아요는 바로 보여야 하는데 로깅 서버를 거치나?", "a": "두 길로 보낸다. 화면 반영은 뉴스 WAS가 Cloud SQL 테이블에 바로 쓰는 길이라 로깅 서버를 거치지 않는다. 피처는 같은 순간 로깅 서버에 남긴 이벤트로 만들어 1시간 뒤 반영된다. 추천 순서에도 바로 반영하려면 WAS가 추론 서버 요청에 구독 언론사 목록을 함께 넘긴다. 클릭은 \"일어난 일\"이고 구독은 켜고 끄는 \"현재 상태\"라 다르게 다룬다."}, {"sec": "s2", "sel": null, "term": "쿠키", "q": "쿠키와 캐시는 다른가? 둘 다 수집하면 되지 않나?", "a": "쿠키는 사이트가 브라우저에 저장시키고 요청마다 서버로 다시 보내는 작은 값이다. 캐시는 브라우저가 받은 이미지·JS 파일의 사본이라 서버로 가지 않고 식별에 쓸 수 없다. 독자 식별은 쿠키 토큰을 서버가 reader_id로 바꾸는 방식이다. 쿠키는 브라우저 단위라 같은 사람도 휴대폰과 PC에서는 다른 독자가 되고, 이것은 무엇을 더 수집해도 풀리지 않는다. 로그인이 있어야 풀린다."}, {"sec": "s3", "sel": null, "term": "봇", "q": "정제 단계에서 봇 기록은 왜 빼나?", "a": "봇(검색엔진 수집기, 서버 상태 점검기)은 기사를 많이 열고 거의 누르지 않는다. 그대로 두면 CTR의 분모가 부풀고, 아무도 안 보는 기사가 인기 기사처럼 보인다. 단, 우리가 만든 가상 독자는 학습 데이터 자체라 빼면 안 된다. 가상 독자 기록은 따로 표시해 두고 외부 봇만 지운다."}, {"sec": "s3", "sel": null, "term": "export_serving", "q": "DAG가 피처 파일을 새로 만들면 메모리에 올려 둔 피처는 어떻게 바뀌나?", "a": "DAG는 기존 파일을 덮어쓰지 않고 features/v14/처럼 새 이름으로 저장한 뒤, 마지막에 LATEST 파일에 v14라고 적는다. 추론 서버는 몇 분마다 LATEST만 확인하고, 바뀌었으면 요청 처리와 별도로 새 표를 만든 뒤 한 번에 교체한다. 교체하는 동안 요청은 옛 표로 처리돼 멈추지 않는다. 모델 파일도 같은 방식이다."}, {"sec": "s3", "sel": null, "term": "Airflow", "q": "Airflow를 GKE에 직접 설치하는 것과 MWAA·Cloud Composer는 뭐가 다른가?", "a": "MWAA(AWS)와 Cloud Composer(GCP)는 클라우드가 Airflow 설치·업그레이드·재시작을 대신 한다. 대신 안 써도 환경 유지비가 나온다. 직접 설치는 Helm으로 우리가 운영하고 설정을 전부 바꿀 수 있으며, 노드 비용만 나간다. DAG 코드는 거의 같다. 우리가 직접 설치하는 이유는 멘토 방침(Airflow·ML 부품은 직접 설치, 쿠버네티스 경험)이다."}, {"sec": "s3b", "sel": null, "term": "Pub/Sub", "q": "로깅 서버가 있으면 Pub/Sub은 안 넣어도 되나?", "a": "MVP에는 넣지 않는다. 로깅 서버가 이벤트를 받아 GCS에 5분 단위 파일로 쓰고, 피처가 매시간 배치라 이것으로 충분하다. Pub/Sub은 \"최근 클릭 5개\" 같은 실시간 피처가 필요해질 때 로깅 서버와 저장 사이에 넣는다. 그때는 같은 메시지가 두 번 올 수 있어서, 클릭 순간 만든 event_id로 중복을 거른다."}, {"sec": "s10", "sel": null, "term": "세 부분", "q": "추론 서버는 누가 만드나? \"#2 Helm에 추론 서버가 들어 있다\"는 무슨 뜻인가?", "a": "세 부분으로 나눈다. 점수화 코드·FastAPI·컨테이너 이미지는 윤모가 맡는다. 그 이미지를 GKE에 띄우는 Helm 설정은 장주현 님 작업 #2에 이미 들어 있다. 뉴스 WAS에서 추론 서버를 부르고, 실패하면 인기순 피드로 대신하는 부분은 태원 님 쪽이다."}, {"sec": "s10", "sel": null, "term": "Helm", "q": "Helm은 뭐고 GKE는 뭔가?", "a": "GKE는 구글이 운영해 주는 쿠버네티스다. 쿠버네티스는 컨테이너를 여러 서버(노드, 실제로는 VM)에 띄우고, 죽으면 다시 띄우고, 개수를 늘리고, 새 버전을 하나씩 바꿔 끼우는 시스템이다. 비용은 노드 VM이 켜져 있는 시간만큼 나간다. Helm은 쿠버네티스에 프로그램을 설치하는 도구로, 차트(설정 파일 묶음)를 받아 values.yaml에 적은 값만 바꿔 설치·업그레이드한다."}, {"sec": "s10", "sel": null, "term": "GKE + FastAPI", "q": "쿠버네티스는 언제부터 필요하고, Cloud Run과는 어떻게 다른가?", "a": "계속 켜져 있는 서버가 여러 개이고 재시작·확장·교체를 한곳에서 하고 싶을 때 필요하다. Cloud Run은 이미지를 등록(배포)하면 주소가 생기고, 그 주소로 요청이 오면 컨테이너를 켜서 처리하고 그 자리에서 응답을 돌려준다. 요청이 없으면 0개로 줄인다. 그래서 요청→응답형(WAS, 추론 서버)에는 맞고, Airflow 스케줄러처럼 스스로 계속 도는 프로그램에는 맞지 않는다."}, {"sec": null, "sel": "header .src-note", "term": "작업 번호", "q": "WBS가 뭔가?", "a": "Work Breakdown Structure, 작업 분해표다. 프로젝트 일을 작은 작업으로 쪼개 번호·산출물·의존·담당을 적은 표다. 우리 팀 것은 장주현 님이 10/29에 만든 28개 작업 표(작업 나열표)이고, \"WBS Q2\" 같은 표기는 그 문서 끝의 질문 목록 번호다."}];
 (function () {
   var ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 2h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7l-3.5 3V11H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/></svg>';
-  var panel = document.getElementById("qa-panel"), list = document.getElementById("qa-list");
+  var panel = document.getElementById("qa-panel");
   var btns = [], current = -1, opener = null;
   function root(it) { return it.sel ? document.querySelector(it.sel) : document.getElementById(it.sec); }
   function wrap(it, i) {
@@ -662,14 +656,13 @@ var QA = [{"sec": "overview", "sel": null, "term": "추론 서버", "q": "피드
     var it = QA[i]; current = i;
     document.getElementById("qa-q").textContent = it.q;
     document.getElementById("qa-a").textContent = it.a;
-    document.getElementById("qa-count").textContent = "질문 " + (i + 1) + " / " + QA.length;
+    document.getElementById("qa-count").textContent = "질문";
     var from = document.getElementById("qa-from"); from.textContent = "위치: " + where(it) + " · ";
     if (btns[i]) {
       var go = document.createElement("a"); go.href = "#"; go.textContent = "본문에서 보기";
       go.addEventListener("click", function (e) { e.preventDefault(); btns[i].scrollIntoView({ block: "center" }); btns[i].focus(); });
       from.appendChild(go);
     }
-    list.querySelectorAll("li").forEach(function (li, j) { li.classList.toggle("on", j === i); });
     btns.forEach(function (b, j) { if (b) b.setAttribute("aria-expanded", j === i ? "true" : "false"); });
     panel.classList.add("open"); panel.setAttribute("aria-hidden", "false");
     document.getElementById("qa-close").focus();
@@ -681,12 +674,7 @@ var QA = [{"sec": "overview", "sel": null, "term": "추론 서버", "q": "피드
   }
   QA.forEach(function (it, i) {
     btns.push(wrap(it, i));
-    var li = document.createElement("li"), a = document.createElement("a");
-    a.href = "#"; a.textContent = it.q;
-    a.addEventListener("click", function (e) { e.preventDefault(); show(i); });
-    li.appendChild(a); list.appendChild(li);
   });
-  document.getElementById("qa-open").addEventListener("click", function () { opener = this; show(current < 0 ? 0 : current); });
   document.getElementById("qa-close").addEventListener("click", hide);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && panel.classList.contains("open")) hide(); });
 })();
