@@ -105,7 +105,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 </header>
 
 <nav class="toc" aria-label="목차">
-  <a href="#mine">맡는 일</a><a href="#asks">팀원별 요청</a><a href="#overview">전체 그림</a><a href="#s1">1 지표</a><a href="#s2">2 피처↔이벤트</a><a href="#s3">3 피처 정의서</a><a href="#s4">4 피처 DAG</a><a href="#s4b">4+ Pub/Sub</a><a href="#s5">5 데이터 확보</a><a href="#s6">6 학습 데이터</a><a href="#s7">7 후보 생성</a><a href="#s8">8 랭킹</a><a href="#s9">9 후처리</a><a href="#s10">10 평가</a><a href="#s11">11 서빙 연결</a><a href="#s12">12 운영·통합</a><a href="#s13">13 질문</a><a href="wbs.html">작업 나열표 ↗</a><a href="#index">표시 모아보기</a>
+  <a href="#mine">맡는 일</a><a href="#asks">팀원별 요청</a><a href="#overview">전체 그림</a><a href="#s1">1 지표</a><a href="#s2">2 피처·이벤트</a><a href="#s3">3 피처 DAG</a><a href="#s3b">3+ Pub/Sub</a><a href="#s4">4 데이터 확보</a><a href="#s5">5 학습 데이터</a><a href="#s6">6 후보 생성</a><a href="#s7">7 랭킹</a><a href="#s8">8 후처리</a><a href="#s9">9 평가</a><a href="#s10">10 서빙 연결</a><a href="#s11">11 운영·통합</a><a href="#s12">12 질문</a><a href="wbs.html">작업 나열표 ↗</a><a href="#index">표시 모아보기</a>
 </nav>
 
 <section id="mine">
@@ -115,12 +115,12 @@ table.wbs tr:target td { background: var(--decide-soft); }
     <thead><tr><th>작업표</th><th>작업</th><th>산출물</th><th>설명 위치</th></tr></thead>
     <tbody>
       <tr><td><span class="task">#23</span></td><td>평가 지표 정의 (CTR 먼저, nDCG@K는 이후)</td><td>지표 문서</td><td>STEP 1</td></tr>
-      <tr><td><span class="task">#11</span></td><td>피처 목록과 필요한 이벤트 거꾸로 확인</td><td>피처 정의서</td><td>STEP 2, 3</td></tr>
-      <tr><td><span class="task">#12</span></td><td>정제·집계·피처 DAG</td><td>DAG</td><td>STEP 4</td></tr>
-      <tr><td><span class="task">#13</span></td><td>baseline(인기순), CTR 모델, 평가</td><td>노트북, 지표</td><td>STEP 6~10</td></tr>
-      <tr><td><span class="task">#14</span></td><td>추론 서버 코드: 피처 파일과 모델을 불러 후보 10~20개를 점수화하는 FastAPI 서버와 컨테이너 이미지 (GKE 배포는 장주현 님 <span class="task">#2</span>, 뉴스 WAS에서 부르는 부분은 태원 님 <span class="task">#6</span>)</td><td>서버 코드, 이미지, API 명세</td><td>STEP 11</td></tr>
+      <tr><td><span class="task">#11</span></td><td>피처 목록과 필요한 이벤트 거꾸로 확인</td><td>피처 정의서</td><td>STEP 2</td></tr>
+      <tr><td><span class="task">#12</span></td><td>정제·집계·피처 DAG</td><td>DAG</td><td>STEP 3</td></tr>
+      <tr><td><span class="task">#13</span></td><td>baseline(인기순), CTR 모델, 평가</td><td>노트북, 지표</td><td>STEP 5~9</td></tr>
+      <tr><td><span class="task">#14</span></td><td>추론 서버 코드: 피처 파일과 모델을 불러 후보 10~20개를 점수화하는 FastAPI 서버와 컨테이너 이미지 (GKE 배포는 장주현 님 <span class="task">#2</span>, 뉴스 WAS에서 부르는 부분은 태원 님 <span class="task">#6</span>)</td><td>서버 코드, 이미지, API 명세</td><td>STEP 10</td></tr>
       <tr><td>맞물림</td><td><span class="task">#8</span> 행동 정의 · <span class="task">#9</span> 수집 · <span class="task">#14</span> 피드 연결 · <span class="task">#15</span> 피처 공유 방식 · <span class="task">#19</span> 최소 데이터 · <span class="task">#20</span> 전달 방식 · <span class="task">#22</span> 파티션·비용 · <span class="task">#28</span> 통합 테스트</td><td>합의 메모</td><td>각 STEP의 표시</td></tr>
-      <tr><td><span class="task">#25</span></td><td>중간발표(11/19 예정)에서 이 파트가 보여 줄 것</td><td>BigQuery 원본·집계 테이블, baseline 피드</td><td>STEP 4, 8</td></tr>
+      <tr><td><span class="task">#25</span></td><td>중간발표(11/19 예정)에서 이 파트가 보여 줄 것</td><td>BigQuery 원본·집계 테이블, baseline 피드</td><td>STEP 3, 7</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -133,15 +133,15 @@ table.wbs tr:target td { background: var(--decide-soft); }
     <tbody>
       <tr><td>세호 (FE·수집)</td><td>"화면에 보였다"(impression)의 기준</td><td><span class="task">#7</span> <span class="task">#8</span></td><td>STEP 1</td></tr>
       <tr><td>세호 (FE·수집)</td><td>모든 이벤트에 <code>event_id</code>, <code>position</code>, <code>request_id</code>, <code>model_version</code> 싣기</td><td><span class="task">#9</span></td><td>STEP 2</td></tr>
-      <tr><td>세호 (FE·수집)</td><td>익명 사용자 ID 처리, 봇을 수집에서 막을지 정제에서 표시할지</td><td><span class="task">#8</span></td><td>STEP 2, 4</td></tr>
+      <tr><td>세호 (FE·수집)</td><td>익명 사용자 ID 처리, 봇을 수집에서 막을지 정제에서 표시할지</td><td><span class="task">#8</span></td><td>STEP 2, 3</td></tr>
       <tr><td>세호 (FE·수집)</td><td>구독·좋아요 버튼과 <code>subscribe</code>/<code>unsubscribe</code>, <code>like</code>/<code>unlike</code> 이벤트</td><td><span class="task">#7</span> <span class="task">#8</span></td><td>STEP 2</td></tr>
-      <tr><td>태원 (뉴스)</td><td>Cloud SQL <code>subscriptions</code>·<code>likes</code> 테이블, 기사 메타에 <code>publisher_id</code>, 추론 서버 요청에 구독 언론사 목록 넣기</td><td><span class="task">#4</span> <span class="task">#6</span></td><td>STEP 2, 11</td></tr>
-      <tr><td>태원 (뉴스)</td><td>기사 메타에 카테고리·세부 태그·<code>published_at</code>·자극도 점수 넣기</td><td><span class="task">#4</span> <span class="task">#18</span></td><td>STEP 3</td></tr>
-      <tr><td>태원 (뉴스)</td><td>기사 임베딩은 피처 DAG에서 계산하는 안에 동의하는지 (뉴스 쪽은 제목·본문·카테고리·<code>published_at</code>만 Cloud SQL에 정확히 저장)</td><td><span class="task">#5</span> <span class="task">#6</span></td><td>STEP 3</td></tr>
-      <tr><td>장주현 (인프라)</td><td>서빙용 피처 파일의 GCS 경로·권한, BigQuery 파티션·스캔 비용 기준</td><td><span class="task">#2</span> <span class="task">#22</span></td><td>STEP 3, 4</td></tr>
-      <tr><td>장주현 (인프라)</td><td>GPU 사용 가능 범위, 프로젝트 ID·버킷 이름을 설정값으로 받기 (계정 교체 대비)</td><td><span class="task">#21</span> <span class="task">#24</span></td><td>STEP 8, 12</td></tr>
-      <tr><td>전원</td><td>추론 서버 분담 확인: 점수화 코드·이미지는 윤모, GKE 배포(<span class="task">#2</span> Helm)는 장주현, 뉴스 WAS에서 호출·실패 시 인기순 대체 피드는 태원. 요청 시 점수화 확정 (WBS Q3)</td><td><span class="task">#14</span> <span class="task">#20</span></td><td>STEP 11</td></tr>
-      <tr><td>전원</td><td>가상 독자 담당, 학습용 데이터 양·기간</td><td><span class="task">#10</span> <span class="task">#17</span> <span class="task">#19</span></td><td>STEP 5</td></tr>
+      <tr><td>태원 (뉴스)</td><td>Cloud SQL <code>subscriptions</code>·<code>likes</code> 테이블, 기사 메타에 <code>publisher_id</code>, 추론 서버 요청에 구독 언론사 목록 넣기</td><td><span class="task">#4</span> <span class="task">#6</span></td><td>STEP 2, 10</td></tr>
+      <tr><td>태원 (뉴스)</td><td>기사 메타에 카테고리·세부 태그·<code>published_at</code>·자극도 점수 넣기</td><td><span class="task">#4</span> <span class="task">#18</span></td><td>STEP 2</td></tr>
+      <tr><td>태원 (뉴스)</td><td>기사 임베딩은 피처 DAG에서 계산하는 안에 동의하는지 (뉴스 쪽은 제목·본문·카테고리·<code>published_at</code>만 Cloud SQL에 정확히 저장)</td><td><span class="task">#5</span> <span class="task">#6</span></td><td>STEP 2</td></tr>
+      <tr><td>장주현 (인프라)</td><td>서빙용 피처 파일의 GCS 경로·권한, BigQuery 파티션·스캔 비용 기준</td><td><span class="task">#2</span> <span class="task">#22</span></td><td>STEP 2, 3</td></tr>
+      <tr><td>장주현 (인프라)</td><td>GPU 사용 가능 범위, 프로젝트 ID·버킷 이름을 설정값으로 받기 (계정 교체 대비)</td><td><span class="task">#21</span> <span class="task">#24</span></td><td>STEP 7, 11</td></tr>
+      <tr><td>전원</td><td>추론 서버 분담 확인: 점수화 코드·이미지는 윤모, GKE 배포(<span class="task">#2</span> Helm)는 장주현, 뉴스 WAS에서 호출·실패 시 인기순 대체 피드는 태원. 요청 시 점수화 확정 (WBS Q3)</td><td><span class="task">#14</span> <span class="task">#20</span></td><td>STEP 10</td></tr>
+      <tr><td>전원</td><td>가상 독자 담당, 학습용 데이터 양·기간</td><td><span class="task">#10</span> <span class="task">#17</span> <span class="task">#19</span></td><td>STEP 4</td></tr>
       <tr><td>전원</td><td>발표에서 내세울 대표 지표 (CTR로 제안)</td><td><span class="task">#23</span></td><td>STEP 1</td></tr>
     </tbody>
   </table></div>
@@ -214,66 +214,34 @@ table.wbs tr:target td { background: var(--decide-soft); }
 </section>
 
 <section id="s2">
-  <h2><span class="step">STEP 2</span>피처에서 이벤트 거꾸로 확인 <span class="task">#11</span> <span class="task">#8</span></h2>
-  <p>만들고 싶은 피처(왼쪽 칸)에서 출발해 필요한 이벤트와 필드를 거꾸로 뽑는다. 이 목록을 세호 님의 수집 행동 정의(<span class="task">#8</span>)와 맞춰 본다. 양방향 작업이라 한 번에 끝나지 않고 몇 번 오간다.</p>
+  <h2><span class="step">STEP 2</span>피처 설계와 필요한 이벤트 <span class="task">#11</span> <span class="task">#8</span> <span class="task">#15</span></h2>
+  <p>피처는 네 묶음 17개로 시작한다. 피처마다 필요한 이벤트와 필드를 거꾸로 뽑고(왼쪽에서 오른쪽으로 읽는다), 이 목록을 세호 님의 수집 행동 정의(<span class="task">#8</span>)와 맞춰 본다. 양방향 작업이라 몇 번 오간다. 대부분 하루나 1시간 단위 배치로 만들고, 실시간이 가장 필요한 "최근 클릭 5개"를 나중에 스트림으로 바꿀 첫 후보로 둔다. 구독·좋아요 피처 3개는 2026-10-31에 추가했다.</p>
   <div class="tbl"><table>
-    <thead><tr><th>묶음</th><th>만들 피처</th><th>필요한 이벤트·데이터</th><th>꼭 필요한 필드</th><th>보내 줄 곳</th></tr></thead>
+    <thead><tr><th>묶음</th><th>만들 피처</th><th>왜 필요한가</th><th>필요한 이벤트·데이터</th><th>꼭 필요한 필드</th><th>보내 줄 곳</th><th>갱신</th></tr></thead>
     <tbody>
-      <tr><td>사용자</td><td>카테고리별 클릭 비율(30일)</td><td>click + 기사 메타</td><td><code>article_id</code>, <code>category</code></td><td>세호 · 태원</td></tr>
-      <tr><td>사용자</td><td>최근 클릭 5개의 카테고리 분포</td><td>click</td><td><code>article_id</code>, <code>event_time</code></td><td>세호</td></tr>
-      <tr><td>사용자</td><td>사용자 임베딩</td><td>click + 기사 임베딩</td><td><code>article_id</code></td><td>세호</td></tr>
-      <tr><td>사용자</td><td>시간대별 방문 비율</td><td>visit</td><td><code>session_id</code>, <code>event_time</code></td><td>세호</td></tr>
-      <tr><td>사용자</td><td>전체 CTR, 활동 일수</td><td>impression, click</td><td><code>request_id</code>, <code>event_time</code></td><td>세호</td></tr>
-      <tr><td>사용자</td><td>카테고리별 좋아요 비율</td><td>like / unlike + 기사 메타</td><td><code>article_id</code>, <code>action</code></td><td>세호 · 태원</td></tr>
-      <tr><td>기사</td><td>카테고리, 세부 태그</td><td>기사 메타</td><td><code>category</code>, 세부 태그</td><td>태원</td></tr>
-      <tr><td>기사</td><td>발행 후 경과 시간</td><td>기사 메타</td><td><code>published_at</code></td><td>태원</td></tr>
-      <tr><td>기사</td><td>최근 1시간 클릭 수·CTR</td><td>impression, click</td><td><code>article_id</code>, <code>event_time</code></td><td>세호</td></tr>
-      <tr><td>기사</td><td>최근 1시간 좋아요 수</td><td>like / unlike</td><td><code>article_id</code>, <code>action</code>, <code>event_time</code></td><td>세호</td></tr>
-      <tr><td>기사</td><td>제목·본문 임베딩</td><td>기사 메타</td><td>제목, 본문</td><td>태원</td></tr>
-      <tr><td>기사</td><td>자극도 점수</td><td>기사 메타</td><td>자극도 점수</td><td>태원</td></tr>
-      <tr><td>사용자×기사</td><td>임베딩 코사인 유사도</td><td>위 두 임베딩</td><td>없음 (계산값)</td><td>윤모</td></tr>
-      <tr><td>사용자×기사</td><td>이 사용자의 해당 카테고리 CTR</td><td>impression, click + 기사 메타</td><td><code>article_id</code>, <code>category</code></td><td>세호 · 태원</td></tr>
-      <tr><td>사용자×기사</td><td>이 기사를 이미 본 횟수</td><td>impression</td><td><code>article_id</code></td><td>세호</td></tr>
-      <tr><td>사용자×기사</td><td>이 기사 언론사를 구독 중인가(0/1)</td><td>구독 상태 (Cloud SQL) + 기사 메타</td><td><code>publisher_id</code></td><td>태원</td></tr>
-      <tr><td>문맥</td><td>요청 시각(시, 요일), 노출 위치</td><td>impression</td><td><code>event_time</code>, <code>position</code></td><td>세호</td></tr>
+      <tr><td>사용자</td><td>카테고리별 클릭 비율(30일)</td><td>장기 관심</td><td>click + 기사 메타</td><td><code>article_id</code>, <code>category</code></td><td>세호 · 태원</td><td>하루</td></tr>
+      <tr><td>사용자</td><td>최근 클릭 5개의 카테고리 분포</td><td>단기 관심</td><td>click</td><td><code>article_id</code>, <code>event_time</code></td><td>세호</td><td>1시간 → 실시간</td></tr>
+      <tr><td>사용자</td><td>사용자 임베딩 (최근 클릭 기사 임베딩 평균)</td><td>카테고리보다 세밀한 관심</td><td>click + 기사 임베딩</td><td><code>article_id</code></td><td>세호</td><td>하루</td></tr>
+      <tr><td>사용자</td><td>시간대별 방문 비율</td><td>출퇴근형·저녁형 접속 패턴</td><td>visit</td><td><code>session_id</code>, <code>event_time</code></td><td>세호</td><td>하루</td></tr>
+      <tr><td>사용자</td><td>전체 CTR, 활동 일수</td><td>자주 누르는 사람과 안 누르는 사람 보정</td><td>impression, click</td><td><code>request_id</code>, <code>event_time</code></td><td>세호</td><td>하루</td></tr>
+      <tr><td>사용자</td><td>카테고리별 좋아요 비율</td><td>클릭보다 강한 선호 신호</td><td>like / unlike + 기사 메타</td><td><code>article_id</code>, <code>action</code></td><td>세호 · 태원</td><td>하루</td></tr>
+      <tr><td>기사</td><td>카테고리, 세부 태그</td><td>기본 주제 신호</td><td>기사 메타</td><td><code>category</code>, 세부 태그</td><td>태원</td><td>발행 시</td></tr>
+      <tr><td>기사</td><td>발행 후 경과 시간</td><td>뉴스는 신선도가 크게 작용</td><td>기사 메타</td><td><code>published_at</code></td><td>태원</td><td>요청 시</td></tr>
+      <tr><td>기사</td><td>최근 1시간 클릭 수·CTR</td><td>지금 뜨는 기사, 인기순 baseline</td><td>impression, click</td><td><code>article_id</code>, <code>event_time</code></td><td>세호</td><td>1시간</td></tr>
+      <tr><td>기사</td><td>최근 1시간 좋아요 수</td><td>읽고 나서도 좋았던 기사</td><td>like / unlike</td><td><code>article_id</code>, <code>action</code>, <code>event_time</code></td><td>세호</td><td>1시간</td></tr>
+      <tr><td>기사</td><td>제목·본문 임베딩</td><td>내용 비교의 기반</td><td>기사 메타</td><td>제목, 본문</td><td>태원</td><td>발행 시</td></tr>
+      <tr><td>기사</td><td>자극도 점수</td><td>낚시성 제목 영향 확인</td><td>기사 메타</td><td>자극도 점수</td><td>태원</td><td>발행 시</td></tr>
+      <tr><td>사용자×기사</td><td>사용자·기사 임베딩 코사인 유사도</td><td>핵심 개인화 신호</td><td>위 두 임베딩</td><td>없음 (계산값)</td><td>윤모</td><td>요청 시</td></tr>
+      <tr><td>사용자×기사</td><td>이 사용자의 해당 카테고리 CTR</td><td>카테고리 선호의 강도</td><td>impression, click + 기사 메타</td><td><code>article_id</code>, <code>category</code></td><td>세호 · 태원</td><td>하루</td></tr>
+      <tr><td>사용자×기사</td><td>이 기사를 이미 본 횟수</td><td>반복 노출 피로</td><td>impression</td><td><code>article_id</code></td><td>세호</td><td>1시간</td></tr>
+      <tr><td>사용자×기사</td><td>이 기사 언론사를 구독 중인가(0/1)</td><td>독자가 직접 고른 선호, 누르는 즉시 반영</td><td>구독 상태 (Cloud SQL) + 기사 메타</td><td><code>publisher_id</code></td><td>태원</td><td>요청 시</td></tr>
+      <tr><td>문맥</td><td>요청 시각(시, 요일), 노출 위치</td><td>시간대 취향, 위치 편향 보정</td><td>impression</td><td><code>event_time</code>, <code>position</code></td><td>세호</td><td>요청 시</td></tr>
     </tbody>
   </table></div>
-  <p>이렇게 뽑은 이벤트는 <code>impression</code>, <code>click</code>, <code>read_end</code>, <code>visit</code>, <code>subscribe</code>/<code>unsubscribe</code>, <code>like</code>/<code>unlike</code>이다. <code>read_end</code>는 위 피처에는 없지만 체류 시간 지표(STEP 1)와 봇 탐지(STEP 4)에 쓴다.</p>
-  <p>구독과 좋아요는 누르는 즉시 화면에 보여야 하므로 두 길로 보낸다. 뉴스 WAS가 Cloud SQL의 <code>subscriptions</code>, <code>likes</code> 테이블에 바로 쓰고(현재 상태), 같은 순간 로깅 서버에도 이벤트를 남긴다(피처용 기록). 추천 순서에도 바로 반영하려면 뉴스 WAS가 추론 서버를 부를 때 구독 언론사 목록을 함께 넘긴다(STEP 11).</p>
+  <p>이렇게 뽑은 이벤트는 <code>impression</code>, <code>click</code>, <code>read_end</code>, <code>visit</code>, <code>subscribe</code>/<code>unsubscribe</code>, <code>like</code>/<code>unlike</code>이다. <code>read_end</code>는 위 피처에는 없지만 체류 시간 지표(STEP 1)와 봇 탐지(STEP 3)에 쓴다.</p>
+  <p>구독과 좋아요는 누르는 즉시 화면에 보여야 하므로 두 길로 보낸다. 뉴스 WAS가 Cloud SQL의 <code>subscriptions</code>, <code>likes</code> 테이블에 바로 쓰고(현재 상태), 같은 순간 로깅 서버에도 이벤트를 남긴다(피처용 기록). 추천 순서에도 바로 반영하려면 뉴스 WAS가 추론 서버를 부를 때 구독 언론사 목록을 함께 넘긴다(STEP 10).</p>
   <p>모든 사용자 이벤트에 공통으로 필요한 필드는 <code>event_id</code>, <code>user_id</code>(또는 익명 ID), <code>session_id</code>, <code>event_time</code>, <code>model_version</code>이다.</p>
-  <div class="flags">
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>익명 독자 식별은 <a href="seho.html">세호 님 안</a>을 따른다. 브라우저 쿠키에 임의 토큰을 넣고 서버가 그 토큰으로 <code>reader_id</code>를 찾는다. 이 <code>reader_id</code>를 사용자로 다룬다. 다만 같은 사람도 휴대폰과 PC, 시크릿 창에서는 다른 독자가 되므로 피처는 "브라우저 단위"다. 회원가입이 후속 범위라 로그인 후 기록 합치기는 MVP에서 다루지 않는다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>구독·좋아요를 넣기로 했다. 세호 님 화면 안에는 좋아요가 아직 후속 범위로 적혀 있어 버튼·이벤트(<span class="task">#8</span>)를 다시 맞춰야 하고, 태원 님 쪽에는 <code>subscriptions</code>·<code>likes</code> 테이블과 기사 메타의 <code>publisher_id</code>가 필요하다(<span class="task">#4</span> <span class="task">#6</span>).</p></div>
-    <div class="flag"><span class="tag risk">예상 문제</span><p>프론트엔드가 <code>request_id</code>와 <code>position</code>을 모든 노출 이벤트에 실어 보내야 한다. 빠지면 피드백 연결과 위치 편향 보정이 둘 다 안 된다.</p></div>
-    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>모델이 원하는 이벤트와 수집 쪽이 만들 수 있는 이벤트가 다를 수 있다. 우선순위는 impression, click, read_end, visit 순서로 제안한다.</p></div>
-  </div>
-</section>
 
-<section id="s3">
-  <h2><span class="step">STEP 3</span>피처 설계와 피처 정의서 <span class="task">#11</span> <span class="task">#15</span></h2>
-  <p>피처는 네 묶음 17개로 시작한다. 구독·좋아요 피처 3개는 2026-10-31에 추가했다. 대부분 하루나 1시간 단위 배치로 만든다. 실시간이 가장 필요한 것은 "최근 클릭 5개"이고, 나중에 스트림으로 바꿀 첫 후보로 둔다.</p>
-  <div class="tbl"><table>
-    <thead><tr><th>묶음</th><th>피처</th><th>왜 필요한가</th><th>원본</th><th>갱신</th></tr></thead>
-    <tbody>
-      <tr><td>사용자</td><td>카테고리별 클릭 비율(30일)</td><td>장기 관심</td><td>click, 기사 메타</td><td>하루</td></tr>
-      <tr><td>사용자</td><td>최근 클릭 5개의 카테고리 분포</td><td>단기 관심</td><td>click</td><td>1시간 → 실시간</td></tr>
-      <tr><td>사용자</td><td>사용자 임베딩 (최근 클릭 기사 임베딩 평균)</td><td>카테고리보다 세밀한 관심</td><td>click, 기사 임베딩</td><td>하루</td></tr>
-      <tr><td>사용자</td><td>시간대별 방문 비율</td><td>출퇴근형·저녁형 접속 패턴</td><td>visit</td><td>하루</td></tr>
-      <tr><td>사용자</td><td>전체 CTR, 활동 일수</td><td>자주 누르는 사람과 안 누르는 사람 보정</td><td>impression, click</td><td>하루</td></tr>
-      <tr><td>사용자</td><td>카테고리별 좋아요 비율</td><td>클릭보다 강한 선호 신호</td><td>like, 기사 메타</td><td>하루</td></tr>
-      <tr><td>기사</td><td>카테고리, 세부 태그</td><td>기본 주제 신호</td><td>기사 메타</td><td>발행 시</td></tr>
-      <tr><td>기사</td><td>발행 후 경과 시간</td><td>뉴스는 신선도가 크게 작용</td><td>기사 메타</td><td>요청 시</td></tr>
-      <tr><td>기사</td><td>최근 1시간 클릭 수·CTR</td><td>지금 뜨는 기사, 인기순 baseline</td><td>impression, click</td><td>1시간</td></tr>
-      <tr><td>기사</td><td>최근 1시간 좋아요 수</td><td>읽고 나서도 좋았던 기사</td><td>like</td><td>1시간</td></tr>
-      <tr><td>기사</td><td>제목·본문 임베딩</td><td>내용 비교의 기반</td><td>기사 본문</td><td>발행 시</td></tr>
-      <tr><td>기사</td><td>자극도 점수</td><td>낚시성 제목 영향 확인</td><td>뉴스 생성</td><td>발행 시</td></tr>
-      <tr><td>사용자×기사</td><td>사용자·기사 임베딩 코사인 유사도</td><td>핵심 개인화 신호</td><td>두 임베딩</td><td>요청 시</td></tr>
-      <tr><td>사용자×기사</td><td>이 사용자의 해당 카테고리 CTR</td><td>카테고리 선호의 강도</td><td>impression, click</td><td>하루</td></tr>
-      <tr><td>사용자×기사</td><td>이 기사를 이미 본 횟수</td><td>반복 노출 피로</td><td>impression</td><td>1시간</td></tr>
-      <tr><td>사용자×기사</td><td>이 기사 언론사를 구독 중인가(0/1)</td><td>독자가 직접 고른 선호, 누르는 즉시 반영</td><td>구독 상태(Cloud SQL), 기사 메타</td><td>요청 시</td></tr>
-      <tr><td>문맥</td><td>요청 시각(시, 요일), 노출 위치</td><td>시간대 취향, 위치 편향 보정</td><td>impression</td><td>요청 시</td></tr>
-    </tbody>
-  </table></div>
   <h3>피처 정의서 형식</h3>
   <p>피처마다 아래 칸을 채운 것이 <span class="task">#11</span>의 산출물이다. 이 문서가 그대로 피처 공유 방식(<span class="task">#15</span>)의 합의 기준이 된다.</p>
   <div class="tbl"><table>
@@ -295,18 +263,22 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
+    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>익명 독자 식별은 <a href="seho.html">세호 님 안</a>을 따른다. 브라우저 쿠키에 임의 토큰을 넣고 서버가 그 토큰으로 <code>reader_id</code>를 찾는다. 이 <code>reader_id</code>를 사용자로 다룬다. 다만 같은 사람도 휴대폰과 PC, 시크릿 창에서는 다른 독자가 되므로 피처는 "브라우저 단위"다. 회원가입이 후속 범위라 로그인 후 기록 합치기는 MVP에서 다루지 않는다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>구독·좋아요를 넣기로 했다. 세호 님 화면 안에는 좋아요가 아직 후속 범위로 적혀 있어 버튼·이벤트(<span class="task">#8</span>)를 다시 맞춰야 하고, 태원 님 쪽에는 <code>subscriptions</code>·<code>likes</code> 테이블과 기사 메타의 <code>publisher_id</code>가 필요하다(<span class="task">#4</span> <span class="task">#6</span>).</p></div>
+    <div class="flag"><span class="tag risk">예상 문제</span><p>프론트엔드가 <code>request_id</code>와 <code>position</code>을 모든 노출 이벤트에 실어 보내야 한다. 빠지면 피드백 연결과 위치 편향 보정이 둘 다 안 된다.</p></div>
+    <div class="flag"><span class="tag unsure">불확실·어려움</span><p>모델이 원하는 이벤트와 수집 쪽이 만들 수 있는 이벤트가 다를 수 있다. 우선순위는 impression, click, read_end, visit 순서로 제안한다.</p></div>
     <div class="flag"><span class="tag risk">예상 문제</span><p>학습-서빙 피처 불일치. 학습은 BigQuery SQL로, 서빙은 다른 코드로 피처를 만들면 값이 어긋난다. 학습과 서빙이 같은 피처 테이블을 읽게 한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>피처 공유 방식(<span class="task">#15</span>). BigQuery 피처 테이블 스키마와 서빙용 피처 파일의 경로·컬럼을 추론 서버 담당과 합의해야 한다.</p></div>
     <div class="flag"><span class="tag unsure">불확실·어려움</span><p>Memorystore(Redis)의 용도는 멘토 답을 기다리는 중이다(WBS Q8). 답을 받기 전까지 MVP는 배치 피처 파일로 가고, 실시간 피처가 필요해지면 Redis를 붙인다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>기사 임베딩 담당. 처리·피처·모델 파트의 피처 DAG가 매시 새 기사만 계산하는 안을 추천한다(STEP 4 <code>embed_articles</code>). 임베딩 모델은 모델 쪽이 실험하며 바꾸는 입력이라 같은 파트가 맡는 편이 낫고, 뉴스 쪽은 기사 메타만 정확히 주면 된다. 태원 님 동의가 필요하다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>기사 임베딩 담당. 처리·피처·모델 파트의 피처 DAG가 매시 새 기사만 계산하는 안을 추천한다(STEP 3 <code>embed_articles</code>). 임베딩 모델은 모델 쪽이 실험하며 바꾸는 입력이라 같은 파트가 맡는 편이 낫고, 뉴스 쪽은 기사 메타만 정확히 주면 된다. 태원 님 동의가 필요하다.</p></div>
     <div class="flag"><span class="tag risk">예상 문제</span><p>새 기사는 최대 1시간 늦게 임베딩이 생긴다. 그동안은 최신순·인기순 후보 생성이 새 기사를 후보에 넣어 준다. 더 빨라야 하면 실행 주기를 10분으로 줄인다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>기사 세부 태그(<span class="task">#18</span>)와 자극도 점수를 기사 메타에 넣을 수 있는지 태원 님과 확인한다.</p></div>
     <div class="flag"><span class="tag unsure">불확실·어려움</span><p>단기 관심 피처를 실시간으로 만들 가치가 있는지 아직 모른다. 배치 버전과 비교해 효과가 있을 때만 스트림으로 바꾼다.</p></div>
   </div>
 </section>
 
-<section id="s4">
-  <h2><span class="step">STEP 4</span>정제·집계·피처 DAG <span class="task">#12</span> <span class="task">#22</span></h2>
+<section id="s3">
+  <h2><span class="step">STEP 3</span>정제·집계·피처 DAG <span class="task">#12</span> <span class="task">#22</span></h2>
   <p>GCS에 5분 단위로 쌓인 이벤트를 네 층의 BigQuery 테이블로 단계별로 바꾼다. 층마다 테이블을 따로 두면, 문제가 생겼을 때 어느 단계에서 틀렸는지 찾기 쉽고 그 층부터 다시 돌릴 수 있다.</p>
   <div class="chain" aria-label="데이터 층 흐름">
     <div class="node"><b>GCS</b><span>5분 파티션 JSON</span></div><span class="arr">→</span>
@@ -358,8 +330,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s4b">
-  <h2><span class="step">STEP 4+</span>실시간 수집으로 넓힐 때: Pub/Sub</h2>
+<section id="s3b">
+  <h2><span class="step">STEP 3+</span>실시간 수집으로 넓힐 때: Pub/Sub</h2>
   <p>MVP 수집 경로는 로깅 서버 → GCS 5분 파티션이다(<span class="task">#9</span>). WBS 문서도 Pub/Sub을 확장 항목으로 일부러 뺐다. 배치 피처만 쓰는 동안은 이것으로 충분하다. Pub/Sub이 필요해지는 때는 "최근 클릭 5개" 같은 피처를 분 단위 이하로 갱신하기로 했을 때다.</p>
   <div class="chain" aria-label="지금 경로">
     <div class="node"><b>지금 (MVP)</b><span>배치 피처</span></div><span class="arr">:</span>
@@ -393,8 +365,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s5">
-  <h2><span class="step">STEP 5</span>학습 데이터 확보 <span class="task">#19</span></h2>
+<section id="s4">
+  <h2><span class="step">STEP 4</span>학습 데이터 확보 <span class="task">#19</span></h2>
   <p>실제 독자가 없으므로 세 가지 출처를 역할을 나눠 쓴다. 가상 독자 생성(<span class="task">#10</span> <span class="task">#17</span>)은 R&amp;R 논의 중이다. 모델 쪽에서는 필요한 양과 형식을 요청한다.</p>
   <div class="tbl"><table>
     <thead><tr><th>출처</th><th>설명</th><th>역할</th><th>판단</th></tr></thead>
@@ -412,8 +384,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s6">
-  <h2><span class="step">STEP 6</span>학습 데이터 구성</h2>
+<section id="s5">
+  <h2><span class="step">STEP 5</span>학습 데이터 구성</h2>
   <ol>
     <li><b>한 행 = 노출 한 건.</b> 같은 세션에서 클릭이 따랐으면 1, 아니면 0이다.</li>
     <li><b>시점 기준 피처.</b> 노출 시각 이전 데이터로만 피처를 만든다. 10월 15일 09시 노출에는 <code>feature_date = 10월 14일</code> 스냅샷을 붙인다.</li>
@@ -428,8 +400,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s7">
-  <h2><span class="step">STEP 7</span>후보 생성</h2>
+<section id="s6">
+  <h2><span class="step">STEP 6</span>후보 생성</h2>
   <p>전체 기사 중 10~20개로 좁히는 단계다. 여러 방법의 결과를 합쳐서 쓴다. 한 가지만 쓰면 놓치는 기사가 생기기 때문이다.</p>
   <div class="tbl"><table>
     <thead><tr><th>방법</th><th>설명</th><th>장점</th><th>한계</th><th>판단</th></tr></thead>
@@ -450,8 +422,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s8">
-  <h2><span class="step">STEP 8</span>baseline과 CTR 모델 <span class="task">#13</span></h2>
+<section id="s7">
+  <h2><span class="step">STEP 7</span>baseline과 CTR 모델 <span class="task">#13</span></h2>
   <p>먼저 인기순 baseline으로 피드를 띄우고(중간발표 <span class="task">#25</span>), 그 다음 CTR 모델로 바꾼다. 1차 CTR 모델은 LightGBM이다. 표 형태 피처에 강하고 학습이 몇 분 안에 끝나며, 피처 중요도와 SHAP으로 설명하기 쉽다.</p>
   <div class="tbl"><table>
     <thead><tr><th>모델</th><th>설명</th><th>장점</th><th>한계</th><th>판단</th></tr></thead>
@@ -478,8 +450,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s9">
-  <h2><span class="step">STEP 9</span>후처리 · 탐색</h2>
+<section id="s8">
+  <h2><span class="step">STEP 8</span>후처리 · 탐색</h2>
   <p>점수 순서를 그대로 보여 주지 않고 규칙으로 다듬는다. 같은 주제만 연달아 나오거나 이미 본 기사가 다시 나오는 것을 막는다.</p>
   <div class="tbl"><table>
     <thead><tr><th>방법</th><th>설명</th><th>판단</th></tr></thead>
@@ -497,8 +469,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s10">
-  <h2><span class="step">STEP 10</span>평가 · 검증 <span class="task">#13</span> <span class="task">#23</span></h2>
+<section id="s9">
+  <h2><span class="step">STEP 9</span>평가 · 검증 <span class="task">#13</span> <span class="task">#23</span></h2>
   <div class="tbl"><table>
     <thead><tr><th>단계</th><th>무엇을</th><th>통과 기준</th></tr></thead>
     <tbody>
@@ -518,8 +490,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s11">
-  <h2><span class="step">STEP 11</span>서빙 연결 <span class="task">#14</span> <span class="task">#20</span></h2>
+<section id="s10">
+  <h2><span class="step">STEP 10</span>서빙 연결 <span class="task">#14</span> <span class="task">#20</span></h2>
   <p>WBS 문서의 추천대로 1차는 <b>요청 시 점수화</b>다(Q3). 뉴스 WAS와 추론 서버는 따로 두고 HTTP로 주고받는다(Q4). 추론 서버는 세 부분으로 나눈다(Q2 추천안을 나눈 것). 점수화 코드·API·컨테이너 이미지는 윤모가 맡는다. 이 이미지를 GKE에 띄우는 Helm 설정은 장주현 님의 <span class="task">#2</span> 작업이다. 뉴스 WAS에서 추론 서버를 부르고, 실패하면 인기순 피드로 대신하는 부분은 태원 님 쪽이다.</p>
   <div class="tbl"><table>
     <thead><tr><th></th><th>요청 시 점수화 <span class="tag pick">1차 선택</span></th><th>미리 계산해 저장 <span class="tag ext">확장</span></th></tr></thead>
@@ -549,8 +521,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s12">
-  <h2><span class="step">STEP 12</span>운영 · 통합 테스트 <span class="task">#22</span> <span class="task">#28</span></h2>
+<section id="s11">
+  <h2><span class="step">STEP 11</span>운영 · 통합 테스트 <span class="task">#22</span> <span class="task">#28</span></h2>
   <ul>
     <li><b>재학습</b>: Airflow가 학습 데이터를 다시 만들고 모델을 학습한다. 검증 기준을 통과한 모델만 새 <code>model_version</code>으로 바꾼다.</li>
     <li><b>모니터링</b>: 층별 행 수와 중복 비율, 피처 분포 변화, 모델 버전별 CTR, BigQuery 스캔량을 본다.</li>
@@ -564,8 +536,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
 </section>
 
-<section id="s13">
-  <h2><span class="step">STEP 13</span>멘토님께 드릴 질문</h2>
+<section id="s12">
+  <h2><span class="step">STEP 12</span>멘토님께 드릴 질문</h2>
   <ol>
     <li>후보 10~20개를 점수화하는 구조에서, 후보 생성과 점수화 모델 중 어디에 더 힘을 주는 것이 좋을까요?</li>
     <li>Memorystore(Redis)를 MVP에서 빼고, 배치 피처를 파일로 내보내 추론 서버가 불러 쓰는 방식으로 시작해도 될까요? (WBS Q8)</li>
