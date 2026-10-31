@@ -166,7 +166,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 
 <section id="overview">
   <h2>전체 그림</h2>
-  <p>독자의 노출·클릭·읽기 기록은 로깅 서버를 거쳐 GCS에 5분 단위로 쌓인다. 피처 DAG가 이것을 BigQuery에서 원본 → 정제 → 집계 → 피처로 바꾸고, 모델도 학습한다. DAG는 서빙용 피처를 파일로 GCS에 내보낸다. 점선 안의 추론 서버는 이 파일과 학습된 모델을 불러 두고, 피드 요청이 올 때마다 후보 10~20개에 점수를 매긴다. Redis는 멘토 확인 전까지 MVP에서 뺐다(WBS Q8). 구독·좋아요(노란 점선)는 누르는 즉시 뉴스 WAS가 Cloud SQL에 저장해 화면에 바로 보이고, 피드 요청 때 구독 언론사 목록을 추론 서버에 함께 넘겨 순서에도 바로 반영한다. 같은 행동은 로깅 서버로도 가서 1시간 뒤 피처가 된다. 굵은 테두리가 처리·피처·모델 파트가 만드는 부분이다.</p>
+  <p>독자의 노출·클릭·읽기 기록은 로깅 서버를 거쳐 GCS에 5분 단위로 쌓인다. 피처 DAG가 이것을 BigQuery에서 원본 → 정제 → 집계 → 피처로 바꾸고, 모델도 학습한다. DAG는 서빙용 피처를 파일로 GCS에 내보낸다. 점선 안의 추론 서버는 이 파일과 학습된 모델을 불러 두고, 피드 요청이 올 때마다 후보 10~20개에 점수를 매긴다. Redis는 멘토 확인 전까지 MVP에서 뺐다(WBS Q8). 구독·좋아요(노란 점선)는 누르는 즉시 뉴스 WAS가 Cloud SQL에 저장해 화면에 바로 보이고, 피드 요청 때 구독 언론사 목록을 추론 서버에 함께 넘겨 순서에도 바로 반영한다. 같은 행동은 로깅 서버로도 가서 1시간 뒤 피처가 된다. 학습 결과는 MLflow에 실험 기록(파라미터, AUC)과 모델 버전으로 남기고, 검증을 통과한 버전의 모델 파일을 추론 서버가 불러 쓴다(MLflow와 Vertex AI Experiments 중 선택은 STEP 9). 굵은 테두리가 처리·피처·모델 파트가 만드는 부분이다.</p>
   <div class="diagram">
   <svg viewBox="0 0 760 294" role="img" aria-label="로그가 피처 DAG를 거쳐 피처 파일과 모델이 되고, 추론 서버가 요청마다 후보에 점수를 매겨 피드에 넘기는 구조. 구독·좋아요는 뉴스 WAS가 Cloud SQL에 바로 저장하고 피드 요청 때 구독 목록을 추론 서버에 넘긴다">
     <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
@@ -176,7 +176,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
     <g fill="none" stroke="var(--muted)" stroke-width="1.25">
       <path d="M152 72H166" marker-end="url(#ar)"/><path d="M296 72H310" marker-end="url(#ar)"/><path d="M440 72H454" marker-end="url(#ar)"/><path d="M584 72H598" marker-end="url(#ar)"/>
       <path d="M664 100V168" marker-end="url(#ar)"/><path d="M600 206H586" marker-end="url(#ar)"/><path d="M312 206H298" marker-end="url(#ar)"/>
-      <path d="M232 170V102" marker-end="url(#ar)"/><path d="M376 170V102" marker-end="url(#ar)"/>
+      <path d="M232 170V102" marker-end="url(#ar)"/><path d="M512 170V160" marker-end="url(#ar)"/><path d="M440 136H376V102" marker-end="url(#ar)"/>
     </g>
     <g stroke-width="1.25">
       <rect x="24" y="44" width="128" height="56" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
@@ -188,11 +188,14 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <rect x="312" y="170" width="272" height="72" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
       <rect x="600" y="170" width="128" height="72" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
       <rect x="24" y="170" width="128" height="72" rx="8" fill="var(--decide-soft)" stroke="var(--decide)"/>
+      <rect x="440" y="114" width="144" height="44" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
     </g>
     <g fill="none" stroke="var(--decide)" stroke-width="1.25" stroke-dasharray="4 3">
       <path d="M728 72H748V272H88V246" marker-end="url(#ar)"/>
       <path d="M88 170V136H164V112" marker-end="url(#ar)"/>
     </g>
+    <text x="512" y="132" font-size="13" font-weight="700" fill="var(--fg)" text-anchor="middle">MLflow</text>
+    <text x="512" y="149" font-size="11.5" fill="var(--muted)" text-anchor="middle">실험 기록·모델 버전</text>
     <text x="88" y="194" font-size="13" font-weight="700" fill="var(--fg)" text-anchor="middle">구독·좋아요</text>
     <text x="88" y="212" font-size="11.5" fill="var(--muted)" text-anchor="middle">Cloud SQL 테이블</text>
     <text x="88" y="228" font-size="11.5" fill="var(--muted)" text-anchor="middle">누르면 즉시 저장</text>
@@ -209,7 +212,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <text x="664" y="212">GCS 5분 파티션</text><text x="664" y="228">클릭·구독·좋아요</text>
     </g>
     <g font-size="11.5" fill="var(--muted)">
-      <text x="240" y="142">피처 불러오기</text><text x="384" y="142">학습한 모델 파일</text>
+      <text x="240" y="142">피처 불러오기</text><text x="384" y="128">모델 파일</text>
     </g>
   </svg>
   </div>
