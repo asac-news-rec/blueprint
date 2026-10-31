@@ -38,6 +38,7 @@ header p { margin: 0; color: var(--muted); max-width: 68ch; }
 .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
 .tag.risk { background: var(--risk-soft); color: var(--risk); }
 .tag.decide { background: var(--decide-soft); color: var(--decide); }
+.tag.unsure { background: var(--unsure-soft); color: var(--unsure); }
 .tag.pick { background: var(--pick-soft); color: var(--pick); }
 .tag.cmp { background: var(--accent-soft); color: var(--accent); }
 .tag.ext { border: 1px solid var(--line); color: var(--muted); }
@@ -109,8 +110,9 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <h1>추천 모델 청사진</h1>
   <p>행동 로그를 피처로 만들고, 그 피처로 "이 독자에게 지금 보여 줄 기사"를 고르는 부분의 설계안이다. 바쁘면 <a href="#asks">팀원별로 필요한 것</a>과 <a href="#index">표시 모아보기</a>만 봐도 된다. 본문은 설계 순서대로 적었다.</p>
   <p class="src-note">작업 번호(<span class="task">#12</span> 같은 표시)는 장주현 님이 10/29에 공유한 「작업 나열표 · 병렬 구간 · WBS 골격」의 작업 28개 번호다. 번호를 누르면 <a href="wbs.html">작업 나열표 페이지</a>의 해당 작업으로 이동한다.</p>
+  <p class="src-note">표시: <b>결정 필요</b>는 팀이나 멘토와 정할 것, <b>주의할 것</b>은 이미 알려진 함정이라 설계에 미리 반영할 것, <b>문제·불확실</b>은 직접 해 보며 예상대로 되는지 테스트할 것이다.</p>
   <div class="legend">
-    <span class="tag decide">결정 필요</span><span class="tag risk">문제·불확실</span>
+    <span class="tag decide">결정 필요</span><span class="tag risk">주의할 것</span><span class="tag unsure">문제·불확실</span>
     <span class="tag pick">1차 선택</span><span class="tag cmp">비교군</span><span class="tag ext">확장</span><span class="tag hold">보류</span>
     <span class="counts" id="counts"></span>
   </div>
@@ -222,7 +224,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>CTR의 분모가 되는 "노출"의 기준을 세호 님과 맞춰야 한다. 화면에 일부만 보인 카드도 노출로 셀지에 따라 CTR이 크게 달라진다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>최적화 목표를 클릭 하나로 둘지, 체류 시간을 섞을지 정해야 한다. 클릭만 쫓으면 자극적인 제목이 위로 올라온다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>합성 데이터에서 나온 성능 숫자는 실제 독자에게서의 성능을 뜻하지 않는다. 발표에서 어떻게 해석할지 멘토님께 확인한다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>합성 데이터에서 나온 성능 숫자는 실제 독자에게서의 성능을 뜻하지 않는다. 발표에서 어떻게 해석할지 멘토님께 확인한다.</p></div>
   </div>
 </section>
 
@@ -276,16 +278,16 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>익명 독자 식별은 <a href="seho.html">세호 님 안</a>을 따른다. 브라우저 쿠키에 임의 토큰을 넣고 서버가 그 토큰으로 <code>reader_id</code>를 찾는다. 이 <code>reader_id</code>를 사용자로 다룬다. 다만 같은 사람도 휴대폰과 PC, 시크릿 창에서는 다른 독자가 되므로 피처는 "브라우저 단위"다. 회원가입이 후속 범위라 로그인 후 기록 합치기는 MVP에서 다루지 않는다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>익명 독자 식별은 <a href="seho.html">세호 님 안</a>을 따른다. 브라우저 쿠키에 임의 토큰을 넣고 서버가 그 토큰으로 <code>reader_id</code>를 찾는다. 이 <code>reader_id</code>를 사용자로 다룬다. 다만 같은 사람도 휴대폰과 PC, 시크릿 창에서는 다른 독자가 되므로 피처는 "브라우저 단위"다. 회원가입이 후속 범위라 로그인 후 기록 합치기는 MVP에서 다루지 않는다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>구독·좋아요를 넣기로 했다. 세호 님 화면 안에는 좋아요가 아직 후속 범위로 적혀 있어 버튼·이벤트(<span class="task">#8</span>)를 다시 맞춰야 하고, 태원 님 쪽에는 <code>subscriptions</code>·<code>likes</code> 테이블과 기사 메타의 <code>publisher_id</code>가 필요하다(<span class="task">#4</span> <span class="task">#6</span>).</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>프론트엔드가 <code>request_id</code>와 <code>position</code>을 모든 노출 이벤트에 실어 보내야 한다. 빠지면 피드백 연결과 위치 편향 보정이 둘 다 안 된다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>모델이 원하는 이벤트와 수집 쪽이 만들 수 있는 이벤트가 다를 수 있다. 우선순위는 impression, click, read_end, visit 순서로 제안한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>학습-서빙 피처 불일치. 학습은 BigQuery SQL로, 서빙은 다른 코드로 피처를 만들면 값이 어긋난다. 학습과 서빙이 같은 피처 테이블을 읽게 한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>프론트엔드가 <code>request_id</code>와 <code>position</code>을 모든 노출 이벤트에 실어 보내야 한다. 빠지면 피드백 연결과 위치 편향 보정이 둘 다 안 된다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>모델이 원하는 이벤트와 수집 쪽이 만들 수 있는 이벤트가 다를 수 있다. 우선순위는 impression, click, read_end, visit 순서로 제안한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>학습-서빙 피처 불일치. 학습은 BigQuery SQL로, 서빙은 다른 코드로 피처를 만들면 값이 어긋난다. 학습과 서빙이 같은 피처 테이블을 읽게 한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>피처 공유 방식(<span class="task">#15</span>). BigQuery 피처 테이블 스키마와 서빙용 피처 파일의 경로·컬럼을 추론 서버 담당과 합의해야 한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>Memorystore(Redis)의 용도는 멘토 답을 기다리는 중이다(WBS Q8). 답을 받기 전까지 MVP는 배치 피처 파일로 가고, 실시간 피처가 필요해지면 Redis를 붙인다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>새 기사는 최대 1시간 늦게 임베딩이 생긴다. 그동안은 최신순·인기순 후보 생성이 새 기사를 후보에 넣어 준다. 더 빨라야 하면 실행 주기를 10분으로 줄인다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>Memorystore(Redis)의 용도는 멘토 답을 기다리는 중이다(WBS Q8). 답을 받기 전까지 MVP는 배치 피처 파일로 가고, 실시간 피처가 필요해지면 Redis를 붙인다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>새 기사는 최대 1시간 늦게 임베딩이 생긴다. 그동안은 최신순·인기순 후보 생성이 새 기사를 후보에 넣어 준다. 더 빨라야 하면 실행 주기를 10분으로 줄인다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>기사 세부 태그(<span class="task">#18</span>)와 자극도 점수를 기사 메타에 넣을 수 있는지 태원 님과 확인한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>단기 관심 피처를 실시간으로 만들 가치가 있는지 아직 모른다. 배치 버전과 비교해 효과가 있을 때만 스트림으로 바꾼다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>단기 관심 피처를 실시간으로 만들 가치가 있는지 아직 모른다. 배치 버전과 비교해 효과가 있을 때만 스트림으로 바꾼다.</p></div>
   </div>
 </section>
 
@@ -332,13 +334,13 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>늦게 도착하는 데이터. 5분 파티션이 늦게 올라오면 이미 집계한 시간이 틀어진다. 매시 실행 때 직전 몇 시간을 함께 다시 처리하는 창이 필요하다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>로깅 서버 재전송이나 클라이언트 재시도로 같은 이벤트가 두 번 들어올 수 있다. <code>event_id</code>로 지우지 않으면 클릭 수와 CTR이 부풀려진다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>스캔 비용. 매일 30일 창을 새로 계산하면 읽는 양이 계속 커진다. 하루 집계를 쌓아 두고 더하는 방식으로 줄인다(<span class="task">#22</span>).</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>늦게 도착하는 데이터. 5분 파티션이 늦게 올라오면 이미 집계한 시간이 틀어진다. 매시 실행 때 직전 몇 시간을 함께 다시 처리하는 창이 필요하다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>로깅 서버 재전송이나 클라이언트 재시도로 같은 이벤트가 두 번 들어올 수 있다. <code>event_id</code>로 지우지 않으면 클릭 수와 CTR이 부풀려진다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>스캔 비용. 매일 30일 창을 새로 계산하면 읽는 양이 계속 커진다. 하루 집계를 쌓아 두고 더하는 방식으로 줄인다(<span class="task">#22</span>).</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>GCS → BigQuery 적재 방식. load job으로 복사할지, 외부 테이블로 바로 읽을지 정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>SQL을 Airflow에 직접 둘지 dbt로 관리할지 정한다. dbt는 테스트와 문서가 편하지만 배울 것이 늘어난다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>봇·이상 행동 기준과 처리 위치. 수집 단계에서 막을지, 정제 단계에서 표시만 할지 세호 님과 정한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>로컬 compose의 폴더형 GCS와 실제 GCS는 경로와 권한 방식이 다르다. 저장소 접근 부분을 한 곳에 모아 두어야 옮길 때 덜 고친다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>로컬 compose의 폴더형 GCS와 실제 GCS는 경로와 권한 방식이 다르다. 저장소 접근 부분을 한 곳에 모아 두어야 옮길 때 덜 고친다.</p></div>
   </div>
 </section>
 
@@ -370,10 +372,10 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>Pub/Sub은 "최소 한 번 전달"이다. ack가 정해진 시간(기본 10초) 안에 오지 않으면 같은 메시지를 다시 보내서 중복이 생긴다. 지금 clean 단계의 <code>event_id</code> 중복 제거를 그대로 쓴다. <code>event_id</code>는 클릭 순간에 만들어야 하고, Pub/Sub의 <code>message_id</code>로 대신하면 안 된다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>메시지 순서는 보장되지 않는다. 도착 순서가 아니라 <code>event_time</code>으로 정렬한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>Pub/Sub은 "최소 한 번 전달"이다. ack가 정해진 시간(기본 10초) 안에 오지 않으면 같은 메시지를 다시 보내서 중복이 생긴다. 지금 clean 단계의 <code>event_id</code> 중복 제거를 그대로 쓴다. <code>event_id</code>는 클릭 순간에 만들어야 하고, Pub/Sub의 <code>message_id</code>로 대신하면 안 된다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>메시지 순서는 보장되지 않는다. 도착 순서가 아니라 <code>event_time</code>으로 정렬한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>도입 시점. 배치 "최근 클릭 5개"와 실시간 버전을 비교해 CTR 차이가 확인될 때만 붙이는 것을 제안한다. 비용과 운영 부담이 늘어나기 때문이다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>수집 경로를 바꾸면 누락·지연을 다시 검증해야 한다. 가상 독자가 보낸 이벤트 목록과 BigQuery에 도착한 목록을 대조해 누락 수, 중복 수, 도착 지연을 잰다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>수집 경로를 바꾸면 누락·지연을 다시 검증해야 한다. 가상 독자가 보낸 이벤트 목록과 BigQuery에 도착한 목록을 대조해 누락 수, 중복 수, 도착 지연을 잰다.</p></div>
   </div>
 </section>
 
@@ -390,9 +392,9 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>최소 데이터 양과 기간(<span class="task">#19</span>). 데이터를 10%, 30%, 100%로 늘려 학습해 보고, 성능이 더 오르지 않는 지점을 최소량으로 잡는 방법을 제안한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>가상 독자의 클릭 확률은 우리가 정한 공식이다. 모델은 그 공식을 다시 배우는 것이라, 잘 맞혀도 "연결이 제대로 됐다"는 증거일 뿐이다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>피드백 루프를 돌리면 모델이 보여 준 기사에만 클릭 기록이 쌓인다. 노출 편향이 생기므로 일정 비율은 무작위나 baseline 추천을 섞어야 한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>MIND는 영어 기사이고 연구 목적 라이선스다. 코드 점검과 비교에만 쓰고 서비스 화면에는 쓰지 않는다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>가상 독자의 클릭 확률은 우리가 정한 공식이다. 모델은 그 공식을 다시 배우는 것이라, 잘 맞혀도 "연결이 제대로 됐다"는 증거일 뿐이다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>피드백 루프를 돌리면 모델이 보여 준 기사에만 클릭 기록이 쌓인다. 노출 편향이 생기므로 일정 비율은 무작위나 baseline 추천을 섞어야 한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>MIND는 영어 기사이고 연구 목적 라이선스다. 코드 점검과 비교에만 쓰고 서비스 화면에는 쓰지 않는다.</p></div>
   </div>
 </section>
 
@@ -405,10 +407,10 @@ table.wbs tr:target td { background: var(--decide-soft); }
     <li><b>빼는 데이터.</b> 페르소나 컬럼은 학습에 넣지 않는다. 정제 단계에서 봇으로 표시된 사용자도 빼고, 몇 명을 뺐는지 기록한다.</li>
   </ol>
   <div class="flags">
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>데이터 누수. 노출 이후의 클릭이 피처에 섞이면 학습 성능은 높게 나오지만 서비스에서는 맞지 않는다. 조인 날짜 규칙을 테스트로 고정한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>데이터 누수. 노출 이후의 클릭이 피처에 섞이면 학습 성능은 높게 나오지만 서비스에서는 맞지 않는다. 조인 날짜 규칙을 테스트로 고정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>라벨 기준. 체류 시간이 아주 짧은 클릭을 0으로 볼지 실험으로 정한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>클래스 불균형. CTR이 낮으면 0이 1보다 훨씬 많다. 음성 샘플링 비율과 확률 보정 방법이 필요하다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>위치 편향. 위에 있어서 눌린 효과를 빼야 기사 자체의 매력을 배운다. 학습 때 위치를 피처로 넣고 서빙 때 1번 자리로 고정하는 방법을 쓰지만 효과는 실험해 봐야 안다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>클래스 불균형. CTR이 낮으면 0이 1보다 훨씬 많다. 음성 샘플링 비율과 확률 보정 방법이 필요하다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>위치 편향. 위에 있어서 눌린 효과를 빼야 기사 자체의 매력을 배운다. 학습 때 위치를 피처로 넣고 서빙 때 1번 자리로 고정하는 방법을 쓰지만 효과는 실험해 봐야 안다.</p></div>
   </div>
 </section>
 
@@ -428,8 +430,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>새 기사 콜드 스타트. 뉴스는 몇 시간 안에 가치가 떨어진다. 클릭 기반 방법(CF, ALS)은 새 기사를 다루지 못하므로 내용 기반 방법이 필요하다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>신규·익명 사용자 콜드 스타트. 클릭 기록이 없으면 인기순으로 대체한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>새 기사 콜드 스타트. 뉴스는 몇 시간 안에 가치가 떨어진다. 클릭 기반 방법(CF, ALS)은 새 기사를 다루지 못하므로 내용 기반 방법이 필요하다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>신규·익명 사용자 콜드 스타트. 클릭 기록이 없으면 인기순으로 대체한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>방법별로 후보를 몇 개씩 가져와 합칠지 정해야 한다. 후보가 10~20개뿐이라 이 비율이 결과를 크게 바꾼다.</p></div>
   </div>
 </section>
@@ -456,9 +458,9 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>목적 함수. 클릭 여부를 맞히는 binary로 할지, 노출 목록 안의 순서를 맞추는 LambdaRank로 할지 비교해서 고른다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>딥러닝 모델은 합성 데이터 규모로 충분히 학습되는지 모른다. MIND-small에서 먼저 돌려 보고 GBDT와 차이가 있을 때만 가져온다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>GPU 비용. 뉴스 전용 딥러닝 모델을 학습하려면 GPU가 필요하다. 크레딧 범위 안에서 가능한지 장주현 님과 확인한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>모델 고르기에 시간을 많이 쓰지 말라는 멘토 조언이 있었다. 비교군은 같은 학습 데이터로 한 번씩만 돌리고 피처 개선에 시간을 더 쓴다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>딥러닝 모델은 합성 데이터 규모로 충분히 학습되는지 모른다. MIND-small에서 먼저 돌려 보고 GBDT와 차이가 있을 때만 가져온다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>GPU 비용. 뉴스 전용 딥러닝 모델을 학습하려면 GPU가 필요하다. 크레딧 범위 안에서 가능한지 장주현 님과 확인한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>모델 고르기에 시간을 많이 쓰지 말라는 멘토 조언이 있었다. 비교군은 같은 학습 데이터로 한 번씩만 돌리고 피처 개선에 시간을 더 쓴다.</p></div>
   </div>
 </section>
 
@@ -495,8 +497,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <p>결과는 BigQuery 위 대시보드에서 <code>model_version</code>별, 페르소나별, 위치별 CTR로 본다. 실험 기록은 MLflow 또는 Vertex AI Experiments로 남긴다.</p>
   <div class="flags">
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>오프라인 지표가 올라도 온라인 CTR이 함께 오르지 않을 수 있다. 두 숫자를 같이 보여 줘야 한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>기록된 로그로 하는 평가는 이전 모델이 보여 준 기사만 평가할 수 있다. 새 모델이 다른 기사를 고르면 정답이 없어 정확한 비교가 어렵다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>오프라인 지표가 올라도 온라인 CTR이 함께 오르지 않을 수 있다. 두 숫자를 같이 보여 줘야 한다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>기록된 로그로 하는 평가는 이전 모델이 보여 준 기사만 평가할 수 있다. 새 모델이 다른 기사를 고르면 정답이 없어 정확한 비교가 어렵다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>A/B 그룹을 나누는 방식. <code>user_id</code> 해시로 고정할지, 실험 기간과 그룹 비율을 어떻게 할지 정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>실험 기록 도구로 MLflow를 쓸지 Vertex AI Experiments를 쓸지 정한다.</p></div>
   </div>
@@ -528,8 +530,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>요청 시 점수화(<span class="task">#20</span>)는 추천안이다. 추론 서버 코드(<span class="task">#14</span>)는 윤모가 맡기로 했고, 배포·호출 분담은 장주현·태원 님 확인이 필요하다. 그리고 "후보 10~20개 요청 시 점수화로 충분한가"를 10/31에 멘토님께 한 줄 확인한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>뉴스 WAS ↔ 추론 서버 요청·응답 형식(후보 목록, <code>user_id</code>, 점수, <code>request_id</code>, <code>model_version</code>)을 계약으로 먼저 정해야 둘이 따로 개발할 수 있다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>피처 파일을 다시 불러오는 시점에 서버가 잠깐 멈추거나 옛 피처를 쓸 수 있다. 새 파일을 다 읽은 뒤에 교체하는 방식으로 만든다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>학습 도구와 서빙 런타임이 다를 때 어떤 패키징이 적절한지 멘토님 의견을 듣는다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>피처 파일을 다시 불러오는 시점에 서버가 잠깐 멈추거나 옛 피처를 쓸 수 있다. 새 파일을 다 읽은 뒤에 교체하는 방식으로 만든다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>학습 도구와 서빙 런타임이 다를 때 어떤 패키징이 적절한지 멘토님 의견을 듣는다.</p></div>
   </div>
 </section>
 
@@ -542,9 +544,9 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </ul>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>재학습 주기. 매일로 할지, 성능이 떨어질 때만 할지 정한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>새 모델이 더 나쁠 때 되돌릴 방법이 필요하다. 이전 버전 파일을 남겨 두고 버전 값만 바꾸면 되돌릴 수 있게 한다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>계정 교체(<span class="task">#24</span>) 때 프로젝트 ID와 버킷 이름이 바뀐다. DAG와 SQL에 이름을 직접 쓰지 않고 설정값으로 빼 둔다.</p></div>
-    <div class="flag"><span class="tag risk">문제·불확실</span><p>합성 데이터는 분포가 거의 바뀌지 않아 드리프트 감지를 시연하기 어렵다. 가상 독자 페르소나 비율을 중간에 바꾸는 실험이 필요하다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>새 모델이 더 나쁠 때 되돌릴 방법이 필요하다. 이전 버전 파일을 남겨 두고 버전 값만 바꾸면 되돌릴 수 있게 한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p>계정 교체(<span class="task">#24</span>) 때 프로젝트 ID와 버킷 이름이 바뀐다. DAG와 SQL에 이름을 직접 쓰지 않고 설정값으로 빼 둔다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>합성 데이터는 분포가 거의 바뀌지 않아 드리프트 감지를 시연하기 어렵다. 가상 독자 페르소나 비율을 중간에 바꾸는 실험이 필요하다.</p></div>
   </div>
 </section>
 
@@ -582,7 +584,7 @@ var TASKS = {"1": "GCP 계정·프로젝트, Terraform", "2": "Helm: Airflow, �
   });
 })();
 (function () {
-  var kinds = [["decide", "결정 필요"], ["risk", "문제·불확실"]];
+  var kinds = [["decide", "결정 필요"], ["risk", "주의할 것"], ["unsure", "문제·불확실"]];
   var body = document.getElementById("index-body");
   var counts = [];
   kinds.forEach(function (k) {
