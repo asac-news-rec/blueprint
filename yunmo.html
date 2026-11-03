@@ -72,6 +72,7 @@ td:first-child { font-weight: 500; white-space: nowrap; }
 .flags { display: grid; gap: 8px; }
 .flag { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; font-size: 14px; }
 .flag p { margin: 0; }
+pre { font: 12.5px/1.55 var(--mono); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; margin: 0; }
 .diagram { overflow-x: auto; }
 .diagram svg { display: block; min-width: 640px; width: 100%; height: auto; }
 .diagram text { font-family: var(--body); }
@@ -135,7 +136,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 </header>
 
 <nav class="toc" id="toc" aria-label="목차">
-  <a href="#mine">맡는 일</a><a href="#asks">팀원별 요청</a><a href="#overview">전체 그림</a><a href="#s1">1 지표</a><a href="#s2">2 피처·이벤트</a><a href="#s3">3 피처 DAG</a><a href="#s3b">3+ Pub/Sub</a><a href="#s4">4 데이터 확보</a><a href="#s5">5 학습 데이터</a><a href="#s6">6 후보 생성</a><a href="#s7">7 랭킹</a><a href="#s8">8 후처리</a><a href="#s9">9 평가</a><a href="#s10">10 서빙 연결</a><a href="#s11">11 운영·통합</a><a href="#s12">12 질문</a><a href="wbs.html">작업 나열표 ↗</a><a href="#index">표시 모아보기</a>
+  <a href="#mine">맡는 일</a><a href="#asks">팀원별 요청</a><a href="#overview">전체 그림</a><a href="#contracts">인터페이스 규약</a><a href="#s1">1 지표</a><a href="#s2">2 피처·이벤트</a><a href="#s3">3 피처 DAG</a><a href="#s3b">3+ Pub/Sub</a><a href="#s4">4 데이터 확보</a><a href="#s5">5 학습 데이터</a><a href="#s6">6 후보 생성</a><a href="#s7">7 랭킹</a><a href="#s8">8 후처리</a><a href="#s9">9 평가</a><a href="#s10">10 서빙 연결</a><a href="#s11">11 운영·통합</a><a href="#s12">12 질문</a><a href="wbs.html">작업 나열표 ↗</a><a href="#index">표시 모아보기</a>
 </nav>
 
 <section id="mine">
@@ -382,6 +383,237 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>후보 수 10~20개는 팀 계획(<span class="task">#14</span>)을 따랐다. 후보가 적으면 점수화 모델이 바꿀 수 있는 순서도 적다. 후보 생성 품질이 전체 성능을 좌우하므로, 수를 늘릴지 데이터를 본 뒤 다시 정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>후보 10~20개를 누가 고르는지. WBS Q2 예시처럼 뉴스 WAS가 후보를 골라 추론 서버에 보낼지, 추론 서버가 직접 고를지 정해야 한다.</p></div>
+  </div>
+</section>
+
+<section id="contracts">
+  <h2><span class="step">규약</span>인터페이스 규약: 이 파트가 맡는 경계 3곳 <span class="task">#14</span> <span class="task">#12</span> <span class="task">#15</span></h2>
+  <p>멘토님 요청으로 단계 사이에 오가는 데이터를 필드 단위까지 정한다. 큰그림의 경계 7곳 중 이 파트가 정하는 곳은 ② 뉴스 WAS ↔ 추론 서버, ⑤ BigQuery 테이블, ⑥ Valkey 키 구조다. 세 곳은 서로 이어진다. ⑤의 <code>train.samples</code> 피처 컬럼 이름과 추론 서버가 모델에 넣는 입력 이름이 같아야 하고, 그 입력은 ⑥의 Valkey 값과 ②의 요청으로 만든다.</p>
+  <div class="chain" aria-label="세 경계의 연결">
+    <div class="node"><b>뉴스 WAS</b><span>Cloud Run (태원)</span></div><span class="arr">② ⇄</span>
+    <div class="node main"><b>추론 서버</b><span>GKE, <code>POST /v1/rank</code></span></div><span class="arr">⇠ ⑥</span>
+    <div class="node main"><b>Valkey</b><span>최신 피처·후보 목록</span></div><span class="arr">⇠</span>
+    <div class="node main"><b>BigQuery ⑤</b><span>raw → clean → agg → feat → train</span></div>
+  </div>
+
+  <h3>공통 규칙</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>항목</th><th>규칙</th></tr></thead>
+    <tbody>
+      <tr><td>이름</td><td>모든 필드·컬럼은 영어 소문자 snake_case. 같은 뜻은 어디서나 같은 이름 (<code>user_id</code>, <code>article_id</code>, <code>request_id</code>)</td></tr>
+      <tr><td>시각</td><td>JSON에서는 UTC ISO-8601 문자열 (<code>2026-11-03T00:15:02.123Z</code>). BigQuery는 <code>TIMESTAMP</code>(UTC). 날짜 파티션 <code>event_date</code>만 한국 시간 기준 날짜다. 하루 집계를 독자의 하루에 맞추기 위해서다</td></tr>
+      <tr><td><code>user_id</code></td><td>세호 님 안의 <code>reader_id</code>. 쿠키 토큰 자체가 아니라 서버가 토큰으로 찾은 ID 문자열</td></tr>
+      <tr><td><code>article_id</code></td><td>Cloud SQL <code>articles</code>의 기본 키를 문자열로 쓴다. 숫자여도 문자열로 주고받는다</td></tr>
+      <tr><td><code>request_id</code></td><td>피드 요청마다 뉴스 WAS가 만드는 UUID v4. 추론 요청, impression, exposure, click이 모두 같은 값을 싣는다</td></tr>
+      <tr><td>빈 값</td><td>모르는 값은 필드를 빼지 않고 <code>null</code>. 0과 "모름"을 구분하기 위해서다. LightGBM은 <code>null</code>(결측)을 그대로 다룬다</td></tr>
+      <tr><td>버전</td><td>API는 경로에 버전(<code>/v1/</code>)을 둔다. 필드를 지우거나 뜻을 바꾸면 <code>/v2/</code>로 올리고, 필드 추가만은 같은 버전에서 한다</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>② 뉴스 WAS → 추론 서버</h3>
+  <p>독자가 피드를 열 때마다 뉴스 WAS가 한 번 부른다. 추론 서버는 후보 생성, 점수화, 후처리를 모두 하고 정렬된 목록을 돌려준다. 뉴스 WAS는 후보를 보내지 않는다. 멘토님이 말한 대로 정적인 독자 정보와 지금 상태만 보낸다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>항목</th><th>값</th></tr></thead>
+    <tbody>
+      <tr><td>주소</td><td><code>POST /v1/rank</code> (GKE 내부 서비스 주소, 외부 공개 안 함)</td></tr>
+      <tr><td>형식</td><td><code>Content-Type: application/json</code>, UTF-8</td></tr>
+      <tr><td>응답 시간</td><td>추론 서버 목표 p95 100ms. 뉴스 WAS 타임아웃 300ms, 넘으면 인기순 피드로 대신한다</td></tr>
+      <tr><td>상태 확인</td><td><code>GET /healthz</code>: 프로세스가 살아 있으면 200. <code>GET /readyz</code>: 모델을 메모리에 올리고 Valkey에 연결됐을 때만 200. 롤링 교체 때 GKE가 <code>/readyz</code>를 보고 요청을 보낸다 (<span class="task">#2</span>)</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>요청 필드</b></p>
+  <div class="tbl"><table>
+    <thead><tr><th>필드</th><th>타입</th><th>필수</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>request_id</code></td><td>string (UUID)</td><td>필수</td><td>이 피드 요청의 ID. impression 기록에 같은 값을 쓴다</td></tr>
+      <tr><td><code>user_id</code></td><td>string</td><td>필수</td><td>독자 ID</td></tr>
+      <tr><td><code>request_time</code></td><td>string (UTC)</td><td>필수</td><td>뉴스 WAS가 요청을 받은 시각. 경과 시간·시간대 피처의 기준이 되고 impression의 <code>served_at</code>과 같은 값이다</td></tr>
+      <tr><td><code>subscribed_publisher_ids</code></td><td>array&lt;string&gt;</td><td>필수 (없으면 <code>[]</code>)</td><td>Cloud SQL <code>subscriptions</code>의 지금 상태. 구독을 누른 즉시 순서에 반영하려고 요청에 싣는다</td></tr>
+      <tr><td><code>exclude_article_ids</code></td><td>array&lt;string&gt;</td><td>선택 (기본 <code>[]</code>)</td><td>이번 세션에서 이미 내려보낸 기사. 무한 스크롤 다음 묶음에서 겹치지 않게 뺀다</td></tr>
+      <tr><td><code>num_results</code></td><td>int</td><td>선택 (기본 20, 최대 50)</td><td>돌려받을 기사 수</td></tr>
+      <tr><td><code>device_type</code></td><td>string</td><td>선택</td><td><code>mobile</code> | <code>desktop</code> | <code>null</code>. 멘토님이 말한 브라우저 정보 피처의 자리. 1차 모델에는 아직 넣지 않는다</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>응답 필드</b></p>
+  <div class="tbl"><table>
+    <thead><tr><th>필드</th><th>타입</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>request_id</code></td><td>string</td><td>요청 값 그대로</td></tr>
+      <tr><td><code>model_version</code></td><td>string</td><td>점수를 낸 모델. MLflow 등록 이름@버전 (예: <code>news-ctr-lgbm@7</code>). 뉴스 WAS는 이 값을 impression 기록에 그대로 싣는다</td></tr>
+      <tr><td><code>feature_version</code></td><td>string</td><td>읽은 Valkey 피처 버전 (예: <code>2026110309</code>). 문제가 생겼을 때 어떤 피처로 계산했는지 찾는 용도</td></tr>
+      <tr><td><code>items</code></td><td>array</td><td>정렬된 기사 목록. 아래 항목이 <code>rank</code> 순서로 들어 있다</td></tr>
+      <tr><td><code>items[].article_id</code></td><td>string</td><td>기사 ID</td></tr>
+      <tr><td><code>items[].rank</code></td><td>int</td><td>1부터. 후처리(중복·다양성 규칙)까지 거친 최종 순서</td></tr>
+      <tr><td><code>items[].score</code></td><td>float (0~1)</td><td>모델이 예측한 클릭 확률(pCTR). 후처리 전 값이라 <code>rank</code> 순서와 완전히 같지 않을 수 있다</td></tr>
+      <tr><td><code>items[].source</code></td><td>string</td><td>이 기사를 후보로 올린 방법: <code>popular</code> | <code>recent</code> | <code>category</code> | <code>embedding</code>. 후보 생성 방법별 효과를 보려고 둔다</td></tr>
+    </tbody>
+  </table></div>
+<pre>요청
+{
+  "request_id": "6f1c2e9a-3b7d-4c51-9a0e-2d4b8f7c1a20",
+  "user_id": "r_8k2m4q",
+  "request_time": "2026-11-03T00:15:02.123Z",
+  "subscribed_publisher_ids": ["pub_03", "pub_11"],
+  "exclude_article_ids": [],
+  "num_results": 20,
+  "device_type": "mobile"
+}
+
+응답 200
+{
+  "request_id": "6f1c2e9a-3b7d-4c51-9a0e-2d4b8f7c1a20",
+  "model_version": "news-ctr-lgbm@7",
+  "feature_version": "2026110309",
+  "items": [
+    {"article_id": "10482", "rank": 1, "score": 0.142, "source": "category"},
+    {"article_id": "10477", "rank": 2, "score": 0.131, "source": "embedding"},
+    {"article_id": "10490", "rank": 3, "score": 0.097, "source": "recent"}
+  ]
+}</pre>
+  <div class="tbl"><table>
+    <thead><tr><th>상태 코드</th><th>언제</th><th>뉴스 WAS가 할 일</th></tr></thead>
+    <tbody>
+      <tr><td>200</td><td>정상. Valkey에 독자 피처가 없는 신규 독자도 200이다 (독자 피처를 <code>null</code>로 두고 점수화, 후보는 인기순·최신순)</td><td>그대로 보여 준다</td></tr>
+      <tr><td>400</td><td>필수 필드가 없거나 타입이 틀림. 본문에 <code>{"error": "...", "field": "..."}</code></td><td>인기순으로 대신하고 오류를 로그에 남긴다 (코드 버그이므로 고친다)</td></tr>
+      <tr><td>503</td><td>모델을 아직 못 올렸거나 Valkey에 연결할 수 없음</td><td>인기순으로 대신하고 impression의 <code>model_version</code>을 <code>fallback-popular</code>로 남긴다</td></tr>
+      <tr><td>타임아웃</td><td>300ms 안에 응답 없음</td><td>503과 같다</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>⑤ BigQuery 테이블 스키마</h3>
+  <p>데이터셋 다섯 개(<code>raw</code>, <code>clean</code>, <code>agg</code>, <code>feat</code>, <code>train</code>)를 층마다 둔다. 모든 테이블은 날짜로 파티션하고 자주 거르는 ID로 클러스터링한다(STEP 3 원칙). <code>raw</code>는 로깅 서버가 정하는 이벤트 JSON(경계 ③, 세호·장주현 님)을 손대지 않고 받으므로, 공통 필드만 꺼내고 나머지는 원본 JSON 칸에 그대로 둔다. 그래서 ③의 필드가 바뀌어도 적재는 멈추지 않는다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>테이블</th><th>한 행</th><th>파티션 / 클러스터링</th><th>만드는 작업</th></tr></thead>
+    <tbody>
+      <tr><td><code>raw.events</code></td><td>받은 이벤트 한 건 (중복 포함)</td><td><code>load_date</code> / <code>event_type</code></td><td><code>load_raw</code> 매시</td></tr>
+      <tr><td><code>clean.events</code></td><td>정제된 이벤트 한 건</td><td><code>event_date</code> / <code>user_id</code>, <code>article_id</code></td><td><code>clean_events</code> 매시</td></tr>
+      <tr><td><code>agg.article_hourly</code></td><td>기사 × 1시간</td><td><code>DATE(event_hour)</code> / <code>article_id</code></td><td><code>agg_hourly</code> 매시</td></tr>
+      <tr><td><code>agg.user_daily</code></td><td>독자 × 하루</td><td><code>event_date</code> / <code>user_id</code></td><td><code>agg_daily</code> 매일</td></tr>
+      <tr><td><code>agg.user_cat_daily</code></td><td>독자 × 카테고리 × 하루</td><td><code>event_date</code> / <code>user_id</code></td><td><code>agg_daily</code> 매일</td></tr>
+      <tr><td><code>feat.article_meta</code></td><td>기사 한 건</td><td>없음 (작음) / <code>article_id</code></td><td><code>embed_articles</code> 매시</td></tr>
+      <tr><td><code>feat.article_embedding</code></td><td>기사 × 임베딩 모델 버전</td><td>없음 / <code>article_id</code></td><td><code>embed_articles</code> 매시</td></tr>
+      <tr><td><code>feat.user</code></td><td>독자 × 스냅샷 시각</td><td><code>DATE(snapshot_time)</code> / <code>user_id</code></td><td><code>build_features</code></td></tr>
+      <tr><td><code>feat.article</code></td><td>기사 × 스냅샷 시각</td><td><code>DATE(snapshot_time)</code> / <code>article_id</code></td><td><code>build_features</code> 매시</td></tr>
+      <tr><td><code>feat.user_article</code></td><td>독자 × 기사 × 스냅샷 시각 (한 번이라도 받은 짝만)</td><td><code>DATE(snapshot_time)</code> / <code>user_id</code></td><td><code>build_features</code> 매시</td></tr>
+      <tr><td><code>train.samples</code></td><td>exposure 한 건 = 학습 한 행</td><td><code>event_date</code> / <code>user_id</code></td><td>학습 데이터 작업</td></tr>
+    </tbody>
+  </table></div>
+  <p><b><code>raw.events</code></b></p>
+  <div class="tbl"><table>
+    <thead><tr><th>컬럼</th><th>타입</th><th>모드</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>event_id</code></td><td>STRING</td><td>NULLABLE</td><td>원본의 이벤트 ID. 없으면 정제에서 버린다</td></tr>
+      <tr><td><code>event_type</code></td><td>STRING</td><td>NULLABLE</td><td>원본의 이벤트 종류</td></tr>
+      <tr><td><code>event_time</code></td><td>TIMESTAMP</td><td>NULLABLE</td><td>원본의 발생 시각</td></tr>
+      <tr><td><code>payload</code></td><td>JSON</td><td>REQUIRED</td><td>받은 이벤트 JSON 전체 (손대지 않음)</td></tr>
+      <tr><td><code>source_file</code></td><td>STRING</td><td>REQUIRED</td><td>읽어 온 GCS 파일 경로. 문제가 생긴 파일만 다시 적재할 때 쓴다</td></tr>
+      <tr><td><code>load_date</code></td><td>DATE</td><td>REQUIRED</td><td>적재한 날짜 (파티션)</td></tr>
+      <tr><td><code>loaded_at</code></td><td>TIMESTAMP</td><td>REQUIRED</td><td>적재한 시각</td></tr>
+    </tbody>
+  </table></div>
+  <p><b><code>clean.events</code></b> (이벤트 종류: <code>impression</code>, <code>exposure</code>, <code>click</code>, <code>read_end</code>, <code>visit</code>, <code>subscribe</code>, <code>unsubscribe</code>, <code>like</code>, <code>unlike</code>)</p>
+  <div class="tbl"><table>
+    <thead><tr><th>컬럼</th><th>타입</th><th>모드</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>event_id</code></td><td>STRING</td><td>REQUIRED</td><td>이벤트 ID. 이 값으로 중복을 지운다 (표 안에서 유일)</td></tr>
+      <tr><td><code>event_type</code></td><td>STRING</td><td>REQUIRED</td><td>위 9개 중 하나. 그 밖의 값은 오류 테이블로 보낸다</td></tr>
+      <tr><td><code>event_time</code></td><td>TIMESTAMP</td><td>REQUIRED</td><td>발생 시각 (UTC). impression은 <code>served_at</code></td></tr>
+      <tr><td><code>event_date</code></td><td>DATE</td><td>REQUIRED</td><td>한국 시간 기준 발생 날짜 (파티션)</td></tr>
+      <tr><td><code>user_id</code></td><td>STRING</td><td>REQUIRED</td><td>독자 ID</td></tr>
+      <tr><td><code>session_id</code></td><td>STRING</td><td>NULLABLE</td><td>세션 ID (브라우저 이벤트)</td></tr>
+      <tr><td><code>request_id</code></td><td>STRING</td><td>NULLABLE</td><td>impression·exposure·click에서는 필수. 없으면 오류 테이블로</td></tr>
+      <tr><td><code>article_id</code></td><td>STRING</td><td>NULLABLE</td><td>기사 이벤트에서 필수</td></tr>
+      <tr><td><code>publisher_id</code></td><td>STRING</td><td>NULLABLE</td><td>subscribe·unsubscribe에서 필수</td></tr>
+      <tr><td><code>position</code></td><td>INT64</td><td>NULLABLE</td><td>피드에서 몇 번째 칸인지 (1부터)</td></tr>
+      <tr><td><code>model_version</code></td><td>STRING</td><td>NULLABLE</td><td>그 피드를 만든 모델 (②의 응답 값 또는 <code>fallback-popular</code>)</td></tr>
+      <tr><td><code>visible_ratio</code></td><td>FLOAT64</td><td>NULLABLE</td><td>exposure: 카드가 보인 비율 (0~1)</td></tr>
+      <tr><td><code>visible_ms</code></td><td>INT64</td><td>NULLABLE</td><td>exposure: 연속으로 보인 시간</td></tr>
+      <tr><td><code>dwell_ms</code></td><td>INT64</td><td>NULLABLE</td><td>read_end: 기사 페이지에 머문 시간</td></tr>
+      <tr><td><code>device_type</code></td><td>STRING</td><td>NULLABLE</td><td><code>mobile</code> | <code>desktop</code></td></tr>
+      <tr><td><code>is_bot</code></td><td>BOOL</td><td>REQUIRED</td><td>봇 규칙에 걸렸는지. 지우지 않고 표시만 한다</td></tr>
+      <tr><td><code>received_at</code></td><td>TIMESTAMP</td><td>REQUIRED</td><td>로깅 서버가 받은 시각. 늦게 도착한 이벤트를 찾는 데 쓴다</td></tr>
+    </tbody>
+  </table></div>
+  <p><b><code>agg</code> 층</b></p>
+  <div class="tbl"><table>
+    <thead><tr><th>테이블</th><th>컬럼 (타입)</th></tr></thead>
+    <tbody>
+      <tr><td><code>agg.article_hourly</code></td><td><code>event_hour</code> TIMESTAMP, <code>article_id</code> STRING, <code>impressions</code> INT64, <code>exposures</code> INT64, <code>clicks</code> INT64, <code>likes</code> INT64, <code>ctr</code> FLOAT64 (= clicks ÷ exposures, exposures가 0이면 NULL)</td></tr>
+      <tr><td><code>agg.user_daily</code></td><td><code>event_date</code> DATE, <code>user_id</code> STRING, <code>exposures</code> INT64, <code>clicks</code> INT64, <code>visits</code> INT64, <code>visits_by_hour</code> ARRAY&lt;INT64&gt; (24칸, 한국 시간 0~23시)</td></tr>
+      <tr><td><code>agg.user_cat_daily</code></td><td><code>event_date</code> DATE, <code>user_id</code> STRING, <code>category</code> STRING, <code>exposures</code> INT64, <code>clicks</code> INT64, <code>likes</code> INT64</td></tr>
+    </tbody>
+  </table></div>
+  <p><b><code>feat</code> 층</b> 모든 피처 테이블에 <code>snapshot_time</code>이 있다. 학습 데이터는 exposure 시각 직전의 스냅샷만 붙인다(포인트 인타임 조인).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>테이블</th><th>컬럼 (타입)</th></tr></thead>
+    <tbody>
+      <tr><td><code>feat.article_meta</code></td><td><code>article_id</code> STRING, <code>category</code> STRING, <code>tags</code> ARRAY&lt;STRING&gt;, <code>publisher_id</code> STRING, <code>published_at</code> TIMESTAMP, <code>clickbait_score</code> FLOAT64 (없으면 NULL), <code>copied_at</code> TIMESTAMP</td></tr>
+      <tr><td><code>feat.article_embedding</code></td><td><code>article_id</code> STRING, <code>embedding</code> ARRAY&lt;FLOAT64&gt; (768칸, 길이 1로 정규화), <code>model_name</code> STRING (예: <code>multilingual-e5-base</code>), <code>model_version</code> STRING, <code>created_at</code> TIMESTAMP</td></tr>
+      <tr><td><code>feat.user</code></td><td><code>snapshot_time</code> TIMESTAMP, <code>user_id</code> STRING, <code>cat_prefs</code> ARRAY&lt;STRUCT&lt;category STRING, click_ratio_30d FLOAT64, ctr_30d FLOAT64, like_ratio_30d FLOAT64&gt;&gt;, <code>recent5_categories</code> ARRAY&lt;STRING&gt;, <code>ctr_30d</code> FLOAT64, <code>active_days_30d</code> INT64, <code>visit_hour_ratio</code> ARRAY&lt;FLOAT64&gt; (24칸), <code>user_embedding</code> ARRAY&lt;FLOAT64&gt; (768칸, 정규화)</td></tr>
+      <tr><td><code>feat.article</code></td><td><code>snapshot_time</code> TIMESTAMP, <code>article_id</code> STRING, <code>clicks_1h</code> INT64, <code>ctr_1h</code> FLOAT64, <code>likes_1h</code> INT64</td></tr>
+      <tr><td><code>feat.user_article</code></td><td><code>snapshot_time</code> TIMESTAMP, <code>user_id</code> STRING, <code>article_id</code> STRING, <code>exposure_cnt</code> INT64, <code>impression_cnt</code> INT64</td></tr>
+    </tbody>
+  </table></div>
+  <p><b><code>train.samples</code></b> 모델에 들어가는 피처 컬럼(<code>u_</code>, <code>a_</code>, <code>ua_</code>, <code>ctx_</code>로 시작)은 STEP 2의 18개 피처와 하나씩 맞는다. 추론 서버도 Valkey 값과 ②의 요청으로 <b>같은 이름, 같은 계산</b>의 입력을 만든다. 이 이름 목록이 학습과 서빙 사이의 규약이다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>컬럼</th><th>타입</th><th>뜻 (STEP 2 피처)</th><th>서빙 때 출처</th></tr></thead>
+    <tbody>
+      <tr><td><code>sample_id</code></td><td>STRING</td><td>exposure의 <code>event_id</code> (빠른 클릭 행은 click의 <code>event_id</code>)</td><td>없음</td></tr>
+      <tr><td><code>event_time</code>, <code>event_date</code></td><td>TIMESTAMP, DATE</td><td>exposure 시각, 파티션</td><td>없음</td></tr>
+      <tr><td><code>user_id</code>, <code>article_id</code>, <code>request_id</code></td><td>STRING</td><td>누가, 어떤 기사를, 어느 피드에서</td><td>없음</td></tr>
+      <tr><td><code>model_version</code></td><td>STRING</td><td>그때 피드를 만든 모델</td><td>없음</td></tr>
+      <tr><td><code>label</code></td><td>INT64</td><td>같은 세션에서 click이 따랐으면 1, 아니면 0</td><td>없음 (정답)</td></tr>
+      <tr><td><code>label_source</code></td><td>STRING</td><td><code>exposure</code> | <code>quick_click</code> (exposure 없이 눌린 클릭)</td><td>없음</td></tr>
+      <tr><td><code>feature_snapshot_time</code></td><td>TIMESTAMP</td><td>붙인 피처 스냅샷 시각 (항상 <code>event_time</code>보다 앞)</td><td><code>feature_version</code></td></tr>
+      <tr><td><code>u_cat_click_ratio_30d</code></td><td>FLOAT64</td><td>이 기사 카테고리의 독자 클릭 비율 (카테고리별 클릭 비율)</td><td>Valkey <code>u</code>.cat_prefs</td></tr>
+      <tr><td><code>u_recent5_cat_share</code></td><td>FLOAT64</td><td>최근 클릭 5개 중 이 기사 카테고리 비율 (최근 클릭 분포)</td><td>Valkey <code>u</code>.recent5_categories</td></tr>
+      <tr><td><code>u_visit_hour_ratio</code></td><td>FLOAT64</td><td>요청 시각(시)의 방문 비율 (시간대별 방문 비율)</td><td>Valkey <code>u</code> + 요청 시각</td></tr>
+      <tr><td><code>u_ctr_30d</code></td><td>FLOAT64</td><td>독자 전체 CTR</td><td>Valkey <code>u</code></td></tr>
+      <tr><td><code>u_active_days_30d</code></td><td>INT64</td><td>활동 일수</td><td>Valkey <code>u</code></td></tr>
+      <tr><td><code>u_cat_like_ratio_30d</code></td><td>FLOAT64</td><td>이 기사 카테고리의 좋아요 비율</td><td>Valkey <code>u</code>.cat_prefs</td></tr>
+      <tr><td><code>a_category</code></td><td>STRING (범주형)</td><td>카테고리 (세부 태그는 2차)</td><td>Valkey <code>a</code></td></tr>
+      <tr><td><code>a_age_min</code></td><td>FLOAT64</td><td>발행 후 경과 분</td><td>Valkey <code>a</code>.published_at + 요청 시각</td></tr>
+      <tr><td><code>a_clicks_1h</code>, <code>a_ctr_1h</code></td><td>INT64, FLOAT64</td><td>최근 1시간 클릭 수·CTR</td><td>Valkey <code>a</code></td></tr>
+      <tr><td><code>a_likes_1h</code></td><td>INT64</td><td>최근 1시간 좋아요 수</td><td>Valkey <code>a</code></td></tr>
+      <tr><td><code>a_clickbait_score</code></td><td>FLOAT64</td><td>자극도 점수</td><td>Valkey <code>a</code></td></tr>
+      <tr><td><code>ua_cosine</code></td><td>FLOAT64</td><td>독자·기사 임베딩 코사인 유사도 (정규화 벡터의 내적)</td><td>Valkey <code>u</code>.emb · <code>a</code>.emb</td></tr>
+      <tr><td><code>ua_cat_ctr_30d</code></td><td>FLOAT64</td><td>이 독자의 이 카테고리 CTR</td><td>Valkey <code>u</code>.cat_prefs</td></tr>
+      <tr><td><code>ua_exposure_cnt</code></td><td>INT64</td><td>이 기사를 이미 본 횟수</td><td>Valkey <code>ue</code></td></tr>
+      <tr><td><code>ua_impression_cnt</code></td><td>INT64</td><td>이 기사를 이미 받은 횟수</td><td>Valkey <code>ui</code></td></tr>
+      <tr><td><code>ua_subscribed</code></td><td>INT64 (0/1)</td><td>이 기사 언론사를 구독 중인가</td><td>② 요청 <code>subscribed_publisher_ids</code></td></tr>
+      <tr><td><code>ctx_hour</code>, <code>ctx_dow</code></td><td>INT64</td><td>요청 시각의 시(0~23), 요일(0=월) 한국 시간</td><td>② 요청 <code>request_time</code></td></tr>
+      <tr><td><code>ctx_position</code></td><td>INT64</td><td>노출 위치. 서빙 때는 1로 고정해 위치 효과를 뺀다 (STEP 5)</td><td>상수 1</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>⑥ Valkey 키 구조</h3>
+  <p><code>export_serving</code>이 매시 BigQuery <code>feat</code>의 최신 값을 계산 없이 그대로 옮긴다. 새 버전 키를 다 쓴 뒤 포인터 하나만 바꾼다. 추론 서버는 요청마다 포인터를 읽고, 그 버전의 키를 파이프라인 한 번으로 모두 읽는다 (왕복 2번).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>키</th><th>자료형</th><th>필드 / 값</th><th>쓰는 곳</th></tr></thead>
+    <tbody>
+      <tr><td><code>feat:current</code></td><td>STRING</td><td>현재 버전. 스냅샷 시각을 한국 시간 <code>YYYYMMDDHH</code>로 (예: <code>2026110309</code>). 만료 없음</td><td>모든 조회의 시작</td></tr>
+      <tr><td><code>u:{ver}:{user_id}</code></td><td>HASH</td><td><code>cat_prefs</code> (JSON: <code>{"경제": [click_ratio, ctr, like_ratio], ...}</code>), <code>recent5_categories</code> (JSON 배열), <code>ctr_30d</code>, <code>active_days_30d</code>, <code>visit_hour_ratio</code> (JSON 24칸), <code>emb</code> (float32 768개 바이트, 3,072바이트)</td><td>독자 피처</td></tr>
+      <tr><td><code>a:{ver}:{article_id}</code></td><td>HASH</td><td><code>category</code>, <code>publisher_id</code>, <code>published_at</code> (epoch 초), <code>clicks_1h</code>, <code>ctr_1h</code>, <code>likes_1h</code>, <code>clickbait_score</code>, <code>emb</code> (float32 바이트)</td><td>기사 피처, 후처리</td></tr>
+      <tr><td><code>ue:{ver}:{user_id}</code></td><td>HASH</td><td>필드 = <code>article_id</code>, 값 = 본 횟수 (exposure)</td><td><code>ua_exposure_cnt</code>, 이미 본 기사 빼기</td></tr>
+      <tr><td><code>ui:{ver}:{user_id}</code></td><td>HASH</td><td>필드 = <code>article_id</code>, 값 = 받은 횟수 (impression)</td><td><code>ua_impression_cnt</code></td></tr>
+      <tr><td><code>cand:{ver}:popular</code></td><td>ZSET</td><td>멤버 = <code>article_id</code>, 점수 = 최근 1시간 클릭 수. 상위 200개</td><td>후보 생성 (인기순)</td></tr>
+      <tr><td><code>cand:{ver}:recent</code></td><td>ZSET</td><td>멤버 = <code>article_id</code>, 점수 = <code>published_at</code> epoch. 최근 48시간 기사</td><td>후보 생성 (최신순)</td></tr>
+      <tr><td><code>cand:{ver}:cat:{category}</code></td><td>ZSET</td><td>카테고리별 최근 48시간 기사, 점수 = <code>published_at</code></td><td>후보 생성 (카테고리 선호)</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li><b>숫자 값</b>: HASH 값은 문자열이라 숫자는 10진수 문자열로 쓴다. 모르는 값은 필드를 쓰지 않는다. 추론 서버는 없는 필드를 결측(<code>null</code>)으로 읽는다.</li>
+    <li><b>만료</b>: 버전이 붙은 키는 모두 3시간 뒤 만료(<code>EXPIRE 10800</code>). 포인터를 바꾼 뒤 이전 버전을 읽던 요청이 끝날 시간을 주고 저절로 사라지게 한다.</li>
+    <li><b>신규 독자</b>: <code>u:</code> 키가 없으면 독자 피처를 모두 결측으로 두고 점수화한다. 후보는 인기순·최신순에서만 뽑는다.</li>
+    <li><b>복구</b>: 같은 값을 GCS <code>serving/{ver}/</code>에 Parquet로 남긴다. Valkey를 다시 띄우면 마지막 버전을 그 파일에서 다시 채운다.</li>
+  </ul>
+
+  <div class="flags">
+    <div class="flag"><span class="tag decide">결정 필요</span><p>후보를 누가 만드는가. 이 규약은 추론 서버가 Valkey 후보 목록으로 직접 만드는 안이다 (큰그림, 멘토님 리트리벌 제안과 같음). WBS Q2처럼 뉴스 WAS가 후보를 보내기로 하면 요청에 <code>candidate_article_ids</code>를 추가한다. 태원 님과 확정한다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>Cloud Run의 뉴스 WAS가 GKE 내부망의 추론 서버를 부르는 길. 외부에 공개하지 않으려면 Cloud Run에서 VPC로 나가는 설정과 GKE 내부 로드밸런서가 필요하다. 장주현 님 <span class="task">#2</span>에서 정한다.</p></div>
+    <div class="flag"><span class="tag risk">주의할 것</span><p><code>clean.events</code>의 컬럼 이름은 경계 ③의 이벤트 JSON 필드 이름과 같아야 한다. 세호 님 문서는 화면에 보인 이벤트를 <code>article_impression</code>이라고 부르므로, 로깅 규약에서 <code>exposure</code>로 맞추거나 정제 단계에서 이름을 바꾸는 규칙을 하나로 정한다.</p></div>
+    <div class="flag"><span class="tag unsure">문제·불확실</span><p>Valkey 메모리. 기사 5천 개, 독자 1만 명이면 임베딩까지 합쳐 50MB 정도로 추정한다. 포인터를 바꾸는 동안 두 버전이 함께 있어 그 두 배가 필요하다. 실제 수는 가상 독자 규모가 정해지면 다시 계산한다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p><code>event_date</code>를 한국 시간 날짜로 할지 UTC 날짜로 할지. 이 안은 독자의 하루에 맞춰 한국 시간으로 정했다. 장주현 님의 GCS 경로(<code>dt=</code>)와 같은 기준을 쓰도록 맞춘다.</p></div>
   </div>
 </section>
 
@@ -714,7 +946,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <div class="tbl"><table>
     <thead><tr><th></th><th>요청 시 점수화 <span class="tag pick">1차 선택</span></th><th>미리 계산해 저장 <span class="tag ext">확장</span></th></tr></thead>
     <tbody>
-      <tr><td>동작</td><td>독자가 피드를 열면 뉴스 WAS가 후보 10~20개를 추론 서버에 보냄 → 추론 서버가 Valkey에서 사용자 1명 + 후보 피처를 한 번에 조회하고, 메모리에 올려 둔 모델로 점수 → 순서대로 응답</td><td>배치가 사용자별 추천 목록을 미리 계산해 저장 → 뉴스 WAS가 <code>user_id</code>로 꺼냄 (Redis 필요)</td></tr>
+      <tr><td>동작</td><td>독자가 피드를 열면 뉴스 WAS가 <code>user_id</code>와 구독 언론사를 추론 서버에 보냄 → 추론 서버가 Valkey에서 후보 목록과 사용자 1명 + 후보 피처를 한 번에 조회하고, 메모리에 올려 둔 모델로 점수 → 순서대로 응답 (필드는 <a href="#contracts">인터페이스 규약</a> ②)</td><td>배치가 사용자별 추천 목록을 미리 계산해 저장 → 뉴스 WAS가 <code>user_id</code>로 꺼냄 (Redis 필요)</td></tr>
       <tr><td>장점</td><td>구조가 단순하다, 후보가 적어 지연이 작다, 새 기사가 후보에 바로 들어간다</td><td>응답이 가장 빠르다</td></tr>
       <tr><td>단점</td><td>피처는 배치 주기(1시간)만큼 늦다, Valkey 조회 한 번이 더 든다, 추론 서버가 떠 있어야 한다</td><td>저장소와 배치가 더 필요하다, 접속하지 않는 사용자 몫도 계산한다</td></tr>
     </tbody>
@@ -733,7 +965,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <p>모델 파일은 GCS에 두고 MLflow 모델 레지스트리가 버전과 단계(Production)를 관리한다. 추론 서버는 켜질 때 Production 버전을 MLflow에서 불러와 메모리에 올린다. 모델을 도커 이미지에 넣지 않으므로 모델을 바꿀 때 이미지를 다시 만들 필요가 없다 (10/31 멘토링 결정). 응답에는 <code>request_id</code>와 <code>model_version</code>을 실어, 뉴스 WAS의 impression 기록과 브라우저의 exposure·click 이벤트로 돌아오게 한다.</p>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>요청 시 점수화(<span class="task">#20</span>)는 추천안이다. 추론 서버 코드(<span class="task">#14</span>)는 윤모가 맡기로 했고, 배포·호출 분담은 장주현·태원 님 확인이 필요하다. 요청 시 점수화 자체는 10/31 멘토링에서 확정됐다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>뉴스 WAS ↔ 추론 서버 요청·응답 형식(후보 목록, <code>user_id</code>, 점수, <code>request_id</code>, <code>model_version</code>)을 계약으로 먼저 정해야 둘이 따로 개발할 수 있다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>뉴스 WAS ↔ 추론 서버 요청·응답 형식은 <a href="#contracts">인터페이스 규약</a> ②에 초안을 적었다. 태원 님이 확인하면 둘이 따로 개발할 수 있다.</p></div>
     <div class="flag"><span class="tag risk">주의할 것</span><p>새 Production 모델은 서버를 하나씩 새로 띄워(롤링 교체) 불러오게 한다. 한꺼번에 재시작하면 그동안 피드가 인기순으로만 나간다.</p></div>
     <div class="flag"><span class="tag unsure">문제·불확실</span><p>Valkey 조회까지 포함한 응답이 0.1초 안에 드는지 모른다. 멘토님 권고대로 서버가 버티지 못할 때까지 부하 테스트를 해서 확인한다.</p></div>
   </div>
