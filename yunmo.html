@@ -100,6 +100,20 @@ table.wbs tr:target td { background: var(--decide-soft); }
 #qa-panel .qa-from a { color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { #qa-panel { transition: none; } }
 @media (max-width: 520px) { section { padding: 18px 16px; } header h1 { font-size: 24px; } .flag { grid-template-columns: 1fr; gap: 2px; } }
+.ov-wrap svg { min-width: 1000px; }
+.ov-edge { cursor: pointer; outline: none; }
+.ov-edge .hit { fill: none; stroke: transparent; stroke-width: 12; }
+.ov-edge .vis { fill: none; stroke-width: 1.25; }
+.ov-edge:hover .vis, .ov-edge:focus .vis { stroke: var(--accent); stroke-width: 2.25; }
+.ov-edge.on .vis { stroke: var(--accent); stroke-width: 2.75; marker-end: url(#ar-hi); }
+.ov-node.on rect { stroke: var(--accent); stroke-width: 2.5; }
+.ov-info { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 8px 0; font-size: 14px; background: var(--surface); }
+.ov-info dl { display: grid; grid-template-columns: 64px 1fr; gap: 4px 10px; margin: 6px 0 0; }
+.ov-info dt { color: var(--muted); }
+.ov-info dd { margin: 0; }
+.ov-legend { font-size: 13px; color: var(--muted); }
+.ov-all tr { cursor: pointer; }
+.ov-all tr.on td { background: var(--accent-soft); }
 </style>
 </head>
 <body>
@@ -167,67 +181,197 @@ table.wbs tr:target td { background: var(--decide-soft); }
 
 <section id="overview">
   <h2>전체 그림</h2>
-  <p>뉴스 WAS가 피드 응답에 넣어 보낸 기사 목록(impression)과, 독자 화면에서 실제로 보인 기사(exposure)·클릭·읽기 기록은 로깅 서버를 거쳐 GCS에 5분 단위로 쌓인다. 피처 DAG가 이것을 BigQuery에서 원본 → 정제 → 집계 → 피처로 바꾸고, 모델도 학습한다. BigQuery는 학습용 오프라인 피처 스토어이고, DAG가 매시 최신 피처를 온라인 피처 스토어인 Valkey(Redis 호환)에 적재한다 (10/31 멘토링 결정). 점선 안의 추론 서버는 GKE 내부망에 있고, 켜질 때 MLflow에서 Production 모델을 메모리로 불러온 뒤, 피드 요청이 올 때마다 Valkey에서 사용자·후보 피처를 조회해 후보 10~20개에 점수를 매긴다. 구독·좋아요(노란 점선)는 누르는 즉시 뉴스 WAS가 Cloud SQL에 저장해 화면에 바로 보이고, 피드 요청 때 구독 언론사 목록을 추론 서버에 함께 넘겨 순서에도 바로 반영한다. 같은 행동은 로깅 서버로도 가서 1시간 뒤 피처가 된다. 학습 결과는 MLflow에 실험 기록(파라미터, AUC)과 모델 버전으로 남기고, 검증을 통과한 버전을 Production으로 올리면 추론 서버가 그 버전을 불러 쓴다. 굵은 테두리가 처리·피처·모델 파트가 만드는 부분이다. 맨 아래 띠의 Cloud SQL, BigQuery, GCS는 우리 서버가 아니라 구글 데이터센터에서 구글이 운영하는 저장소다. 피처 DAG는 BigQuery에 SQL을 보내기만 하고, 계산과 결과 저장은 BigQuery 안에서 일어난다.</p>
-  <div class="diagram">
-  <svg viewBox="0 0 760 412" role="img" aria-label="아래 띠는 구글이 운영하는 Cloud SQL, BigQuery, GCS이고 위쪽은 GKE에서 도는 프로그램이다. 로그가 피처 DAG를 거쳐 피처 파일과 모델이 되고, 추론 서버가 요청마다 후보에 점수를 매겨 피드에 넘기는 구조. 구독·좋아요는 뉴스 WAS가 Cloud SQL에 바로 저장하고 피드 요청 때 구독 목록을 추론 서버에 넘긴다">
-    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
-    <rect x="160" y="10" width="432" height="98" rx="10" fill="none" stroke="var(--muted)" stroke-width="1.25" stroke-dasharray="5 4"/>
-    <text x="172" y="27" font-size="12" font-weight="700" fill="var(--fg)">추론 서버</text>
-    <text x="232" y="27" font-size="11.5" fill="var(--muted)">#14 · 피드 요청마다 점수화</text>
-    <g fill="none" stroke="var(--muted)" stroke-width="1.25">
-      <path d="M152 72H166" marker-end="url(#ar)"/><path d="M296 72H310" marker-end="url(#ar)"/><path d="M440 72H454" marker-end="url(#ar)"/><path d="M584 72H598" marker-end="url(#ar)"/>
-      <path d="M664 100V168" marker-end="url(#ar)"/><path d="M600 206H586" marker-end="url(#ar)"/><path d="M312 206H298" marker-end="url(#ar)"/>
-      <path d="M232 170V102" marker-end="url(#ar)"/><path d="M512 170V160" marker-end="url(#ar)"/><path d="M440 136H376V102" marker-end="url(#ar)"/>
-    </g>
-    <g stroke-width="1.25">
-      <rect x="24" y="44" width="128" height="56" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
-      <rect x="168" y="44" width="128" height="56" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
-      <rect x="312" y="44" width="128" height="56" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
-      <rect x="456" y="44" width="128" height="56" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
-      <rect x="600" y="44" width="128" height="56" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
-      <rect x="168" y="170" width="128" height="72" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
-      <rect x="312" y="170" width="272" height="72" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
-      <rect x="600" y="170" width="128" height="72" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
-      <rect x="24" y="170" width="128" height="72" rx="8" fill="var(--decide-soft)" stroke="var(--decide)"/>
-      <rect x="440" y="114" width="144" height="44" rx="8" fill="var(--surface)" stroke="var(--muted)"/>
-    </g>
-    <g fill="none" stroke="var(--decide)" stroke-width="1.25" stroke-dasharray="4 3">
-      <path d="M728 72H748V272H88V246" marker-end="url(#ar)"/>
-      <path d="M88 170V136H164V112" marker-end="url(#ar)"/>
-    </g>
-    <text x="512" y="132" font-size="13" font-weight="700" fill="var(--fg)" text-anchor="middle">MLflow</text>
-    <text x="512" y="149" font-size="11.5" fill="var(--muted)" text-anchor="middle">실험 기록·모델 버전</text>
-    <text x="88" y="194" font-size="13" font-weight="700" fill="var(--fg)" text-anchor="middle">구독·좋아요</text>
-    <text x="88" y="212" font-size="11.5" fill="var(--muted)" text-anchor="middle">Cloud SQL 테이블</text>
-    <text x="88" y="228" font-size="11.5" fill="var(--muted)" text-anchor="middle">누르면 즉시 저장</text>
-    <text x="96" y="158" font-size="11.5" fill="var(--decide)">요청에 구독 목록</text>
-    <text x="400" y="288" font-size="11.5" fill="var(--decide)" text-anchor="middle">뉴스 WAS가 구독·좋아요를 바로 저장 (로깅 서버를 거치지 않음)</text>
-    <g font-size="13" font-weight="700" fill="var(--fg)" text-anchor="middle">
-      <text x="88" y="68">기사 풀</text><text x="232" y="68">후보 생성</text><text x="376" y="68">점수화 모델</text><text x="520" y="68">후처리</text><text x="664" y="68">피드 응답</text>
-      <text x="232" y="194">온라인 피처 스토어</text><text x="448" y="194">피처 DAG (Airflow)</text><text x="664" y="194">로깅 서버</text>
-    </g>
-    <g font-size="11.5" fill="var(--muted)" text-anchor="middle">
-      <text x="88" y="86">Cloud SQL 뉴스 DB</text><text x="232" y="86">10~20개</text><text x="376" y="86" fill="var(--fg)">baseline → CTR 모델</text><text x="520" y="86">중복·다양성 규칙</text><text x="664" y="86">뉴스 WAS · impression</text>
-      <text x="232" y="212">Valkey · 매시 적재</text><text x="232" y="228">학습용은 BigQuery</text>
-      <text x="448" y="212">원본 → 정제 → 집계 → 피처</text><text x="448" y="228">BigQuery에 SQL 요청 · 학습</text>
-      <text x="664" y="212">GCS 5분 파티션</text><text x="664" y="228">exposure·클릭·구독</text>
-    </g>
-    <g font-size="11.5" fill="var(--muted)">
-      <text x="240" y="142">요청마다 조회</text><text x="378" y="128">켜질 때 로드</text>
-    </g>
-    <rect x="24" y="300" width="724" height="84" rx="10" fill="none" stroke="var(--muted)" stroke-width="1.25" stroke-dasharray="2 3"/>
-    <text x="36" y="318" font-size="12" font-weight="700" fill="var(--fg)">구글이 운영 (GCP 관리형, 우리가 설치하지 않음)</text>
-    <g stroke-width="1.25" fill="var(--surface)" stroke="var(--muted)">
-      <rect x="40" y="328" width="176" height="44" rx="8"/><rect x="312" y="328" width="272" height="44" rx="8"/><rect x="600" y="328" width="128" height="44" rx="8"/>
-    </g>
-    <g fill="none" stroke="var(--muted)" stroke-width="1.25">
-      <path d="M664 242V326" marker-end="url(#ar)"/><path d="M600 350H586" marker-end="url(#ar)"/><path d="M572 244V326" marker-start="url(#ar)" marker-end="url(#ar)"/>
-    </g>
-    <g font-size="13" font-weight="700" fill="var(--fg)" text-anchor="middle"><text x="128" y="346">Cloud SQL</text><text x="448" y="346">BigQuery</text><text x="664" y="346">GCS</text></g>
-    <g font-size="11.5" fill="var(--muted)" text-anchor="middle"><text x="128" y="363">기사·구독·좋아요</text><text x="448" y="363">raw · clean · agg · feat 데이터셋</text><text x="664" y="363">로그 원본·모델 파일</text></g>
-    <text x="24" y="404" font-size="11.5" fill="var(--muted)">위쪽 상자 중 추론 서버·Valkey·피처 DAG(Airflow)·MLflow·로깅 서버는 GKE 클러스터에서, 뉴스 WAS는 Cloud Run에서 돈다.</text>
-  </svg>
-  </div>
+  <p>뉴스 WAS가 피드 응답에 넣어 보낸 기사 목록(impression)과, 독자 화면에서 실제로 보인 기사(exposure)·클릭·읽기 기록은 로깅 서버를 거쳐 GCS에 5분 단위로 쌓인다. 피처 DAG가 이것을 BigQuery에서 원본 → 정제 → 집계 → 피처로 바꾸고, 모델도 학습한다. BigQuery는 학습용 오프라인 피처 스토어이고, DAG가 매시 최신 피처를 온라인 피처 스토어인 Valkey(Redis 호환)에 적재한다 (10/31 멘토링 결정). 점선 안의 추론 서버는 GKE 내부망에 있고, 켜질 때 MLflow에서 Production 모델을 메모리로 불러온 뒤, 피드 요청이 올 때마다 Valkey에서 사용자·후보 피처를 조회해 후보 10~20개에 점수를 매긴다. 구독·좋아요(노란 상자)는 누르는 즉시 뉴스 WAS가 Cloud SQL에 저장해 화면에 바로 보이고, 피드 요청 때 구독 언론사 목록을 추론 서버에 함께 넘겨 순서에도 바로 반영한다. 같은 행동은 로깅 서버로도 가서 1시간 뒤 피처가 된다. 학습 결과는 MLflow에 실험 기록(파라미터, AUC)과 모델 버전으로 남기고, 검증을 통과한 버전을 Production으로 올리면 추론 서버가 그 버전을 불러 쓴다. 굵은 파란 테두리가 처리·피처·모델 파트가 만드는 부분이다. 선을 누르면 그 선으로 오가는 데이터가 그림 아래에 나온다. 맨 아래 띠의 Cloud SQL, BigQuery, GCS는 우리 서버가 아니라 구글 데이터센터에서 구글이 운영하는 저장소다. 피처 DAG는 BigQuery에 SQL을 보내기만 하고, 계산과 결과 저장은 BigQuery 안에서 일어난다.</p>
+  <div class="diagram ov-wrap">
+<svg id="ov-svg" viewBox="0 0 1070 650" role="img" aria-label="전체 구성도. 독자 쪽, Cloud Run의 뉴스 WAS, GKE 클러스터의 추론 서버·Valkey·MLflow·로깅 서버·Airflow 작업, 구글이 운영하는 Cloud SQL·BigQuery·GCS와 그 사이를 오가는 데이터. 선을 누르면 오가는 데이터가 아래에 나온다">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker><marker id="ar-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
+<rect x="10" y="30" width="165" height="195" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
+<text x="20" y="45" font-size="11.5" font-weight="700" fill="var(--muted)">독자 쪽</text>
+<rect x="190" y="30" width="130" height="100" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
+<text x="200" y="45" font-size="11.5" font-weight="700" fill="var(--muted)">Cloud Run</text>
+<rect x="330" y="30" width="725" height="385" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
+<text x="340" y="45" font-size="11.5" font-weight="700" fill="var(--muted)">GKE 클러스터 (장주현 님 #2)</text>
+<rect x="345" y="50" width="455" height="90" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="355" y="65" font-size="11.5" font-weight="700" fill="var(--muted)">추론 서버 #14</text>
+<rect x="345" y="250" width="695" height="150" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="355" y="265" font-size="11.5" font-weight="700" fill="var(--muted)">Airflow 피처 DAG #12 (매시·매일)</text>
+<rect x="10" y="445" width="1045" height="190" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
+<text x="445" y="460" font-size="11.5" font-weight="700" fill="var(--muted)">구글이 운영 (GCP 관리형, 우리가 설치하지 않음)</text>
+<rect x="25" y="470" width="310" height="150" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="35" y="485" font-size="11.5" font-weight="700" fill="var(--muted)">Cloud SQL</text>
+<rect x="355" y="470" width="510" height="160" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="365" y="485" font-size="11.5" font-weight="700" fill="var(--muted)">BigQuery</text>
+<rect x="880" y="470" width="160" height="150" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="890" y="485" font-size="11.5" font-weight="700" fill="var(--muted)">GCS</text>
+<g class="ov-edge" data-e="feed_req" tabindex="0" role="button" aria-label="브라우저에서 뉴스 WAS로"><path class="hit" d="M160 78H203"/><path class="vis" d="M160 78H203" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="feed_res" tabindex="0" role="button" aria-label="뉴스 WAS에서 브라우저로"><path class="hit" d="M205 96H162"/><path class="vis" d="M205 96H162" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="sim_feed" tabindex="0" role="button" aria-label="가상 독자에서 뉴스 WAS로"><path class="hit" d="M160 180H230V112"/><path class="vis" d="M160 180H230V112" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="inf_req" tabindex="0" role="button" aria-label="뉴스 WAS에서 후보 생성로"><path class="hit" d="M305 92H358"/><path class="vis" d="M305 92H358" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="cand_score" tabindex="0" role="button" aria-label="후보 생성에서 점수화 모델로"><path class="hit" d="M485 100H508"/><path class="vis" d="M485 100H508" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="score_post" tabindex="0" role="button" aria-label="점수화 모델에서 후처리로"><path class="hit" d="M635 100H658"/><path class="vis" d="M635 100H658" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="inf_res" tabindex="0" role="button" aria-label="후처리에서 뉴스 WAS로"><path class="hit" d="M722 125V150H270V112"/><path class="vis" d="M722 125V150H270V112" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="vk_cand" tabindex="0" role="button" aria-label="Valkey에서 후보 생성로"><path class="hit" d="M430 168V127"/><path class="vis" d="M430 168V127" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="vk_score" tabindex="0" role="button" aria-label="Valkey에서 점수화 모델로"><path class="hit" d="M500 185H560V127"/><path class="vis" d="M500 185H560V127" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="ml_score" tabindex="0" role="button" aria-label="MLflow에서 점수화 모델로"><path class="hit" d="M620 168V127"/><path class="vis" d="M620 168V127" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="ev_browser" tabindex="0" role="button" aria-label="브라우저에서 로깅 서버로"><path class="hit" d="M90 60V14H960V73"/><path class="vis" d="M90 60V14H960V73" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="ev_sim" tabindex="0" role="button" aria-label="가상 독자에서 로깅 서버로"><path class="hit" d="M160 200H340V240H1000V127"/><path class="vis" d="M160 200H340V240H1000V127" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="ev_imp" tabindex="0" role="button" aria-label="뉴스 WAS에서 로깅 서버로"><path class="hit" d="M295 60V22H945V73"/><path class="vis" d="M295 60V22H945V73" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="sub_rw" tabindex="0" role="button" aria-label="뉴스 WAS에서 subscriptions·likes로"><path class="hit" d="M285 112V493"/><path class="vis" d="M285 112V493" stroke="var(--decide)" marker-start="url(#ar)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="art_was" tabindex="0" role="button" aria-label="articles에서 뉴스 WAS로"><path class="hit" d="M165 495V252H255V112"/><path class="vis" d="M165 495V252H255V112" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="gen_art" tabindex="0" role="button" aria-label="기사 생성에서 articles로"><path class="hit" d="M140 350V493"/><path class="vis" d="M140 350V493" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="log_gcs" tabindex="0" role="button" aria-label="로깅 서버에서 로그 원본로"><path class="hit" d="M1030 100H1045V520H1027"/><path class="vis" d="M1030 100H1045V520H1027" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="gcs_sensor" tabindex="0" role="button" aria-label="로그 원본에서 GCS 센서로"><path class="hit" d="M960 495V316"/><path class="vis" d="M960 495V316" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="gcs_raw" tabindex="0" role="button" aria-label="로그 원본에서 raw.events로"><path class="hit" d="M895 520H857"/><path class="vis" d="M895 520H857" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="raw_clean" tabindex="0" role="button" aria-label="raw.events에서 clean.events로"><path class="hit" d="M745 520H732"/><path class="vis" d="M745 520H732" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="clean_agg" tabindex="0" role="button" aria-label="clean.events에서 agg.*로"><path class="hit" d="M620 520H607"/><path class="vis" d="M620 520H607" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="agg_feat" tabindex="0" role="button" aria-label="agg.*에서 feat.*로"><path class="hit" d="M495 520H482"/><path class="vis" d="M495 520H482" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="emb_feat" tabindex="0" role="button" aria-label="article_embedding에서 feat.*로"><path class="hit" d="M510 558V551H440V547"/><path class="vis" d="M510 558V551H440V547" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="feat_train" tabindex="0" role="button" aria-label="feat.*에서 train.samples로"><path class="hit" d="M400 545V558"/><path class="vis" d="M400 545V558" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="clean_train" tabindex="0" role="button" aria-label="clean.events에서 train.samples로"><path class="hit" d="M675 545V625H425V612"/><path class="vis" d="M675 545V625H425V612" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="art_embed" tabindex="0" role="button" aria-label="articles에서 embed_articles로"><path class="hit" d="M120 495V432H800V386"/><path class="vis" d="M120 495V432H800V386" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="embed_emb" tabindex="0" role="button" aria-label="embed_articles에서 article_embedding로"><path class="hit" d="M745 375H737V553H590V558"/><path class="vis" d="M745 375H737V553H590V558" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="feat_export" tabindex="0" role="button" aria-label="feat.*에서 export_serving로"><path class="hit" d="M425 495V386"/><path class="vis" d="M425 495V386" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="export_vk" tabindex="0" role="button" aria-label="export_serving에서 Valkey로"><path class="hit" d="M370 362H352V195H358"/><path class="vis" d="M370 362H352V195H358" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="export_gcs" tabindex="0" role="button" aria-label="export_serving에서 모델·스냅샷로"><path class="hit" d="M480 375H489V438H874V595H893"/><path class="vis" d="M480 375H489V438H874V595H893" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="train_in" tabindex="0" role="button" aria-label="train.samples에서 train_model로"><path class="hit" d="M370 585H347V425H550V386"/><path class="vis" d="M370 585H347V425H550V386" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="train_ml" tabindex="0" role="button" aria-label="train_model에서 MLflow로"><path class="hit" d="M605 355H738V232H670V222"/><path class="vis" d="M605 355H738V232H670V222" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="train_gcs" tabindex="0" role="button" aria-label="train_model에서 모델·스냅샷로"><path class="hit" d="M605 372H612V429H868V578H893"/><path class="vis" d="M605 372H612V429H868V578H893" stroke="var(--muted)" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="o_sensor" tabindex="0" role="button" aria-label="GCS 센서에서 load_raw로"><path class="hit" d="M895 292H857"/><path class="vis" d="M895 292H857" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="o_load" tabindex="0" role="button" aria-label="load_raw에서 clean_events로"><path class="hit" d="M745 292H732"/><path class="vis" d="M745 292H732" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="o_clean" tabindex="0" role="button" aria-label="clean_events에서 agg_hourly·daily로"><path class="hit" d="M620 292H607"/><path class="vis" d="M620 292H607" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="o_agg" tabindex="0" role="button" aria-label="agg_hourly·daily에서 build_features로"><path class="hit" d="M495 292H482"/><path class="vis" d="M495 292H482" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="o_build" tabindex="0" role="button" aria-label="build_features에서 export_serving로"><path class="hit" d="M425 314V338"/><path class="vis" d="M425 314V338" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
+<g class="ov-edge" data-e="o_train" tabindex="0" role="button" aria-label="build_features에서 train_model로"><path class="hit" d="M455 314V327H550V338"/><path class="vis" d="M455 314V327H550V338" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
+<g class="ov-node" data-n="browser"><rect x="20" y="60" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="90.0" y="81" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">브라우저</text>
+<text x="90.0" y="97" text-anchor="middle" font-size="10.5" fill="var(--muted)">독자 화면 (세호)</text></g>
+<g class="ov-node" data-n="sim"><rect x="20" y="160" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="90.0" y="181" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">가상 독자</text>
+<text x="90.0" y="197" text-anchor="middle" font-size="10.5" fill="var(--muted)">시뮬레이터 #10</text></g>
+<g class="ov-node" data-n="gen"><rect x="20" y="300" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="90.0" y="321" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">기사 생성</text>
+<text x="90.0" y="337" text-anchor="middle" font-size="10.5" fill="var(--muted)">OpenRouter LLM (태원)</text></g>
+<g class="ov-node" data-n="was"><rect x="205" y="60" width="100" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="255.0" y="81" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">뉴스 WAS</text>
+<text x="255.0" y="97" text-anchor="middle" font-size="10.5" fill="var(--muted)">API (태원)</text></g>
+<g class="ov-node" data-n="cand"><rect x="360" y="75" width="125" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="422.5" y="96" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">후보 생성</text>
+<text x="422.5" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">10~20개</text></g>
+<g class="ov-node" data-n="score"><rect x="510" y="75" width="125" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="572.5" y="96" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">점수화 모델</text>
+<text x="572.5" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">LightGBM pCTR</text></g>
+<g class="ov-node" data-n="post"><rect x="660" y="75" width="125" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="722.5" y="96" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">후처리</text>
+<text x="722.5" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">중복·다양성 규칙</text></g>
+<g class="ov-node" data-n="log"><rect x="880" y="75" width="150" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="955.0" y="96" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">로깅 서버</text>
+<text x="955.0" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">이벤트 받기</text></g>
+<g class="ov-node" data-n="valkey"><rect x="360" y="170" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="430.0" y="191" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">Valkey</text>
+<text x="430.0" y="207" text-anchor="middle" font-size="10.5" fill="var(--muted)">온라인 피처 스토어</text></g>
+<g class="ov-node" data-n="mlflow"><rect x="600" y="170" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="670.0" y="191" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">MLflow</text>
+<text x="670.0" y="207" text-anchor="middle" font-size="10.5" fill="var(--muted)">실험 기록·모델 버전</text></g>
+<g class="ov-node" data-n="t_build"><rect x="370" y="270" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="425.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">build_features</text>
+<text x="425.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">매일·매시</text></g>
+<g class="ov-node" data-n="t_agg"><rect x="495" y="270" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="550.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">agg_hourly·daily</text>
+<text x="550.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">매시·매일</text></g>
+<g class="ov-node" data-n="t_clean"><rect x="620" y="270" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="675.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">clean_events</text>
+<text x="675.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">매시</text></g>
+<g class="ov-node" data-n="t_load"><rect x="745" y="270" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="800.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">load_raw</text>
+<text x="800.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">매시</text></g>
+<g class="ov-node" data-n="t_sensor"><rect x="895" y="270" width="130" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="960.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">GCS 센서</text>
+<text x="960.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">파티션 도착 감시</text></g>
+<g class="ov-node" data-n="t_export"><rect x="370" y="340" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="425.0" y="358" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">export_serving</text>
+<text x="425.0" y="374" text-anchor="middle" font-size="10.5" fill="var(--muted)">피처 갱신 직후</text></g>
+<g class="ov-node" data-n="t_train"><rect x="495" y="340" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="550.0" y="358" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">train_model</text>
+<text x="550.0" y="374" text-anchor="middle" font-size="10.5" fill="var(--muted)">재학습 주기</text></g>
+<g class="ov-node" data-n="t_embed"><rect x="745" y="340" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="800.0" y="358" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">embed_articles</text>
+<text x="800.0" y="374" text-anchor="middle" font-size="10.5" fill="var(--muted)">매시, e5</text></g>
+<g class="ov-node" data-n="sql_art"><rect x="40" y="495" width="130" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="105.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">articles</text>
+<text x="105.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">기사 메타·본문</text></g>
+<g class="ov-node" data-n="sql_sub"><rect x="185" y="495" width="135" height="50" rx="7" fill="var(--decide-soft)" stroke="var(--decide)" stroke-width="1.25"/>
+<text x="252.5" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">subscriptions·likes</text>
+<text x="252.5" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">구독·좋아요 현재 상태</text></g>
+<g class="ov-node" data-n="bq_feat"><rect x="370" y="495" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="425.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">feat.*</text>
+<text x="425.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">피처 스냅샷</text></g>
+<g class="ov-node" data-n="bq_agg"><rect x="495" y="495" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="550.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">agg.*</text>
+<text x="550.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">시간·일 집계</text></g>
+<g class="ov-node" data-n="bq_clean"><rect x="620" y="495" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="675.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">clean.events</text>
+<text x="675.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">중복 제거된 이벤트</text></g>
+<g class="ov-node" data-n="bq_raw"><rect x="745" y="495" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="800.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">raw.events</text>
+<text x="800.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">원본 그대로</text></g>
+<g class="ov-node" data-n="bq_train"><rect x="370" y="560" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="425.0" y="581" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">train.samples</text>
+<text x="425.0" y="597" text-anchor="middle" font-size="10.5" fill="var(--muted)">학습 데이터</text></g>
+<g class="ov-node" data-n="bq_emb"><rect x="495" y="560" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<text x="550.0" y="581" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">article_embedding</text>
+<text x="550.0" y="597" text-anchor="middle" font-size="10.5" fill="var(--muted)">기사 벡터 768칸</text></g>
+<g class="ov-node" data-n="gcs_log"><rect x="895" y="495" width="130" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="960.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">로그 원본</text>
+<text x="960.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">5분 파티션 JSONL</text></g>
+<g class="ov-node" data-n="gcs_model"><rect x="895" y="560" width="130" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
+<text x="960.0" y="581" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">모델·스냅샷</text>
+<text x="960.0" y="597" text-anchor="middle" font-size="10.5" fill="var(--muted)">모델 파일, 피처 사본</text></g>
+</svg>
+</div>
+  <div id="ov-info" class="ov-info" aria-live="polite"><b>선을 누르면</b> 그 선으로 오가는 데이터가 여기에 나온다. 점선은 데이터가 오가지 않는 실행 순서나 확인이다.</div>
+  <p class="ov-legend">굵은 파란 테두리 = 처리·피처·모델 파트가 만드는 것 · 노란 상자 = 구독·좋아요 · 바깥 점선 = 어디서 도는지 (독자 쪽, Cloud Run, GKE, 구글 운영)</p>
+  <details class="ov-all"><summary>모든 연결 표 (39개)</summary>
+  <div class="tbl"><table><thead><tr><th>보내는 쪽 → 받는 쪽</th><th>오가는 데이터</th><th>언제</th><th>형식</th></tr></thead><tbody>
+    <tr data-e="feed_req"><td>브라우저 → 뉴스 WAS</td><td>피드 요청. 쿠키의 독자 토큰을 같이 보낸다</td><td>독자가 피드를 열거나 스크롤할 때</td><td>HTTPS GET, 쿠키</td></tr>
+    <tr data-e="feed_res"><td>뉴스 WAS → 브라우저</td><td>정렬된 기사 카드 목록(article_id, 제목, 썸네일 URL, position)과 request_id, model_version</td><td>피드 요청 응답</td><td>JSON</td></tr>
+    <tr data-e="sim_feed"><td>가상 독자 → 뉴스 WAS</td><td>가상 독자의 피드 요청. 브라우저와 같은 API를 부른다</td><td>시뮬레이터가 정한 접속 시각</td><td>HTTPS GET</td></tr>
+    <tr data-e="inf_req"><td>뉴스 WAS → 후보 생성</td><td>추론 요청: user_id, 구독 언론사 목록, request_id</td><td>피드 요청마다</td><td>내부 HTTP JSON</td></tr>
+    <tr data-e="cand_score"><td>후보 생성 → 점수화 모델</td><td>후보 article_id 10~20개</td><td>요청마다 (같은 서버 안)</td><td>메모리 안 목록</td></tr>
+    <tr data-e="score_post"><td>점수화 모델 → 후처리</td><td>(article_id, pCTR) 목록</td><td>요청마다 (같은 서버 안)</td><td>메모리 안 목록</td></tr>
+    <tr data-e="inf_res"><td>후처리 → 뉴스 WAS</td><td>정렬된 article_id와 점수, model_version, request_id</td><td>추론 요청 응답 (실패하면 WAS가 인기순으로 대신)</td><td>내부 HTTP JSON</td></tr>
+    <tr data-e="vk_cand"><td>Valkey → 후보 생성</td><td>인기순·최신순 기사 목록, 사용자 선호 카테고리</td><td>요청마다 키로 조회</td><td>Valkey 키-값</td></tr>
+    <tr data-e="vk_score"><td>Valkey → 점수화 모델</td><td>사용자 1명 + 후보 기사 피처(사용자 벡터, 기사 벡터, CTR 등)</td><td>요청마다 한 번에 조회 (1~2ms)</td><td>Valkey 해시 (u:{user_id}, a:{article_id})</td></tr>
+    <tr data-e="ml_score"><td>MLflow → 점수화 모델</td><td>Production 모델 버전과 그 모델 파일의 GCS 위치. 서버가 그 파일을 메모리에 올린다</td><td>추론 서버가 켜질 때 (새 버전은 롤링 재시작)</td><td>MLflow 레지스트리 API + 모델 파일</td></tr>
+    <tr data-e="ev_browser"><td>브라우저 → 로깅 서버</td><td>exposure(화면에 보인 카드), click, read_end, visit, subscribe, like 이벤트. event_id, request_id, position 포함</td><td>발생 즉시 묶어서 전송</td><td>HTTPS POST JSON 배열</td></tr>
+    <tr data-e="ev_sim"><td>가상 독자 → 로깅 서버</td><td>가상 독자가 만든 exposure·click 등 이벤트 (브라우저와 같은 형식)</td><td>시뮬레이션 중</td><td>HTTPS POST JSON 배열</td></tr>
+    <tr data-e="ev_imp"><td>뉴스 WAS → 로깅 서버</td><td>impression: 응답에 넣어 보낸 기사마다 request_id, article_id, position, model_version, served_at</td><td>피드 응답을 보낼 때</td><td>HTTPS POST JSON</td></tr>
+    <tr data-e="sub_rw"><td>뉴스 WAS → subscriptions·likes</td><td>구독·좋아요 쓰기(누르는 즉시), 피드 요청 때 구독 목록 읽기</td><td>버튼을 누를 때, 피드 요청 때</td><td>SQL</td></tr>
+    <tr data-e="art_was"><td>articles → 뉴스 WAS</td><td>피드·상세 화면에 보여 줄 기사 제목·본문·썸네일 URL</td><td>화면 요청 때</td><td>SQL</td></tr>
+    <tr data-e="gen_art"><td>기사 생성 → articles</td><td>생성한 기사(제목, 본문, 카테고리, publisher_id, published_at, 썸네일)</td><td>기사 생성 배치 때</td><td>SQL INSERT</td></tr>
+    <tr data-e="log_gcs"><td>로깅 서버 → 로그 원본</td><td>받은 이벤트를 5분 단위 파일로</td><td>5분마다</td><td>JSONL 파일 (dt=/hh=/mm= 경로)</td></tr>
+    <tr data-e="gcs_sensor"><td>로그 원본 → GCS 센서</td><td>파일 내용은 오지 않는다. 지난 1시간 파티션 12개가 다 왔는지 확인만 한다</td><td>매시 DAG 시작 때</td><td>GCS 객체 목록 조회</td></tr>
+    <tr data-e="gcs_raw"><td>로그 원본 → raw.events</td><td>5분 파일들을 raw.events에 적재 (load_raw가 BigQuery load job을 시킨다)</td><td>매시</td><td>BigQuery load job</td></tr>
+    <tr data-e="raw_clean"><td>raw.events → clean.events</td><td>event_id 중복 제거, 필수 필드 검사, 시간대 통일, 봇 표시를 거친 이벤트 (clean_events의 SQL)</td><td>매시</td><td>BigQuery SQL</td></tr>
+    <tr data-e="clean_agg"><td>clean.events → agg.*</td><td>기사별 impression·exposure·클릭 수, 사용자×카테고리 집계 (agg_hourly·agg_daily의 SQL)</td><td>매시·매일</td><td>BigQuery SQL</td></tr>
+    <tr data-e="agg_feat"><td>agg.* → feat.*</td><td>30일·1시간 창 피처, CTR 같은 비율 (build_features의 SQL)</td><td>매일·매시</td><td>BigQuery SQL</td></tr>
+    <tr data-e="emb_feat"><td>article_embedding → feat.*</td><td>기사 벡터. 사용자가 최근 누른 기사들의 벡터 평균이 사용자 벡터가 된다</td><td>build_features 때</td><td>BigQuery SQL (JOIN on article_id)</td></tr>
+    <tr data-e="feat_train"><td>feat.* → train.samples</td><td>노출 시각 직전 스냅샷의 사용자·기사 피처 (포인트 인타임 조인)</td><td>학습 데이터 만들 때</td><td>BigQuery SQL</td></tr>
+    <tr data-e="clean_train"><td>clean.events → train.samples</td><td>정답 라벨: exposure 한 건에 클릭이 따랐으면 1, 아니면 0</td><td>학습 데이터 만들 때</td><td>BigQuery SQL</td></tr>
+    <tr data-e="art_embed"><td>articles → embed_articles</td><td>지난 실행 이후 들어온 새 기사의 제목·본문</td><td>매시</td><td>SQL 조회</td></tr>
+    <tr data-e="embed_emb"><td>embed_articles → article_embedding</td><td>기사마다 768칸 벡터 + 임베딩 모델 이름·버전</td><td>매시 (새 기사만)</td><td>BigQuery 쓰기</td></tr>
+    <tr data-e="feat_export"><td>feat.* → export_serving</td><td>최신 사용자·기사 피처</td><td>피처 갱신 직후</td><td>BigQuery 조회</td></tr>
+    <tr data-e="export_vk"><td>export_serving → Valkey</td><td>최신 피처를 새 버전 키로 쓴 뒤 현재 버전 포인터만 교체</td><td>피처 갱신 직후 (매시)</td><td>Valkey 쓰기</td></tr>
+    <tr data-e="export_gcs"><td>export_serving → 모델·스냅샷</td><td>Valkey에 넣은 값의 사본 (Valkey 재시작 때 다시 채우는 원본)</td><td>피처 갱신 직후</td><td>Parquet 파일</td></tr>
+    <tr data-e="train_in"><td>train.samples → train_model</td><td>학습 데이터 표 (시간순으로 학습·검증·테스트 구간)</td><td>재학습 때</td><td>BigQuery 조회 → DataFrame</td></tr>
+    <tr data-e="train_ml"><td>train_model → MLflow</td><td>파라미터, AUC 같은 지표, 모델 버전 등록. 검증을 통과하면 Production으로 올린다</td><td>재학습 끝날 때</td><td>MLflow API</td></tr>
+    <tr data-e="train_gcs"><td>train_model → 모델·스냅샷</td><td>학습된 LightGBM 모델 파일 (MLflow는 이 위치만 기록한다)</td><td>재학습 끝날 때</td><td>모델 파일</td></tr>
+    <tr data-e="o_sensor"><td>GCS 센서 → load_raw</td><td>데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다</td><td></td><td></td></tr>
+    <tr data-e="o_load"><td>load_raw → clean_events</td><td>데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다</td><td></td><td></td></tr>
+    <tr data-e="o_clean"><td>clean_events → agg_hourly·daily</td><td>데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다</td><td></td><td></td></tr>
+    <tr data-e="o_agg"><td>agg_hourly·daily → build_features</td><td>데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다</td><td></td><td></td></tr>
+    <tr data-e="o_build"><td>build_features → export_serving</td><td>데이터는 오가지 않는다. 피처 계산이 끝나면 적재를 시작한다</td><td></td><td></td></tr>
+    <tr data-e="o_train"><td>build_features → train_model</td><td>데이터는 오가지 않는다. 피처 계산이 끝나면 재학습 주기에 맞춰 학습을 시작한다</td><td></td><td></td></tr>
+  </tbody></table></div></details>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>후보 수 10~20개는 팀 계획(<span class="task">#14</span>)을 따랐다. 후보가 적으면 점수화 모델이 바꿀 수 있는 순서도 적다. 후보 생성 품질이 전체 성능을 좌우하므로, 수를 늘릴지 데이터를 본 뒤 다시 정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>후보 10~20개를 누가 고르는지. WBS Q2 예시처럼 뉴스 WAS가 후보를 골라 추론 서버에 보낼지, 추론 서버가 직접 고를지 정해야 한다.</p></div>
@@ -742,5 +886,30 @@ var QA = [{"sec": "overview", "sel": null, "term": "추론 서버", "q": "피드
 })();
 </script>
 
+<script>
+(function () {
+  var EDGES = [{"id": "feed_req", "from": "브라우저", "to": "뉴스 WAS", "kind": "data", "data": "피드 요청. 쿠키의 독자 토큰을 같이 보낸다", "when": "독자가 피드를 열거나 스크롤할 때", "fmt": "HTTPS GET, 쿠키"}, {"id": "feed_res", "from": "뉴스 WAS", "to": "브라우저", "kind": "data", "data": "정렬된 기사 카드 목록(article_id, 제목, 썸네일 URL, position)과 request_id, model_version", "when": "피드 요청 응답", "fmt": "JSON"}, {"id": "sim_feed", "from": "가상 독자", "to": "뉴스 WAS", "kind": "data", "data": "가상 독자의 피드 요청. 브라우저와 같은 API를 부른다", "when": "시뮬레이터가 정한 접속 시각", "fmt": "HTTPS GET"}, {"id": "inf_req", "from": "뉴스 WAS", "to": "후보 생성", "kind": "data", "data": "추론 요청: user_id, 구독 언론사 목록, request_id", "when": "피드 요청마다", "fmt": "내부 HTTP JSON"}, {"id": "cand_score", "from": "후보 생성", "to": "점수화 모델", "kind": "data", "data": "후보 article_id 10~20개", "when": "요청마다 (같은 서버 안)", "fmt": "메모리 안 목록"}, {"id": "score_post", "from": "점수화 모델", "to": "후처리", "kind": "data", "data": "(article_id, pCTR) 목록", "when": "요청마다 (같은 서버 안)", "fmt": "메모리 안 목록"}, {"id": "inf_res", "from": "후처리", "to": "뉴스 WAS", "kind": "data", "data": "정렬된 article_id와 점수, model_version, request_id", "when": "추론 요청 응답 (실패하면 WAS가 인기순으로 대신)", "fmt": "내부 HTTP JSON"}, {"id": "vk_cand", "from": "Valkey", "to": "후보 생성", "kind": "data", "data": "인기순·최신순 기사 목록, 사용자 선호 카테고리", "when": "요청마다 키로 조회", "fmt": "Valkey 키-값"}, {"id": "vk_score", "from": "Valkey", "to": "점수화 모델", "kind": "data", "data": "사용자 1명 + 후보 기사 피처(사용자 벡터, 기사 벡터, CTR 등)", "when": "요청마다 한 번에 조회 (1~2ms)", "fmt": "Valkey 해시 (u:{user_id}, a:{article_id})"}, {"id": "ml_score", "from": "MLflow", "to": "점수화 모델", "kind": "data", "data": "Production 모델 버전과 그 모델 파일의 GCS 위치. 서버가 그 파일을 메모리에 올린다", "when": "추론 서버가 켜질 때 (새 버전은 롤링 재시작)", "fmt": "MLflow 레지스트리 API + 모델 파일"}, {"id": "ev_browser", "from": "브라우저", "to": "로깅 서버", "kind": "data", "data": "exposure(화면에 보인 카드), click, read_end, visit, subscribe, like 이벤트. event_id, request_id, position 포함", "when": "발생 즉시 묶어서 전송", "fmt": "HTTPS POST JSON 배열"}, {"id": "ev_sim", "from": "가상 독자", "to": "로깅 서버", "kind": "data", "data": "가상 독자가 만든 exposure·click 등 이벤트 (브라우저와 같은 형식)", "when": "시뮬레이션 중", "fmt": "HTTPS POST JSON 배열"}, {"id": "ev_imp", "from": "뉴스 WAS", "to": "로깅 서버", "kind": "data", "data": "impression: 응답에 넣어 보낸 기사마다 request_id, article_id, position, model_version, served_at", "when": "피드 응답을 보낼 때", "fmt": "HTTPS POST JSON"}, {"id": "sub_rw", "from": "뉴스 WAS", "to": "subscriptions·likes", "kind": "data", "data": "구독·좋아요 쓰기(누르는 즉시), 피드 요청 때 구독 목록 읽기", "when": "버튼을 누를 때, 피드 요청 때", "fmt": "SQL"}, {"id": "art_was", "from": "articles", "to": "뉴스 WAS", "kind": "data", "data": "피드·상세 화면에 보여 줄 기사 제목·본문·썸네일 URL", "when": "화면 요청 때", "fmt": "SQL"}, {"id": "gen_art", "from": "기사 생성", "to": "articles", "kind": "data", "data": "생성한 기사(제목, 본문, 카테고리, publisher_id, published_at, 썸네일)", "when": "기사 생성 배치 때", "fmt": "SQL INSERT"}, {"id": "log_gcs", "from": "로깅 서버", "to": "로그 원본", "kind": "data", "data": "받은 이벤트를 5분 단위 파일로", "when": "5분마다", "fmt": "JSONL 파일 (dt=/hh=/mm= 경로)"}, {"id": "gcs_sensor", "from": "로그 원본", "to": "GCS 센서", "kind": "dec", "data": "파일 내용은 오지 않는다. 지난 1시간 파티션 12개가 다 왔는지 확인만 한다", "when": "매시 DAG 시작 때", "fmt": "GCS 객체 목록 조회"}, {"id": "gcs_raw", "from": "로그 원본", "to": "raw.events", "kind": "data", "data": "5분 파일들을 raw.events에 적재 (load_raw가 BigQuery load job을 시킨다)", "when": "매시", "fmt": "BigQuery load job"}, {"id": "raw_clean", "from": "raw.events", "to": "clean.events", "kind": "data", "data": "event_id 중복 제거, 필수 필드 검사, 시간대 통일, 봇 표시를 거친 이벤트 (clean_events의 SQL)", "when": "매시", "fmt": "BigQuery SQL"}, {"id": "clean_agg", "from": "clean.events", "to": "agg.*", "kind": "data", "data": "기사별 impression·exposure·클릭 수, 사용자×카테고리 집계 (agg_hourly·agg_daily의 SQL)", "when": "매시·매일", "fmt": "BigQuery SQL"}, {"id": "agg_feat", "from": "agg.*", "to": "feat.*", "kind": "data", "data": "30일·1시간 창 피처, CTR 같은 비율 (build_features의 SQL)", "when": "매일·매시", "fmt": "BigQuery SQL"}, {"id": "emb_feat", "from": "article_embedding", "to": "feat.*", "kind": "data", "data": "기사 벡터. 사용자가 최근 누른 기사들의 벡터 평균이 사용자 벡터가 된다", "when": "build_features 때", "fmt": "BigQuery SQL (JOIN on article_id)"}, {"id": "feat_train", "from": "feat.*", "to": "train.samples", "kind": "data", "data": "노출 시각 직전 스냅샷의 사용자·기사 피처 (포인트 인타임 조인)", "when": "학습 데이터 만들 때", "fmt": "BigQuery SQL"}, {"id": "clean_train", "from": "clean.events", "to": "train.samples", "kind": "data", "data": "정답 라벨: exposure 한 건에 클릭이 따랐으면 1, 아니면 0", "when": "학습 데이터 만들 때", "fmt": "BigQuery SQL"}, {"id": "art_embed", "from": "articles", "to": "embed_articles", "kind": "data", "data": "지난 실행 이후 들어온 새 기사의 제목·본문", "when": "매시", "fmt": "SQL 조회"}, {"id": "embed_emb", "from": "embed_articles", "to": "article_embedding", "kind": "data", "data": "기사마다 768칸 벡터 + 임베딩 모델 이름·버전", "when": "매시 (새 기사만)", "fmt": "BigQuery 쓰기"}, {"id": "feat_export", "from": "feat.*", "to": "export_serving", "kind": "data", "data": "최신 사용자·기사 피처", "when": "피처 갱신 직후", "fmt": "BigQuery 조회"}, {"id": "export_vk", "from": "export_serving", "to": "Valkey", "kind": "data", "data": "최신 피처를 새 버전 키로 쓴 뒤 현재 버전 포인터만 교체", "when": "피처 갱신 직후 (매시)", "fmt": "Valkey 쓰기"}, {"id": "export_gcs", "from": "export_serving", "to": "모델·스냅샷", "kind": "data", "data": "Valkey에 넣은 값의 사본 (Valkey 재시작 때 다시 채우는 원본)", "when": "피처 갱신 직후", "fmt": "Parquet 파일"}, {"id": "train_in", "from": "train.samples", "to": "train_model", "kind": "data", "data": "학습 데이터 표 (시간순으로 학습·검증·테스트 구간)", "when": "재학습 때", "fmt": "BigQuery 조회 → DataFrame"}, {"id": "train_ml", "from": "train_model", "to": "MLflow", "kind": "data", "data": "파라미터, AUC 같은 지표, 모델 버전 등록. 검증을 통과하면 Production으로 올린다", "when": "재학습 끝날 때", "fmt": "MLflow API"}, {"id": "train_gcs", "from": "train_model", "to": "모델·스냅샷", "kind": "data", "data": "학습된 LightGBM 모델 파일 (MLflow는 이 위치만 기록한다)", "when": "재학습 끝날 때", "fmt": "모델 파일"}, {"id": "o_sensor", "from": "GCS 센서", "to": "load_raw", "kind": "order", "data": "데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다", "when": "", "fmt": ""}, {"id": "o_load", "from": "load_raw", "to": "clean_events", "kind": "order", "data": "데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다", "when": "", "fmt": ""}, {"id": "o_clean", "from": "clean_events", "to": "agg_hourly·daily", "kind": "order", "data": "데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다", "when": "", "fmt": ""}, {"id": "o_agg", "from": "agg_hourly·daily", "to": "build_features", "kind": "order", "data": "데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다", "when": "", "fmt": ""}, {"id": "o_build", "from": "build_features", "to": "export_serving", "kind": "order", "data": "데이터는 오가지 않는다. 피처 계산이 끝나면 적재를 시작한다", "when": "", "fmt": ""}, {"id": "o_train", "from": "build_features", "to": "train_model", "kind": "order", "data": "데이터는 오가지 않는다. 피처 계산이 끝나면 재학습 주기에 맞춰 학습을 시작한다", "when": "", "fmt": ""}];
+  var byId = {}; EDGES.forEach(function (e) { byId[e.id] = e; });
+  var info = document.getElementById("ov-info");
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function pick(id) {
+    var e = byId[id]; if (!e) return;
+    document.querySelectorAll(".ov-edge.on, .ov-all tr.on").forEach(function (n) { n.classList.remove("on"); });
+    document.querySelectorAll('.ov-edge[data-e="' + id + '"], .ov-all tr[data-e="' + id + '"]').forEach(function (n) { n.classList.add("on"); });
+    var h = '<b>' + esc(e.from) + ' → ' + esc(e.to) + '</b>' + (e.kind === "data" ? "" : ' <span style="color:var(--muted)">(데이터 없음)</span>');
+    h += '<dl><dt>데이터</dt><dd>' + esc(e.data) + '</dd>';
+    if (e.when) h += '<dt>언제</dt><dd>' + esc(e.when) + '</dd>';
+    if (e.fmt) h += '<dt>형식</dt><dd>' + esc(e.fmt) + '</dd>';
+    info.innerHTML = h + '</dl>';
+  }
+  document.querySelectorAll(".ov-edge").forEach(function (g) {
+    g.addEventListener("click", function () { pick(g.dataset.e); });
+    g.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(g.dataset.e); } });
+  });
+  document.querySelectorAll(".ov-all tr[data-e]").forEach(function (tr) {
+    tr.addEventListener("click", function () { pick(tr.dataset.e); document.getElementById("ov-svg").scrollIntoView({block: "nearest"}); });
+  });
+})();
+</script>
 </body>
 </html>
