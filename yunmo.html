@@ -147,7 +147,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <tr><td><span class="task">#23</span></td><td>평가 지표 정의 (CTR 먼저, nDCG@K는 이후)</td><td>지표 문서</td><td>STEP 1</td></tr>
       <tr><td><span class="task">#11</span></td><td>피처 목록과 필요한 이벤트 거꾸로 확인</td><td>피처 정의서</td><td>STEP 2</td></tr>
       <tr><td><span class="task">#12</span></td><td>정제·집계·피처 DAG</td><td>DAG</td><td>STEP 3</td></tr>
-      <tr><td><span class="task">#12</span></td><td>기사 임베딩: 피처 DAG의 <code>embed_articles</code>가 매시 새 기사만 계산하고, 같은 실행에서 기사 메타도 BigQuery로 복사 (뉴스 쪽은 Cloud SQL에 기사만 저장)</td><td><code>feat.article_embedding</code>, <code>feat.article_meta</code></td><td>STEP 2, 3</td></tr>
+      <tr><td><span class="task">#12</span></td><td>기사 임베딩: 피처 DAG의 <code>embed_articles</code>가 매시 새 기사만 계산하고, 같은 실행에서 기사 메타도 BigQuery로 복사 (태원 님의 기사 생성 배치는 Cloud SQL <code>articles</code>에 기사를 저장하기만 하고, 임베딩은 계산하지 않는다)</td><td><code>feat.article_embedding</code>, <code>feat.article_meta</code></td><td>STEP 2, 3</td></tr>
       <tr><td><span class="task">#13</span></td><td>baseline(인기순), CTR 모델, 평가</td><td>노트북, 지표</td><td>STEP 5~9</td></tr>
       <tr><td><span class="task">#14</span></td><td>추론 서버 코드: 피처 파일과 모델을 불러 후보 10~20개를 점수화하는 FastAPI 서버와 컨테이너 이미지 (GKE 배포는 장주현 님 <span class="task">#2</span>, 뉴스 WAS에서 부르는 부분은 태원 님 <span class="task">#6</span>)</td><td>서버 코드, 이미지, API 명세</td><td>STEP 10</td></tr>
       <tr><td>맞물림</td><td><span class="task">#8</span> 행동 정의 · <span class="task">#9</span> 수집 · <span class="task">#14</span> 피드 연결 · <span class="task">#15</span> 피처 공유 방식 · <span class="task">#19</span> 최소 데이터 · <span class="task">#20</span> 전달 방식 · <span class="task">#22</span> 파티션·비용 · <span class="task">#28</span> 통합 테스트</td><td>합의 메모</td><td>각 STEP의 표시</td></tr>
