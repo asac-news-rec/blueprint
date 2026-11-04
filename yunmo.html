@@ -142,7 +142,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 </header>
 
 <nav class="toc" id="toc" aria-label="목차">
-  <a href="#mine">맡는 일</a><a href="#asks">팀원별 요청</a><a href="#overview">전체 그림</a><a href="#contracts">인터페이스 규약</a><a href="#s1">1 지표</a><a href="#s2">2 피처·이벤트</a><a href="#s3">3 피처 DAG</a><a href="#s3b">3+ Pub/Sub</a><a href="#s4">4 데이터 확보</a><a href="#s5">5 학습 데이터</a><a href="#s6">6 후보 생성</a><a href="#s7">7 랭킹</a><a href="#s8">8 후처리</a><a href="#s9">9 평가</a><a href="#s10">10 서빙 연결</a><a href="#s11">11 운영·통합</a><a href="#s12">12 질문</a><a href="wbs.html">작업 나열표 ↗</a><a href="#index">표시 모아보기</a>
+  <a href="#mine">맡는 일</a><a href="#asks">팀원별 요청</a><a href="#overview">전체 그림</a><a href="overview.html#contracts">인터페이스 규약</a><a href="#s1">1 지표</a><a href="#s2">2 피처·이벤트</a><a href="#s3">3 피처 DAG</a><a href="#s3b">3+ Pub/Sub</a><a href="#s4">4 데이터 확보</a><a href="#s5">5 학습 데이터</a><a href="#s6">6 후보 생성</a><a href="#s7">7 랭킹</a><a href="#s8">8 후처리</a><a href="#s9">9 평가</a><a href="#s10">10 서빙 연결</a><a href="#s11">11 운영·통합</a><a href="#s12">12 질문</a><a href="wbs.html">작업 나열표 ↗</a><a href="#index">표시 모아보기</a>
 </nav>
 
 <section id="mine">
@@ -189,210 +189,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
 <section id="overview">
   <h2>전체 그림</h2>
   <p>뉴스 WAS가 피드 응답에 넣어 보낸 기사 목록(impression)과, 독자 화면에서 실제로 보인 기사(exposure)·클릭·읽기 기록은 로깅 서버를 거쳐 GCS에 5분 단위로 쌓인다. 피처 DAG가 이것을 BigQuery에서 원본 → 정제 → 집계 → 피처로 바꾸고, 모델도 학습한다. BigQuery는 학습용 오프라인 피처 스토어이고, DAG가 매시 최신 피처를 온라인 피처 스토어인 Valkey(Redis 호환)에 적재한다 (10/31 멘토링 결정). 점선 안의 추론 서버는 GKE 내부망에 있고, 켜질 때 MLflow에서 Production 모델을 메모리로 불러온 뒤, 피드 요청이 올 때마다 Valkey에서 사용자·후보 피처를 조회해 후보 10~20개에 점수를 매긴다. 구독·좋아요(노란 상자)는 누르는 즉시 뉴스 WAS가 Cloud SQL에 저장해 화면에 바로 보이고, 피드 요청 때 구독 언론사 목록을 추론 서버에 함께 넘겨 순서에도 바로 반영한다. 같은 행동은 로깅 서버로도 가서 1시간 뒤 피처가 된다. 학습 결과는 MLflow에 실험 기록(파라미터, AUC)과 모델 버전으로 남기고, 검증을 통과한 버전을 Production으로 올리면 추론 서버가 그 버전을 불러 쓴다. 굵은 파란 테두리가 처리·피처·모델 파트가 만드는 부분이다. 선을 누르면 그 선으로 오가는 데이터가 그림 아래에 나온다. 맨 아래 띠의 Cloud SQL, BigQuery, GCS는 우리 서버가 아니라 구글 데이터센터에서 구글이 운영하는 저장소다. 피처 DAG는 BigQuery에 SQL을 보내기만 하고, 계산과 결과 저장은 BigQuery 안에서 일어난다.</p>
-  <div class="diagram ov-wrap">
-<svg id="ov-svg" viewBox="0 0 1070 660" role="img" aria-label="전체 구성도. 독자 쪽, Cloud Run의 뉴스 WAS, GKE 클러스터의 추론 서버·Valkey·MLflow·로깅 서버·Airflow 작업, 구글이 운영하는 Cloud SQL·BigQuery·GCS와 그 사이를 오가는 데이터. 선을 누르면 오가는 데이터가 아래에 나온다">
-<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker><marker id="ar-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
-<rect x="10" y="30" width="165" height="195" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
-<text x="20" y="45" font-size="11.5" font-weight="700" fill="var(--muted)">독자 쪽</text>
-<rect x="190" y="30" width="130" height="100" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
-<text x="200" y="45" font-size="11.5" font-weight="700" fill="var(--muted)">Cloud Run</text>
-<rect x="330" y="30" width="725" height="385" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
-<text x="340" y="45" font-size="11.5" font-weight="700" fill="var(--muted)">GKE 클러스터 (장주현 님 #2)</text>
-<rect x="345" y="50" width="455" height="90" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="355" y="65" font-size="11.5" font-weight="700" fill="var(--muted)">추론 서버 #14</text>
-<rect x="345" y="250" width="695" height="150" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="355" y="265" font-size="11.5" font-weight="700" fill="var(--muted)">Airflow 피처 DAG #12 (매시·매일)</text>
-<rect x="10" y="445" width="1045" height="200" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
-<text x="445" y="460" font-size="11.5" font-weight="700" fill="var(--muted)">구글이 운영 (GCP 관리형, 우리가 설치하지 않음)</text>
-<rect x="25" y="470" width="310" height="150" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="35" y="485" font-size="11.5" font-weight="700" fill="var(--muted)">Cloud SQL</text>
-<rect x="355" y="470" width="510" height="170" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="365" y="485" font-size="11.5" font-weight="700" fill="var(--muted)">BigQuery</text>
-<rect x="880" y="470" width="160" height="150" rx="10" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="890" y="485" font-size="11.5" font-weight="700" fill="var(--muted)">GCS</text>
-<g class="ov-edge" data-e="feed_req" tabindex="0" role="button" aria-label="브라우저에서 뉴스 WAS로"><path class="hit" d="M160 78H203"/><path class="vis" d="M160 78H203" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="feed_res" tabindex="0" role="button" aria-label="뉴스 WAS에서 브라우저로"><path class="hit" d="M205 96H162"/><path class="vis" d="M205 96H162" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="sim_feed" tabindex="0" role="button" aria-label="가상 독자에서 뉴스 WAS로"><path class="hit" d="M160 180H230V112"/><path class="vis" d="M160 180H230V112" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="inf_req" tabindex="0" role="button" aria-label="뉴스 WAS에서 후보 받기로"><path class="hit" d="M305 92H358"/><path class="vis" d="M305 92H358" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="cand_score" tabindex="0" role="button" aria-label="후보 받기에서 점수화 모델로"><path class="hit" d="M485 100H508"/><path class="vis" d="M485 100H508" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="score_post" tabindex="0" role="button" aria-label="점수화 모델에서 후처리로"><path class="hit" d="M635 100H658"/><path class="vis" d="M635 100H658" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="inf_res" tabindex="0" role="button" aria-label="후처리에서 뉴스 WAS로"><path class="hit" d="M722 125V150H270V112"/><path class="vis" d="M722 125V150H270V112" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="vk_cand" tabindex="0" role="button" aria-label="Valkey에서 후보 받기로"><path class="hit" d="M430 168V127"/><path class="vis" d="M430 168V127" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="vk_score" tabindex="0" role="button" aria-label="Valkey에서 점수화 모델로"><path class="hit" d="M500 185H560V127"/><path class="vis" d="M500 185H560V127" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="ml_score" tabindex="0" role="button" aria-label="MLflow에서 점수화 모델로"><path class="hit" d="M620 168V127"/><path class="vis" d="M620 168V127" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="ev_browser" tabindex="0" role="button" aria-label="브라우저에서 로깅 서버로"><path class="hit" d="M90 60V14H960V73"/><path class="vis" d="M90 60V14H960V73" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="ev_sim" tabindex="0" role="button" aria-label="가상 독자에서 로깅 서버로"><path class="hit" d="M160 200H340V240H1000V127"/><path class="vis" d="M160 200H340V240H1000V127" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="ev_imp" tabindex="0" role="button" aria-label="뉴스 WAS에서 로깅 서버로"><path class="hit" d="M295 60V22H945V73"/><path class="vis" d="M295 60V22H945V73" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="sub_rw" tabindex="0" role="button" aria-label="뉴스 WAS에서 subscriptions·likes로"><path class="hit" d="M285 112V493"/><path class="vis" d="M285 112V493" stroke="var(--decide)" marker-start="url(#ar)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="art_was" tabindex="0" role="button" aria-label="articles에서 뉴스 WAS로"><path class="hit" d="M165 495V252H255V112"/><path class="vis" d="M165 495V252H255V112" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="gen_art" tabindex="0" role="button" aria-label="기사 생성에서 articles로"><path class="hit" d="M140 350V493"/><path class="vis" d="M140 350V493" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="log_gcs" tabindex="0" role="button" aria-label="로깅 서버에서 로그 원본로"><path class="hit" d="M1030 100H1045V520H1027"/><path class="vis" d="M1030 100H1045V520H1027" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="gcs_sensor" tabindex="0" role="button" aria-label="로그 원본에서 GCS 센서로"><path class="hit" d="M960 495V316"/><path class="vis" d="M960 495V316" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="gcs_raw" tabindex="0" role="button" aria-label="로그 원본에서 raw.*로"><path class="hit" d="M895 520H857"/><path class="vis" d="M895 520H857" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="raw_clean" tabindex="0" role="button" aria-label="raw.*에서 clean.*로"><path class="hit" d="M745 520H732"/><path class="vis" d="M745 520H732" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="clean_agg" tabindex="0" role="button" aria-label="clean.*에서 agg.*로"><path class="hit" d="M620 520H607"/><path class="vis" d="M620 520H607" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="agg_feat" tabindex="0" role="button" aria-label="agg.*에서 feat.*로"><path class="hit" d="M495 520H482"/><path class="vis" d="M495 520H482" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="emb_feat" tabindex="0" role="button" aria-label="article_embedding에서 feat.*로"><path class="hit" d="M510 558V551H440V547"/><path class="vis" d="M510 558V551H440V547" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="feat_train" tabindex="0" role="button" aria-label="feat.*에서 train.samples로"><path class="hit" d="M400 545V558"/><path class="vis" d="M400 545V558" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="clean_train" tabindex="0" role="button" aria-label="clean.*에서 train.samples로"><path class="hit" d="M675 545V633H425V612"/><path class="vis" d="M675 545V633H425V612" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="art_embed" tabindex="0" role="button" aria-label="articles에서 embed_articles로"><path class="hit" d="M120 495V432H800V386"/><path class="vis" d="M120 495V432H800V386" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="embed_emb" tabindex="0" role="button" aria-label="embed_articles에서 article_embedding로"><path class="hit" d="M745 372H735V553H590V558"/><path class="vis" d="M745 372H735V553H590V558" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="embed_meta" tabindex="0" role="button" aria-label="embed_articles에서 article_meta로"><path class="hit" d="M745 380H741V578H743"/><path class="vis" d="M745 380H741V578H743" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="meta_feat" tabindex="0" role="button" aria-label="article_meta에서 feat.*로"><path class="hit" d="M800 610V621H488V538H482"/><path class="vis" d="M800 610V621H488V538H482" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="feat_export" tabindex="0" role="button" aria-label="feat.*에서 export_serving로"><path class="hit" d="M425 495V386"/><path class="vis" d="M425 495V386" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="export_vk" tabindex="0" role="button" aria-label="export_serving에서 Valkey로"><path class="hit" d="M370 362H352V195H358"/><path class="vis" d="M370 362H352V195H358" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="export_gcs" tabindex="0" role="button" aria-label="export_serving에서 모델·스냅샷로"><path class="hit" d="M480 375H489V438H874V595H893"/><path class="vis" d="M480 375H489V438H874V595H893" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="train_in" tabindex="0" role="button" aria-label="train.samples에서 train_model로"><path class="hit" d="M370 585H347V425H550V386"/><path class="vis" d="M370 585H347V425H550V386" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="train_ml" tabindex="0" role="button" aria-label="train_model에서 MLflow로"><path class="hit" d="M605 355H738V232H670V222"/><path class="vis" d="M605 355H738V232H670V222" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="train_gcs" tabindex="0" role="button" aria-label="train_model에서 모델·스냅샷로"><path class="hit" d="M605 372H612V429H868V578H893"/><path class="vis" d="M605 372H612V429H868V578H893" stroke="var(--muted)" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="o_sensor" tabindex="0" role="button" aria-label="GCS 센서에서 load_raw로"><path class="hit" d="M895 292H857"/><path class="vis" d="M895 292H857" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="o_load" tabindex="0" role="button" aria-label="load_raw에서 clean_events로"><path class="hit" d="M745 292H732"/><path class="vis" d="M745 292H732" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="o_clean" tabindex="0" role="button" aria-label="clean_events에서 agg_hourly·daily로"><path class="hit" d="M620 292H607"/><path class="vis" d="M620 292H607" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="o_agg" tabindex="0" role="button" aria-label="agg_hourly·daily에서 build_features로"><path class="hit" d="M495 292H482"/><path class="vis" d="M495 292H482" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="o_build" tabindex="0" role="button" aria-label="build_features에서 export_serving로"><path class="hit" d="M425 314V338"/><path class="vis" d="M425 314V338" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
-<g class="ov-edge" data-e="o_train" tabindex="0" role="button" aria-label="build_features에서 train_model로"><path class="hit" d="M455 314V327H550V338"/><path class="vis" d="M455 314V327H550V338" stroke="var(--muted)" stroke-dasharray="3 3" marker-end="url(#ar)"/></g>
-<g class="ov-node" data-n="browser"><rect x="20" y="60" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="90.0" y="81" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">브라우저</text>
-<text x="90.0" y="97" text-anchor="middle" font-size="10.5" fill="var(--muted)">독자 화면 (세호)</text></g>
-<g class="ov-node" data-n="sim"><rect x="20" y="160" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="90.0" y="181" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">가상 독자</text>
-<text x="90.0" y="197" text-anchor="middle" font-size="10.5" fill="var(--muted)">시뮬레이터 #10</text></g>
-<g class="ov-node" data-n="gen"><rect x="20" y="300" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="90.0" y="321" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">기사 생성</text>
-<text x="90.0" y="337" text-anchor="middle" font-size="10.5" fill="var(--muted)">OpenRouter LLM (태원)</text></g>
-<g class="ov-node" data-n="was"><rect x="205" y="60" width="100" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="255.0" y="81" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">뉴스 WAS</text>
-<text x="255.0" y="97" text-anchor="middle" font-size="10.5" fill="var(--muted)">API (태원)</text></g>
-<g class="ov-node" data-n="cand"><rect x="360" y="75" width="125" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="422.5" y="96" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">후보 받기</text>
-<text x="422.5" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">백엔드가 보낸 20~50개</text></g>
-<g class="ov-node" data-n="score"><rect x="510" y="75" width="125" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="572.5" y="96" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">점수화 모델</text>
-<text x="572.5" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">LightGBM pCTR</text></g>
-<g class="ov-node" data-n="post"><rect x="660" y="75" width="125" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="722.5" y="96" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">후처리</text>
-<text x="722.5" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">중복·다양성 규칙</text></g>
-<g class="ov-node" data-n="log"><rect x="880" y="75" width="150" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="955.0" y="96" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">로깅 서버</text>
-<text x="955.0" y="112" text-anchor="middle" font-size="10.5" fill="var(--muted)">이벤트 받기</text></g>
-<g class="ov-node" data-n="valkey"><rect x="360" y="170" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="430.0" y="191" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">Valkey</text>
-<text x="430.0" y="207" text-anchor="middle" font-size="10.5" fill="var(--muted)">온라인 피처 스토어</text></g>
-<g class="ov-node" data-n="mlflow"><rect x="600" y="170" width="140" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="670.0" y="191" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">MLflow</text>
-<text x="670.0" y="207" text-anchor="middle" font-size="10.5" fill="var(--muted)">실험 기록·모델 버전</text></g>
-<g class="ov-node" data-n="t_build"><rect x="370" y="270" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="425.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">build_features</text>
-<text x="425.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">매일·매시</text></g>
-<g class="ov-node" data-n="t_agg"><rect x="495" y="270" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="550.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">agg_hourly·daily</text>
-<text x="550.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">매시·매일</text></g>
-<g class="ov-node" data-n="t_clean"><rect x="620" y="270" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="675.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">clean_events</text>
-<text x="675.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">매시</text></g>
-<g class="ov-node" data-n="t_load"><rect x="745" y="270" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="800.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">load_raw</text>
-<text x="800.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">매시</text></g>
-<g class="ov-node" data-n="t_sensor"><rect x="895" y="270" width="130" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="960.0" y="288" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">GCS 센서</text>
-<text x="960.0" y="304" text-anchor="middle" font-size="10.5" fill="var(--muted)">파티션 도착 감시</text></g>
-<g class="ov-node" data-n="t_export"><rect x="370" y="340" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="425.0" y="358" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">export_serving</text>
-<text x="425.0" y="374" text-anchor="middle" font-size="10.5" fill="var(--muted)">피처 갱신 직후</text></g>
-<g class="ov-node" data-n="t_train"><rect x="495" y="340" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="550.0" y="358" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">train_model</text>
-<text x="550.0" y="374" text-anchor="middle" font-size="10.5" fill="var(--muted)">재학습 주기</text></g>
-<g class="ov-node" data-n="t_embed"><rect x="745" y="340" width="110" height="44" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="800.0" y="358" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">embed_articles</text>
-<text x="800.0" y="374" text-anchor="middle" font-size="10.5" fill="var(--muted)">매시, e5</text></g>
-<g class="ov-node" data-n="sql_art"><rect x="40" y="495" width="130" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="105.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">articles</text>
-<text x="105.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">기사 메타·본문</text></g>
-<g class="ov-node" data-n="sql_sub"><rect x="185" y="495" width="135" height="50" rx="7" fill="var(--decide-soft)" stroke="var(--decide)" stroke-width="1.25"/>
-<text x="252.5" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">subscriptions·likes</text>
-<text x="252.5" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">구독·좋아요 현재 상태</text></g>
-<g class="ov-node" data-n="bq_feat"><rect x="370" y="495" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="425.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">feat.*</text>
-<text x="425.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">피처 스냅샷</text></g>
-<g class="ov-node" data-n="bq_agg"><rect x="495" y="495" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="550.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">agg.*</text>
-<text x="550.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">impression 결과·집계</text></g>
-<g class="ov-node" data-n="bq_clean"><rect x="620" y="495" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="675.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">clean.*</text>
-<text x="675.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">served·actions 합침</text></g>
-<g class="ov-node" data-n="bq_raw"><rect x="745" y="495" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="800.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">raw.*</text>
-<text x="800.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">served·actions 원본</text></g>
-<g class="ov-node" data-n="bq_train"><rect x="370" y="560" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="425.0" y="581" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">train.samples</text>
-<text x="425.0" y="597" text-anchor="middle" font-size="10.5" fill="var(--muted)">학습 데이터</text></g>
-<g class="ov-node" data-n="bq_emb"><rect x="495" y="560" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="550.0" y="581" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">article_embedding</text>
-<text x="550.0" y="597" text-anchor="middle" font-size="10.5" fill="var(--muted)">기사 벡터 768칸</text></g>
-<g class="ov-node" data-n="bq_meta"><rect x="745" y="560" width="110" height="50" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.75"/>
-<text x="800.0" y="581" text-anchor="middle" font-weight="700" fill="var(--fg)" font-family="var(--mono)" font-size="11">article_meta</text>
-<text x="800.0" y="597" text-anchor="middle" font-size="10.5" fill="var(--muted)">카테고리·발행 시각</text></g>
-<g class="ov-node" data-n="gcs_log"><rect x="895" y="495" width="130" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="960.0" y="516" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">로그 원본</text>
-<text x="960.0" y="532" text-anchor="middle" font-size="10.5" fill="var(--muted)">5분 파티션 JSONL</text></g>
-<g class="ov-node" data-n="gcs_model"><rect x="895" y="560" width="130" height="50" rx="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.25"/>
-<text x="960.0" y="581" text-anchor="middle" font-weight="700" fill="var(--fg)" font-size="12.5">모델·스냅샷</text>
-<text x="960.0" y="597" text-anchor="middle" font-size="10.5" fill="var(--muted)">모델 파일, 피처 사본</text></g>
-<g class="ov-badge" data-e="feed_req" tabindex="0" role="button" aria-label="규약 ① 보기"><circle cx="182" cy="87" r="9"/><text x="182" y="91" text-anchor="middle">①</text></g>
-<g class="ov-badge" data-e="inf_req" tabindex="0" role="button" aria-label="규약 ② 보기"><circle cx="331" cy="92" r="9"/><text x="331" y="96" text-anchor="middle">②</text></g>
-<g class="ov-badge" data-e="ev_browser" tabindex="0" role="button" aria-label="규약 ③ 보기"><circle cx="620" cy="18" r="9"/><text x="620" y="22" text-anchor="middle">③</text></g>
-<g class="ov-badge" data-e="log_gcs" tabindex="0" role="button" aria-label="규약 ④ 보기"><circle cx="1045" cy="300" r="9"/><text x="1045" y="304" text-anchor="middle">④</text></g>
-<g class="ov-badge" data-e="gcs_raw" tabindex="0" role="button" aria-label="규약 ⑤ 보기"><circle cx="884" cy="520" r="9"/><text x="884" y="524" text-anchor="middle">⑤</text></g>
-<g class="ov-badge" data-e="export_vk" tabindex="0" role="button" aria-label="규약 ⑥ 보기"><circle cx="352" cy="280" r="9"/><text x="352" y="284" text-anchor="middle">⑥</text></g>
-<g class="ov-badge" data-e="gen_art" tabindex="0" role="button" aria-label="규약 ⑦ 보기"><circle cx="140" cy="400" r="9"/><text x="140" y="404" text-anchor="middle">⑦</text></g>
-</svg>
-</div>
-  <div id="ov-info" class="ov-info" aria-live="polite"><b>선을 누르면</b> 그 선으로 오가는 데이터가 여기에 나온다. 규약이 있는 선은 필드 표까지 나온다. 번호 배지(①~⑦)는 경계 7곳의 규약이다. 점선은 데이터가 오가지 않는 실행 순서나 확인이다.</div>
-  <p class="ov-legend">굵은 파란 테두리 = 처리·피처·모델 파트가 만드는 것 · 노란 상자 = 구독·좋아요 · 바깥 점선 = 어디서 도는지 (독자 쪽, Cloud Run, GKE, 구글 운영)</p>
-  <details class="ov-all"><summary>모든 연결 표 (41개)</summary>
-  <div class="tbl"><table><thead><tr><th>보내는 쪽 → 받는 쪽</th><th>오가는 데이터</th><th>언제</th><th>형식</th></tr></thead><tbody>
-    <tr data-e="feed_req"><td>브라우저 → 뉴스 WAS</td><td>피드 요청: reader_id, cursor (첫 요청은 null)</td><td>독자가 피드를 열거나 스크롤할 때</td><td>HTTPS GET, 쿠키</td></tr>
-    <tr data-e="feed_res"><td>뉴스 WAS → 브라우저</td><td>request_id, served_at, 기사 목록(article_id, impression_id, position, 제목·카테고리·이미지 등), next_cursor</td><td>피드 요청 응답</td><td>JSON</td></tr>
-    <tr data-e="sim_feed"><td>가상 독자 → 뉴스 WAS</td><td>가상 독자의 피드 요청. 브라우저와 같은 API를 부른다</td><td>시뮬레이터가 정한 접속 시각</td><td>HTTPS GET</td></tr>
-    <tr data-e="inf_req"><td>뉴스 WAS → 후보 받기</td><td>POST /v1/rank: request_id, reader_id, candidates(백엔드가 최신·인기순으로 고른 article_id), context(request_time, device), top_k</td><td>피드 요청마다</td><td>내부 HTTP JSON</td></tr>
-    <tr data-e="cand_score"><td>후보 받기 → 점수화 모델</td><td>후보 article_id 10~20개</td><td>요청마다 (같은 서버 안)</td><td>메모리 안 목록</td></tr>
-    <tr data-e="score_post"><td>점수화 모델 → 후처리</td><td>(article_id, pCTR) 목록</td><td>요청마다 (같은 서버 안)</td><td>메모리 안 목록</td></tr>
-    <tr data-e="inf_res"><td>후처리 → 뉴스 WAS</td><td>ranked[article_id, pctr, rank], defaulted, unscored, model_version, features_as_of</td><td>추론 요청 응답 (500ms 넘거나 503이면 백엔드가 인기순으로 대신, model_version=fallback)</td><td>내부 HTTP JSON</td></tr>
-    <tr data-e="vk_cand"><td>Valkey → 후보 받기</td><td>MVP에서는 오가지 않는다. 후보는 백엔드가 보낸다. 리트리벌로 넓힐 때 독자 벡터로 비슷한 기사를 여기서 찾는다</td><td>리트리벌 확장 때</td><td></td></tr>
-    <tr data-e="vk_score"><td>Valkey → 점수화 모델</td><td>독자 1명 + 후보 기사 피처(독자 벡터, 기사 벡터, CTR 등)와 피처 버전</td><td>요청마다 한 번에 조회 (1~2ms)</td><td>Valkey 해시 (rf:{ver}:{reader_id}, af:{ver}:{article_id}, re:, ri:)</td></tr>
-    <tr data-e="ml_score"><td>MLflow → 점수화 모델</td><td>Production 모델 버전과 그 모델 파일의 GCS 위치. 서버가 그 파일을 메모리에 올린다</td><td>추론 서버가 켜질 때 (새 버전은 롤링 재시작)</td><td>MLflow 레지스트리 API + 모델 파일</td></tr>
-    <tr data-e="ev_browser"><td>브라우저 → 로깅 서버</td><td>행동 기록: exposure(보인 구간, duration_ms), article_open, like, unlike. event_id, event_type, event_time, impression_id, page_type</td><td>발생 즉시 묶어서 전송</td><td>HTTPS POST JSON 배열</td></tr>
-    <tr data-e="ev_sim"><td>가상 독자 → 로깅 서버</td><td>가상 독자가 만든 exposure·article_open 등 행동 기록 (브라우저와 같은 형식)</td><td>시뮬레이션 중</td><td>HTTPS POST JSON 배열</td></tr>
-    <tr data-e="ev_imp"><td>뉴스 WAS → 로깅 서버</td><td>반환 기록(impression): 응답에 넣은 기사마다 request_id, impression_id, reader_id, article_id, position, served_at, score, model_version, features_as_of</td><td>피드 응답을 보낼 때</td><td>HTTPS POST JSON</td></tr>
-    <tr data-e="sub_rw"><td>뉴스 WAS → subscriptions·likes</td><td>구독·좋아요 쓰기(누르는 즉시), 피드 요청 때 구독 목록 읽기</td><td>버튼을 누를 때, 피드 요청 때</td><td>SQL</td></tr>
-    <tr data-e="art_was"><td>articles → 뉴스 WAS</td><td>피드·상세 화면에 보여 줄 기사 제목·본문·썸네일 URL</td><td>화면 요청 때</td><td>SQL</td></tr>
-    <tr data-e="gen_art"><td>기사 생성 → articles</td><td>생성한 기사(제목, 본문, 카테고리, publisher_id, published_at, 썸네일)</td><td>기사 생성 배치 때</td><td>SQL INSERT</td></tr>
-    <tr data-e="log_gcs"><td>로깅 서버 → 로그 원본</td><td>반환 기록은 served/, 행동은 actions/ 폴더에 5분 단위 파일로</td><td>5분마다</td><td>JSONL gzip (date=/hour=/minute= 경로)</td></tr>
-    <tr data-e="gcs_sensor"><td>로그 원본 → GCS 센서</td><td>파일 내용은 오지 않는다. 지난 1시간 파티션 12개가 다 왔는지 확인만 한다</td><td>매시 DAG 시작 때</td><td>GCS 객체 목록 조회</td></tr>
-    <tr data-e="gcs_raw"><td>로그 원본 → raw.*</td><td>5분 파일들을 raw.served, raw.actions에 적재 (load_raw가 BigQuery load job을 시킨다)</td><td>매시</td><td>BigQuery load job</td></tr>
-    <tr data-e="raw_clean"><td>raw.* → clean.*</td><td>중복 제거·검사·봇 표시 후 impression_id로 반환 기록과 행동을 합친 clean.served, clean.actions (clean_events의 SQL)</td><td>매시</td><td>BigQuery SQL</td></tr>
-    <tr data-e="clean_agg"><td>clean.* → agg.*</td><td>impression마다 결과 한 행(agg.impression_outcome), 기사별 impression·유효 exposure·열기 수, 독자×카테고리 집계</td><td>매시·매일</td><td>BigQuery SQL</td></tr>
-    <tr data-e="agg_feat"><td>agg.* → feat.*</td><td>30일·1시간 창 피처, CTR 같은 비율 (build_features의 SQL)</td><td>매일·매시</td><td>BigQuery SQL</td></tr>
-    <tr data-e="emb_feat"><td>article_embedding → feat.*</td><td>기사 벡터. 사용자가 최근 누른 기사들의 벡터 평균이 사용자 벡터가 된다</td><td>build_features 때</td><td>BigQuery SQL (JOIN on article_id)</td></tr>
-    <tr data-e="feat_train"><td>feat.* → train.samples</td><td>노출 시각 직전 스냅샷의 사용자·기사 피처 (포인트 인타임 조인)</td><td>학습 데이터 만들 때</td><td>BigQuery SQL</td></tr>
-    <tr data-e="clean_train"><td>clean.* → train.samples</td><td>정답 라벨: 유효 exposure가 있는 impression에 30분 안 article_open이면 1, 아니면 0 (빠른 클릭도 1, 안 보인 impression은 제외)</td><td>학습 데이터 만들 때</td><td>BigQuery SQL</td></tr>
-    <tr data-e="art_embed"><td>articles → embed_articles</td><td>지난 실행 이후 들어온 새 기사의 제목·본문과 카테고리·세부 태그·publisher_id·published_at</td><td>매시</td><td>SQL 조회</td></tr>
-    <tr data-e="embed_emb"><td>embed_articles → article_embedding</td><td>기사마다 768칸 벡터 + 임베딩 모델 이름·버전</td><td>매시 (새 기사만)</td><td>BigQuery 쓰기</td></tr>
-    <tr data-e="embed_meta"><td>embed_articles → article_meta</td><td>새 기사의 메타: article_id, 카테고리, 세부 태그, publisher_id, published_at (임베딩과 같은 실행에서 같이 옮긴다)</td><td>매시 (새 기사만)</td><td>BigQuery 쓰기</td></tr>
-    <tr data-e="meta_feat"><td>article_meta → feat.*</td><td>기사 카테고리·언론사·발행 시각. 카테고리 선호, 구독 언론사 여부, 경과 시간 피처의 재료</td><td>build_features 때</td><td>BigQuery SQL (JOIN on article_id)</td></tr>
-    <tr data-e="feat_export"><td>feat.* → export_serving</td><td>최신 사용자·기사 피처</td><td>피처 갱신 직후</td><td>BigQuery 조회</td></tr>
-    <tr data-e="export_vk"><td>export_serving → Valkey</td><td>최신 피처를 새 버전 키로 쓴 뒤 현재 버전 포인터만 교체</td><td>피처 갱신 직후 (매시)</td><td>Valkey 쓰기</td></tr>
-    <tr data-e="export_gcs"><td>export_serving → 모델·스냅샷</td><td>Valkey에 넣은 값의 사본 (Valkey 재시작 때 다시 채우는 원본)</td><td>피처 갱신 직후</td><td>Parquet 파일</td></tr>
-    <tr data-e="train_in"><td>train.samples → train_model</td><td>학습 데이터 표 (시간순으로 학습·검증·테스트 구간)</td><td>재학습 때</td><td>BigQuery 조회 → DataFrame</td></tr>
-    <tr data-e="train_ml"><td>train_model → MLflow</td><td>파라미터, AUC 같은 지표, 모델 버전 등록. 검증을 통과하면 Production으로 올린다</td><td>재학습 끝날 때</td><td>MLflow API</td></tr>
-    <tr data-e="train_gcs"><td>train_model → 모델·스냅샷</td><td>학습된 LightGBM 모델 파일 (MLflow는 이 위치만 기록한다)</td><td>재학습 끝날 때</td><td>모델 파일</td></tr>
-    <tr data-e="o_sensor"><td>GCS 센서 → load_raw</td><td>데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다</td><td></td><td></td></tr>
-    <tr data-e="o_load"><td>load_raw → clean_events</td><td>데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다</td><td></td><td></td></tr>
-    <tr data-e="o_clean"><td>clean_events → agg_hourly·daily</td><td>데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다</td><td></td><td></td></tr>
-    <tr data-e="o_agg"><td>agg_hourly·daily → build_features</td><td>데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다</td><td></td><td></td></tr>
-    <tr data-e="o_build"><td>build_features → export_serving</td><td>데이터는 오가지 않는다. 피처 계산이 끝나면 적재를 시작한다</td><td></td><td></td></tr>
-    <tr data-e="o_train"><td>build_features → train_model</td><td>데이터는 오가지 않는다. 피처 계산이 끝나면 재학습 주기에 맞춰 학습을 시작한다</td><td></td><td></td></tr>
-  </tbody></table></div></details>
+  <p><b><a href="overview.html">전체 그림과 인터페이스 규약 보기 →</a></b> 팀 공통 페이지로 옮겼다. 선을 누르면 오가는 데이터와 규약 필드 표가 나온다.</p>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>후보 수 10~20개는 팀 계획(<span class="task">#14</span>)을 따랐다. 후보가 적으면 점수화 모델이 바꿀 수 있는 순서도 적다. 후보 생성 품질이 전체 성능을 좌우하므로, 수를 늘릴지 데이터를 본 뒤 다시 정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>후보 10~20개를 누가 고르는지. WBS Q2 예시처럼 뉴스 WAS가 후보를 골라 추론 서버에 보낼지, 추론 서버가 직접 고를지 정해야 한다.</p></div>
@@ -400,291 +197,8 @@ table.wbs tr:target td { background: var(--decide-soft); }
 </section>
 
 <section id="contracts">
-  <h2><span class="step">규약</span>인터페이스 규약: 이 파트가 맡는 경계 3곳 <span class="task">#14</span> <span class="task">#12</span> <span class="task">#15</span></h2>
-  <p>멘토님 요청으로 단계 사이에 오가는 데이터를 필드 단위까지 정한다. 팀 발표 자료(11/3 멘토링 숙제 자료)의 ① 프론트↔백엔드, ③ 로깅 서버 형식, ④ impression/exposure 정의를 그대로 받아, 이 파트가 정하는 세 곳을 그 위에 잇는다. ② 백엔드 ↔ 추론 서버, ⑤ BigQuery 테이블, ⑥ Valkey 키 구조다. ⑤의 <code>train.samples</code> 피처 컬럼 이름과 추론 서버가 모델에 넣는 입력 이름이 같아야 하고, 그 입력은 ⑥의 Valkey 값과 ②의 요청으로 만든다.</p>
-  <div class="chain" aria-label="세 경계의 연결">
-    <div class="node"><b>뉴스 백엔드</b><span>Cloud Run (태원)</span></div><span class="arr">② ⇄</span>
-    <div class="node main"><b>추론 서버</b><span>GKE, <code>POST /v1/rank</code></span></div><span class="arr">⇠ ⑥</span>
-    <div class="node main"><b>Valkey</b><span>최신 피처</span></div><span class="arr">⇠</span>
-    <div class="node main"><b>BigQuery ⑤</b><span>raw → clean → agg → feat → train</span></div><span class="arr">⇠</span>
-    <div class="node"><b>GCS</b><span><code>served/</code>, <code>actions/</code> (③)</span></div>
-  </div>
-
-  <h3>공통 규칙 (팀 자료와 같음)</h3>
-  <div class="tbl"><table>
-    <thead><tr><th>번호·항목</th><th>뜻</th><th>누가 만드나</th></tr></thead>
-    <tbody>
-      <tr><td><code>reader_id</code></td><td>독자. 문자열(UUID)</td><td>프론트</td></tr>
-      <tr><td><code>request_id</code></td><td>목록 응답 한 번</td><td>뉴스 백엔드</td></tr>
-      <tr><td><code>impression_id</code></td><td>그 응답 안의 기사 한 건. 행동 기록은 이 번호 하나로 반환 기록에 연결된다</td><td>뉴스 백엔드</td></tr>
-      <tr><td><code>event_id</code></td><td>행동 한 건. 다시 보내도 같은 값이라 중복 제거 키가 된다</td><td>프론트(UUID)</td></tr>
-      <tr><td><code>article_id</code></td><td>기사. 숫자여도 문자열로 주고받는다</td><td>기사 생성 배치</td></tr>
-      <tr><td>시각</td><td>전송은 ISO-8601 + 오프셋(<code>+09:00</code>)이나 <code>Z</code>. BigQuery 저장은 UTC <code>TIMESTAMP</code>. 날짜 파티션 <code>event_date</code>·<code>served_date</code>만 한국 시간 날짜</td><td></td></tr>
-      <tr><td>빈 값</td><td>모르는 값은 <code>null</code>. 0과 "모름"을 구분한다. LightGBM은 <code>null</code>(결측)을 그대로 다룬다</td><td></td></tr>
-    </tbody>
-  </table></div>
-
-  <h3 id="c134">① ③ ④ 팀 자료에서 받는 규약 (11/3 자료 기준, 담당은 세호·태원·장주현 님)</h3>
-  <p>이 파트가 정하는 곳은 아니지만, 이 형식을 입력으로 받으므로 요약해 둔다. 원본은 팀 발표 자료다.</p>
-  <p><b>① 브라우저 → 뉴스 백엔드: 피드 요청</b></p>
-  <div class="tbl"><table id="ct-feed-req">
-    <thead><tr><th>필드</th><th>타입</th><th>뜻</th></tr></thead>
-    <tbody>
-      <tr><td><code>reader_id</code></td><td>string (UUID)</td><td>요청마다 새로 만들지 않고 유지</td></tr>
-      <tr><td><code>cursor</code></td><td>string 또는 null</td><td>첫 요청은 null, 다음부터는 서버가 준 <code>next_cursor</code> 그대로</td></tr>
-    </tbody>
-  </table></div>
-  <p><b>① 뉴스 백엔드 → 브라우저: 피드 응답</b></p>
-  <div class="tbl"><table id="ct-feed-res">
-    <thead><tr><th>필드</th><th>타입</th><th>뜻</th></tr></thead>
-    <tbody>
-      <tr><td><code>request_id</code></td><td>string</td><td>이번 응답 번호</td></tr>
-      <tr><td><code>served_at</code></td><td>string</td><td>응답 시각</td></tr>
-      <tr><td><code>items[].article_id</code></td><td>string</td><td>기사 번호</td></tr>
-      <tr><td><code>items[].impression_id</code></td><td>string</td><td>이번 응답에서 이 기사를 보낸 건의 번호</td></tr>
-      <tr><td><code>items[].position</code></td><td>int</td><td>전체 목록에서의 순서. 다음 페이지로 넘어가도 이어진다</td></tr>
-      <tr><td><code>items[]</code> 나머지</td><td></td><td>제목·요약·본문·태그·카테고리·발행 시각·언론사·이미지 등</td></tr>
-      <tr><td><code>next_cursor</code></td><td>string 또는 null</td><td>null이면 더 이상 목록이 없음</td></tr>
-    </tbody>
-  </table></div>
-  <p><b>③ 브라우저 → 로깅 서버: 행동 기록</b></p>
-  <div class="tbl"><table id="ct-actions">
-    <thead><tr><th>필드</th><th>타입</th><th>뜻</th></tr></thead>
-    <tbody>
-      <tr><td><code>event_id</code></td><td>string (UUID)</td><td>중복 제거와 재전송 구분. 다시 보내도 같은 값</td></tr>
-      <tr><td><code>event_type</code></td><td>string</td><td><code>exposure</code> | <code>article_open</code> | <code>like</code> | <code>unlike</code></td></tr>
-      <tr><td><code>event_time</code></td><td>string</td><td>exposure는 구간 시작, 나머지는 행동 시각</td></tr>
-      <tr><td><code>impression_id</code></td><td>string</td><td>반환 기록과 연결하는 번호</td></tr>
-      <tr><td><code>page_type</code></td><td>string</td><td><code>list</code> | <code>detail</code></td></tr>
-      <tr><td><code>duration_ms</code>, <code>ended_at</code></td><td>int, string</td><td>exposure에만. 그 구간의 길이(누적 아님)와 종료 시각</td></tr>
-    </tbody>
-  </table></div>
-  <p><b>③ 뉴스 백엔드 → 로깅 서버: 반환 기록</b></p>
-  <div class="tbl"><table id="ct-served">
-    <thead><tr><th>필드</th><th>타입</th><th>뜻</th></tr></thead>
-    <tbody>
-      <tr><td><code>request_id</code>, <code>impression_id</code></td><td>string</td><td>응답 번호, 기사 한 건 번호</td></tr>
-      <tr><td><code>reader_id</code>, <code>article_id</code></td><td>string</td><td>누구에게 어떤 기사를</td></tr>
-      <tr><td><code>position</code></td><td>int</td><td>전체 목록에서의 순서</td></tr>
-      <tr><td><code>served_at</code></td><td>string</td><td>보낸 시각</td></tr>
-      <tr><td><code>score</code>, <code>model_version</code>, <code>features_as_of</code></td><td>float, string, string</td><td>②의 응답 값. 대체 응답이면 <code>score=null</code>, <code>model_version="fallback"</code> (제안)</td></tr>
-    </tbody>
-  </table></div>
-  <p><b>④ 로깅 서버 → GCS: 저장 형식</b></p>
-  <div class="tbl"><table id="ct-gcs">
-    <thead><tr><th>항목</th><th>규칙</th></tr></thead>
-    <tbody>
-      <tr><td>경로</td><td><code>served/date=2026-11-03/hour=09/minute=00/part-….jsonl</code>, <code>actions/</code>도 같은 구조</td></tr>
-      <tr><td>단위</td><td>5분 폴더 (09:02 → <code>minute=00</code>, 09:07 → <code>minute=05</code>)</td></tr>
-      <tr><td>파일</td><td>한 줄이 이벤트 한 건인 JSONL. GCS로 올릴 때 파일 단위 gzip (제안)</td></tr>
-    </tbody>
-  </table></div>
-
-  <h3 id="c2">② 뉴스 백엔드 → 추론 서버</h3>
-  <p>피드 요청마다 백엔드가 한 번 부른다. MVP에서는 <b>백엔드가 후보 기사</b>(최신·인기순)를 골라 보내고, 추론 서버는 점수와 순위만 돌려준다. 백엔드는 요청 순간에만 아는 정보(시각, 기기)만 보낸다. 계속 변하는 값(최근 클릭 수 등)은 추론 서버가 <code>reader_id</code>·<code>article_id</code>로 Valkey에서 직접 읽는다. 값이 두 곳에서 오면 학습과 서빙이 어긋나기 때문이다.</p>
-  <div class="tbl"><table id="ct-rank-info">
-    <thead><tr><th>항목</th><th>값</th></tr></thead>
-    <tbody>
-      <tr><td>주소</td><td><code>POST /v1/rank</code> (GKE 내부 서비스 주소, 외부 공개 안 함)</td></tr>
-      <tr><td>응답 시간</td><td>추론 서버 목표 p95 100ms (멘토님 0.1초 기준). 백엔드 타임아웃 500ms(팀 자료 값, 부하 테스트로 조정)</td></tr>
-      <tr><td>보조</td><td><code>GET /healthz</code>: 프로세스가 살아 있으면 200. <code>GET /readyz</code>: 모델을 올리고 Valkey에 연결됐을 때만 200 (롤링 교체 때 GKE가 본다, <span class="task">#2</span>). <code>GET /v1/model</code>: 지금 올라간 <code>model_version</code></td></tr>
-    </tbody>
-  </table></div>
-  <p><b>요청 필드</b></p>
-  <div class="tbl"><table id="ct-rank-req">
-    <thead><tr><th>필드</th><th>타입</th><th>필수</th><th>뜻</th></tr></thead>
-    <tbody>
-      <tr><td><code>request_id</code></td><td>string</td><td>필수</td><td>이번 목록 응답 번호. 반환 기록과 같은 값</td></tr>
-      <tr><td><code>reader_id</code></td><td>string</td><td>필수</td><td>Valkey 독자 피처 조회 키</td></tr>
-      <tr><td><code>candidates</code></td><td>array&lt;string&gt;</td><td>필수</td><td>점수 매길 <code>article_id</code> 목록. 20~50개 권장, 최대 200</td></tr>
-      <tr><td><code>context.request_time</code></td><td>string</td><td>필수</td><td>백엔드가 요청을 받은 시각. 경과 시간·시간대 피처의 기준이고 반환 기록의 <code>served_at</code>과 같은 값</td></tr>
-      <tr><td><code>context.device</code></td><td>string</td><td>선택</td><td><code>mobile</code> | <code>desktop</code> | <code>tablet</code> | <code>null</code>. <code>ctx_device</code> 피처</td></tr>
-      <tr><td><code>top_k</code></td><td>int</td><td>선택 (기본 = 후보 수)</td><td>상위 몇 개를 돌려받을지</td></tr>
-    </tbody>
-  </table></div>
-  <p><b>응답 필드</b></p>
-  <div class="tbl"><table id="ct-rank-res">
-    <thead><tr><th>필드</th><th>타입</th><th>뜻</th></tr></thead>
-    <tbody>
-      <tr><td><code>request_id</code></td><td>string</td><td>요청 값 그대로</td></tr>
-      <tr><td><code>model_version</code></td><td>string</td><td>MLflow 등록 이름@버전 (예: <code>pctr@7</code>). 백엔드는 반환 기록에 그대로 싣는다</td></tr>
-      <tr><td><code>features_as_of</code></td><td>string</td><td>읽은 Valkey 피처가 몇 시 기준인지 (예: <code>2026-11-03T08:00:00+09:00</code>). 학습의 포인트 인타임 조인 규칙과 같은지 점검하는 용도</td></tr>
-      <tr><td><code>ranked[]</code></td><td>array</td><td><code>{article_id, pctr, rank}</code>. <code>pctr</code> 내림차순, <code>rank</code>는 1부터. 제목 등은 백엔드가 붙인다</td></tr>
-      <tr><td><code>defaulted[]</code></td><td>array</td><td><code>{article_id, reason}</code>. 피처 일부가 없어 결측으로 두고 점수는 낸 기사 (<code>ranked</code>에도 있음)</td></tr>
-      <tr><td><code>unscored[]</code></td><td>array</td><td><code>{article_id, reason}</code>. 점수를 못 낸 기사 (<code>ranked</code>에 없음). 백엔드는 목록 뒤에 최신순으로 붙인다</td></tr>
-    </tbody>
-  </table></div>
-  <div class="tbl"><table id="ct-rank-reason">
-    <thead><tr><th><code>reason</code></th><th>어디에</th><th>언제</th></tr></thead>
-    <tbody>
-      <tr><td><code>READER_FEATURES_NOT_FOUND</code></td><td>defaulted (모든 기사)</td><td>신규 독자. 독자 피처를 결측으로 둔다</td></tr>
-      <tr><td><code>ARTICLE_FEATURES_NOT_FOUND</code></td><td>defaulted</td><td>발행 후 아직 피처 배치가 돌지 않은 새 기사 (최대 1시간). 메타·임베딩 피처를 결측으로 둔다</td></tr>
-      <tr><td><code>UNKNOWN_ARTICLE</code></td><td>unscored</td><td><code>article_id</code> 형식이 틀렸거나 기사 메타에도 없는 경우</td></tr>
-    </tbody>
-  </table></div>
-<pre>요청
-{ "request_id": "req-001", "reader_id": "reader-A",
-  "candidates": ["A", "B", "C"],
-  "context": { "request_time": "2026-11-03T09:00:00+09:00", "device": "mobile" },
-  "top_k": 3 }
-
-응답 200
-{ "request_id": "req-001", "model_version": "pctr@7",
-  "features_as_of": "2026-11-03T08:00:00+09:00",
-  "ranked":    [ {"article_id": "A", "pctr": 0.13, "rank": 1},
-                 {"article_id": "B", "pctr": 0.08, "rank": 2} ],
-  "defaulted": [ {"article_id": "B", "reason": "ARTICLE_FEATURES_NOT_FOUND"} ],
-  "unscored":  [ {"article_id": "C", "reason": "UNKNOWN_ARTICLE"} ] }</pre>
-  <div class="tbl"><table id="ct-rank-status">
-    <thead><tr><th>상태</th><th>언제</th><th>백엔드가 할 일</th></tr></thead>
-    <tbody>
-      <tr><td>200</td><td>정상. 신규 독자도 200 (<code>defaulted</code>로 알림)</td><td><code>ranked</code> 순서 + <code>unscored</code>를 뒤에</td></tr>
-      <tr><td>400</td><td>필수 필드가 없거나 타입이 틀림. 본문 <code>{"error", "field"}</code></td><td>대체 응답 + 오류 로그 (코드 버그이므로 고친다)</td></tr>
-      <tr><td>503 / 500ms 초과</td><td>모델 미로드, Valkey 연결 불가, 지연</td><td>대체 응답: 후보를 인기순(최근 1시간 열기 수)으로. 반환 기록은 <code>score=null</code>, <code>model_version="fallback"</code></td></tr>
-    </tbody>
-  </table></div>
-
-  <h3 id="c5">⑤ BigQuery 테이블 스키마</h3>
-  <p>GCS의 두 폴더(<code>served/</code> 반환 기록, <code>actions/</code> 행동 기록)를 따로 적재하고, 정제 단계에서 <code>impression_id</code>로 합친다. 그 뒤의 모든 집계·라벨은 <b>impression 한 건 = 한 행</b>으로 정리한 <code>agg.impression_outcome</code>에서 시작한다. 모든 테이블은 날짜로 파티션하고 자주 거르는 ID로 클러스터링한다(STEP 3 원칙).</p>
-  <div class="tbl"><table id="ct-bq-list">
-    <thead><tr><th>테이블</th><th>한 행</th><th>파티션 / 클러스터링</th><th>만드는 작업</th></tr></thead>
-    <tbody>
-      <tr><td><code>raw.served</code></td><td>반환 기록 한 줄 (중복 포함)</td><td><code>load_date</code> / –</td><td><code>load_raw</code> 매시</td></tr>
-      <tr><td><code>raw.actions</code></td><td>행동 기록 한 줄 (중복 포함)</td><td><code>load_date</code> / <code>event_type</code></td><td><code>load_raw</code> 매시</td></tr>
-      <tr><td><code>clean.served</code></td><td>impression 한 건</td><td><code>served_date</code> / <code>reader_id</code></td><td><code>clean_events</code> 매시</td></tr>
-      <tr><td><code>clean.actions</code></td><td>행동 한 건 (반환 기록 정보를 붙임)</td><td><code>event_date</code> / <code>reader_id</code>, <code>article_id</code></td><td><code>clean_events</code> 매시</td></tr>
-      <tr><td><code>clean.orphan_actions</code></td><td>짝이 되는 반환 기록이 없는 행동</td><td><code>event_date</code></td><td><code>clean_events</code> 매시</td></tr>
-      <tr><td><code>agg.impression_outcome</code></td><td>impression 한 건의 결과</td><td><code>served_date</code> / <code>reader_id</code></td><td><code>agg_hourly</code> 매시</td></tr>
-      <tr><td><code>agg.article_hourly</code></td><td>기사 × 1시간</td><td><code>DATE(event_hour)</code> / <code>article_id</code></td><td><code>agg_hourly</code> 매시</td></tr>
-      <tr><td><code>agg.reader_daily</code>, <code>agg.reader_cat_daily</code></td><td>독자 × 하루, 독자 × 카테고리 × 하루</td><td><code>event_date</code> / <code>reader_id</code></td><td><code>agg_daily</code> 매일</td></tr>
-      <tr><td><code>feat.article_meta</code>, <code>feat.article_embedding</code></td><td>기사 한 건</td><td>– / <code>article_id</code></td><td><code>embed_articles</code> 매시</td></tr>
-      <tr><td><code>feat.reader</code>, <code>feat.article</code>, <code>feat.reader_article</code></td><td>키 × 스냅샷 시각</td><td><code>DATE(snapshot_time)</code> / 키</td><td><code>build_features</code> 매시</td></tr>
-      <tr><td><code>train.samples</code></td><td>학습 한 행 (아래 규칙)</td><td><code>served_date</code> / <code>reader_id</code></td><td>학습 데이터 작업</td></tr>
-    </tbody>
-  </table></div>
-  <p><b><code>raw</code> 층</b> 팀 자료 ③의 필드를 손대지 않고 받는다. 키 몇 개만 꺼내고 나머지는 원본 JSON 칸에 둔다. ③이 필드를 추가해도 적재가 멈추지 않는다.</p>
-  <div class="tbl"><table id="ct-raw">
-    <thead><tr><th>테이블</th><th>컬럼 (타입)</th></tr></thead>
-    <tbody>
-      <tr><td><code>raw.served</code></td><td><code>impression_id</code> STRING, <code>request_id</code> STRING, <code>served_at</code> TIMESTAMP, <code>payload</code> JSON (줄 전체), <code>source_file</code> STRING (GCS 경로), <code>load_date</code> DATE, <code>loaded_at</code> TIMESTAMP</td></tr>
-      <tr><td><code>raw.actions</code></td><td><code>event_id</code> STRING, <code>event_type</code> STRING, <code>event_time</code> TIMESTAMP, <code>impression_id</code> STRING, <code>payload</code> JSON, <code>source_file</code> STRING, <code>load_date</code> DATE, <code>loaded_at</code> TIMESTAMP</td></tr>
-    </tbody>
-  </table></div>
-  <p><b><code>clean.served</code></b> (<code>impression_id</code>로 중복 제거)</p>
-  <div class="tbl"><table id="ct-clean-served">
-    <thead><tr><th>컬럼</th><th>타입</th><th>모드</th><th>뜻</th></tr></thead>
-    <tbody>
-      <tr><td><code>impression_id</code></td><td>STRING</td><td>REQUIRED</td><td>기본 키 (표 안에서 유일)</td></tr>
-      <tr><td><code>request_id</code></td><td>STRING</td><td>REQUIRED</td><td>목록 응답 번호</td></tr>
-      <tr><td><code>reader_id</code>, <code>article_id</code></td><td>STRING</td><td>REQUIRED</td><td>누구에게 어떤 기사를</td></tr>
-      <tr><td><code>position</code></td><td>INT64</td><td>REQUIRED</td><td>전체 목록에서의 순서 (페이지를 넘어도 이어짐)</td></tr>
-      <tr><td><code>served_at</code>, <code>served_date</code></td><td>TIMESTAMP, DATE</td><td>REQUIRED</td><td>보낸 시각, 한국 시간 날짜 (파티션)</td></tr>
-      <tr><td><code>score</code></td><td>FLOAT64</td><td>NULLABLE</td><td>pCTR. 대체 응답이면 NULL</td></tr>
-      <tr><td><code>model_version</code></td><td>STRING</td><td>REQUIRED</td><td><code>pctr@7</code> 또는 <code>fallback</code></td></tr>
-      <tr><td><code>features_as_of</code></td><td>TIMESTAMP</td><td>NULLABLE</td><td>점수에 쓴 피처 시점</td></tr>
-    </tbody>
-  </table></div>
-  <p><b><code>clean.actions</code></b> (<code>event_id</code>로 중복 제거, <code>impression_id</code>로 <code>clean.served</code>를 붙임)</p>
-  <div class="tbl"><table id="ct-clean-actions">
-    <thead><tr><th>컬럼</th><th>타입</th><th>모드</th><th>뜻</th></tr></thead>
-    <tbody>
-      <tr><td><code>event_id</code></td><td>STRING</td><td>REQUIRED</td><td>기본 키</td></tr>
-      <tr><td><code>event_type</code></td><td>STRING</td><td>REQUIRED</td><td><code>exposure</code> | <code>article_open</code> | <code>like</code> | <code>unlike</code>. 그 밖의 값은 오류 테이블로</td></tr>
-      <tr><td><code>event_time</code>, <code>event_date</code></td><td>TIMESTAMP, DATE</td><td>REQUIRED</td><td>행동 시각 (exposure는 구간 시작), 한국 시간 날짜</td></tr>
-      <tr><td><code>impression_id</code></td><td>STRING</td><td>REQUIRED</td><td>반환 기록 연결 번호</td></tr>
-      <tr><td><code>page_type</code></td><td>STRING</td><td>REQUIRED</td><td><code>list</code> | <code>detail</code></td></tr>
-      <tr><td><code>duration_ms</code>, <code>ended_at</code></td><td>INT64, TIMESTAMP</td><td>NULLABLE</td><td>exposure에만. 그 구간의 길이(누적 아님)와 종료 시각</td></tr>
-      <tr><td><code>reader_id</code>, <code>article_id</code>, <code>request_id</code>, <code>position</code>, <code>served_at</code></td><td>(served와 같음)</td><td>REQUIRED</td><td><code>clean.served</code>에서 붙인 값. 짝이 없으면 이 행 대신 <code>clean.orphan_actions</code>로</td></tr>
-      <tr><td><code>is_bot</code></td><td>BOOL</td><td>REQUIRED</td><td>봇 규칙에 걸렸는지. 지우지 않고 표시만</td></tr>
-      <tr><td><code>received_at</code></td><td>TIMESTAMP</td><td>REQUIRED</td><td>로깅 서버가 받은 시각. 늦게 온 행동 찾기</td></tr>
-    </tbody>
-  </table></div>
-  <p><b><code>agg.impression_outcome</code></b> 라벨, CTR, 화면 도달률이 모두 이 표 하나에서 나온다. 같은 impression에 exposure 구간이 여러 개여도 한 행으로 묶는다.</p>
-  <div class="tbl"><table id="ct-outcome">
-    <thead><tr><th>컬럼</th><th>타입</th><th>계산</th></tr></thead>
-    <tbody>
-      <tr><td><code>impression_id</code>, <code>request_id</code>, <code>reader_id</code>, <code>article_id</code>, <code>position</code>, <code>served_at</code>, <code>served_date</code>, <code>model_version</code></td><td>(served와 같음)</td><td><code>clean.served</code> 그대로</td></tr>
-      <tr><td><code>max_list_exposure_ms</code></td><td>INT64</td><td>목록 exposure 구간 중 가장 긴 것. 구간을 더하지 않는다 (0.6초 + 0.6초 ≠ 1.2초)</td></tr>
-      <tr><td><code>valid_exposed</code></td><td>BOOL</td><td><code>max_list_exposure_ms ≥ 1000</code> (팀 기준: 50%·탭 보임·스크롤 멈춤 상태로 연속 1초)</td></tr>
-      <tr><td><code>first_valid_exposure_at</code></td><td>TIMESTAMP</td><td>처음으로 1초를 채운 구간의 시작 시각</td></tr>
-      <tr><td><code>opened</code>, <code>first_open_at</code></td><td>BOOL, TIMESTAMP</td><td><code>article_open</code>이 있었는지, 첫 시각</td></tr>
-      <tr><td><code>read_ms</code></td><td>INT64</td><td>상세 exposure 구간의 합 (같은 <code>event_id</code>는 한 번만)</td></tr>
-      <tr><td><code>liked</code></td><td>BOOL</td><td>마지막 상태가 like인지 (like 뒤 unlike면 false)</td></tr>
-    </tbody>
-  </table></div>
-  <p><b><code>agg</code>·<code>feat</code> 층</b> 모든 피처 테이블에 <code>snapshot_time</code>이 있고, 학습 데이터는 <code>served_at</code> 직전 스냅샷만 붙인다(포인트 인타임 조인).</p>
-  <div class="tbl"><table id="ct-aggfeat">
-    <thead><tr><th>테이블</th><th>컬럼 (타입)</th></tr></thead>
-    <tbody>
-      <tr><td><code>agg.article_hourly</code></td><td><code>event_hour</code> TIMESTAMP, <code>article_id</code> STRING, <code>impressions</code> INT64, <code>valid_exposures</code> INT64, <code>opens</code> INT64, <code>likes</code> INT64, <code>ctr</code> FLOAT64 (= opens ÷ valid_exposures, 0이면 NULL)</td></tr>
-      <tr><td><code>agg.reader_daily</code></td><td><code>event_date</code> DATE, <code>reader_id</code> STRING, <code>valid_exposures</code> INT64, <code>opens</code> INT64, <code>active_by_hour</code> ARRAY&lt;INT64&gt; (24칸, 한국 시간에 행동이 있었던 횟수)</td></tr>
-      <tr><td><code>agg.reader_cat_daily</code></td><td><code>event_date</code> DATE, <code>reader_id</code> STRING, <code>category</code> STRING, <code>valid_exposures</code> INT64, <code>opens</code> INT64, <code>likes</code> INT64</td></tr>
-      <tr><td><code>feat.article_meta</code></td><td><code>article_id</code> STRING, <code>category</code> STRING, <code>tags</code> ARRAY&lt;STRING&gt;, <code>publisher_id</code> STRING, <code>published_at</code> TIMESTAMP, <code>clickbait_score</code> FLOAT64, <code>copied_at</code> TIMESTAMP</td></tr>
-      <tr><td><code>feat.article_embedding</code></td><td><code>article_id</code> STRING, <code>embedding</code> ARRAY&lt;FLOAT64&gt; (768칸, 길이 1로 정규화), <code>model_name</code> STRING, <code>model_version</code> STRING, <code>created_at</code> TIMESTAMP</td></tr>
-      <tr><td><code>feat.reader</code></td><td><code>snapshot_time</code> TIMESTAMP, <code>reader_id</code> STRING, <code>cat_prefs</code> ARRAY&lt;STRUCT&lt;category STRING, open_ratio_30d FLOAT64, ctr_30d FLOAT64, like_ratio_30d FLOAT64&gt;&gt;, <code>recent5_categories</code> ARRAY&lt;STRING&gt;, <code>ctr_30d</code> FLOAT64, <code>active_days_30d</code> INT64, <code>active_hour_ratio</code> ARRAY&lt;FLOAT64&gt; (24칸), <code>reader_embedding</code> ARRAY&lt;FLOAT64&gt; (768칸)</td></tr>
-      <tr><td><code>feat.article</code></td><td><code>snapshot_time</code> TIMESTAMP, <code>article_id</code> STRING, <code>opens_1h</code> INT64, <code>ctr_1h</code> FLOAT64, <code>likes_1h</code> INT64</td></tr>
-      <tr><td><code>feat.reader_article</code></td><td><code>snapshot_time</code> TIMESTAMP, <code>reader_id</code> STRING, <code>article_id</code> STRING, <code>valid_exposure_cnt</code> INT64, <code>impression_cnt</code> INT64 (한 번이라도 받은 짝만)</td></tr>
-    </tbody>
-  </table></div>
-  <p><b><code>train.samples</code> 행 규칙</b> (팀 자료 ④의 정의를 학습 규칙으로 옮긴 것)</p>
-  <div class="tbl"><table id="ct-train-rule">
-    <thead><tr><th>impression의 결과</th><th>학습에 쓰나</th><th><code>label</code></th><th><code>label_source</code></th></tr></thead>
-    <tbody>
-      <tr><td>유효 exposure 있음 + <code>served_at</code> 후 30분 안에 <code>article_open</code></td><td>쓴다</td><td>1</td><td><code>exposure</code></td></tr>
-      <tr><td>유효 exposure 있음 + 30분 안에 열기 없음</td><td>쓴다 (진짜 네거티브)</td><td>0</td><td><code>exposure</code></td></tr>
-      <tr><td>유효 exposure 없음 + 30분 안에 열기 (1초 전에 누른 빠른 클릭)</td><td>쓴다. 보고 누른 것이 확실하다</td><td>1</td><td><code>quick_open</code></td></tr>
-      <tr><td>유효 exposure 없음 + 열기 없음</td><td>안 쓴다. 못 본 것이지 싫은 것이 아니다</td><td>–</td><td>–</td></tr>
-      <tr><td><code>is_bot</code>이 표시된 독자, <code>model_version="fallback"</code></td><td>봇은 뺀다. 대체 응답은 쓰되 <code>model_version</code>으로 구분</td><td></td><td></td></tr>
-    </tbody>
-  </table></div>
-  <p>피처 컬럼(<code>r_</code>, <code>a_</code>, <code>ra_</code>, <code>ctx_</code>로 시작)은 STEP 2의 피처와 하나씩 맞고, 추론 서버도 같은 이름·같은 계산의 입력을 만든다. 이 이름 목록이 학습과 서빙 사이의 규약이다.</p>
-  <div class="tbl"><table id="ct-train-cols">
-    <thead><tr><th>컬럼</th><th>타입</th><th>뜻 (STEP 2 피처)</th><th>서빙 때 출처</th></tr></thead>
-    <tbody>
-      <tr><td><code>impression_id</code>, <code>reader_id</code>, <code>article_id</code>, <code>served_at</code>, <code>served_date</code>, <code>model_version</code></td><td>(served와 같음)</td><td>식별·분석용. 모델 입력 아님</td><td>–</td></tr>
-      <tr><td><code>label</code>, <code>label_source</code></td><td>INT64, STRING</td><td>정답과 출처 (위 표)</td><td>–</td></tr>
-      <tr><td><code>feature_snapshot_time</code></td><td>TIMESTAMP</td><td>붙인 피처 시점 (항상 <code>served_at</code>보다 앞)</td><td><code>features_as_of</code></td></tr>
-      <tr><td><code>r_cat_open_ratio_30d</code></td><td>FLOAT64</td><td>이 기사 카테고리의 독자 열기 비율</td><td>Valkey <code>rf</code>.cat_prefs</td></tr>
-      <tr><td><code>r_recent5_cat_share</code></td><td>FLOAT64</td><td>최근 열기 5개 중 이 기사 카테고리 비율</td><td>Valkey <code>rf</code></td></tr>
-      <tr><td><code>r_active_hour_ratio</code></td><td>FLOAT64</td><td>요청 시각(시)에 활동한 비율 (시간대별 방문 비율 대체)</td><td>Valkey <code>rf</code> + <code>request_time</code></td></tr>
-      <tr><td><code>r_ctr_30d</code>, <code>r_active_days_30d</code></td><td>FLOAT64, INT64</td><td>독자 전체 CTR, 활동 일수</td><td>Valkey <code>rf</code></td></tr>
-      <tr><td><code>r_cat_like_ratio_30d</code></td><td>FLOAT64</td><td>이 기사 카테고리의 좋아요 비율</td><td>Valkey <code>rf</code>.cat_prefs</td></tr>
-      <tr><td><code>a_category</code></td><td>STRING (범주형)</td><td>카테고리</td><td>Valkey <code>af</code></td></tr>
-      <tr><td><code>a_age_min</code></td><td>FLOAT64</td><td>발행 후 경과 분</td><td>Valkey <code>af</code>.published_at + <code>request_time</code></td></tr>
-      <tr><td><code>a_opens_1h</code>, <code>a_ctr_1h</code>, <code>a_likes_1h</code></td><td>INT64, FLOAT64, INT64</td><td>최근 1시간 열기 수·CTR·좋아요 수</td><td>Valkey <code>af</code></td></tr>
-      <tr><td><code>a_clickbait_score</code></td><td>FLOAT64</td><td>자극도 점수</td><td>Valkey <code>af</code></td></tr>
-      <tr><td><code>ra_cosine</code></td><td>FLOAT64</td><td>독자·기사 임베딩 코사인 유사도</td><td>Valkey <code>rf</code>.emb · <code>af</code>.emb</td></tr>
-      <tr><td><code>ra_cat_ctr_30d</code></td><td>FLOAT64</td><td>이 독자의 이 카테고리 CTR</td><td>Valkey <code>rf</code>.cat_prefs</td></tr>
-      <tr><td><code>ra_valid_exposure_cnt</code>, <code>ra_impression_cnt</code></td><td>INT64</td><td>이 기사를 이미 본 횟수, 이미 받은 횟수</td><td>Valkey <code>re</code>, <code>ri</code></td></tr>
-      <tr><td><code>ctx_hour</code>, <code>ctx_dow</code></td><td>INT64</td><td>요청 시각의 시(0~23)·요일(0=월), 한국 시간</td><td><code>context.request_time</code></td></tr>
-      <tr><td><code>ctx_device</code></td><td>STRING (범주형)</td><td>기기</td><td><code>context.device</code></td></tr>
-      <tr><td><code>ctx_position</code></td><td>INT64</td><td>노출 위치. 서빙 때는 1로 고정해 위치 효과를 뺀다 (STEP 5)</td><td>상수 1</td></tr>
-    </tbody>
-  </table></div>
-
-  <h3 id="c6">⑥ Valkey 키 구조</h3>
-  <p><code>export_serving</code>이 매시 BigQuery <code>feat</code>의 최신 값을 계산 없이 그대로 옮긴다. 새 버전 키를 다 쓴 뒤 포인터 하나만 바꾼다. 추론 서버는 요청마다 포인터를 읽고, 그 버전의 독자 키 1개 + 후보 기사 키 N개를 파이프라인 한 번으로 읽는다 (왕복 2번).</p>
-  <div class="tbl"><table id="ct-valkey">
-    <thead><tr><th>키</th><th>자료형</th><th>필드 / 값</th></tr></thead>
-    <tbody>
-      <tr><td><code>feat:current</code></td><td>STRING</td><td>현재 버전 = 스냅샷 시각 한국 시간 <code>YYYYMMDDHH</code> (예: <code>2026110308</code>). 응답의 <code>features_as_of</code>가 이 값이다. 만료 없음</td></tr>
-      <tr><td><code>rf:{ver}:{reader_id}</code></td><td>HASH</td><td><code>cat_prefs</code> (JSON: <code>{"경제": [open_ratio, ctr, like_ratio], ...}</code>), <code>recent5_categories</code> (JSON 배열), <code>ctr_30d</code>, <code>active_days_30d</code>, <code>active_hour_ratio</code> (JSON 24칸), <code>emb</code> (float32 768개 바이트)</td></tr>
-      <tr><td><code>af:{ver}:{article_id}</code></td><td>HASH</td><td><code>category</code>, <code>published_at</code> (epoch 초), <code>opens_1h</code>, <code>ctr_1h</code>, <code>likes_1h</code>, <code>clickbait_score</code>, <code>emb</code> (float32 바이트)</td></tr>
-      <tr><td><code>re:{ver}:{reader_id}</code></td><td>HASH</td><td>필드 = <code>article_id</code>, 값 = 유효 exposure 횟수</td></tr>
-      <tr><td><code>ri:{ver}:{reader_id}</code></td><td>HASH</td><td>필드 = <code>article_id</code>, 값 = impression 횟수</td></tr>
-      <tr><td><code>popular:{ver}</code></td><td>ZSET</td><td>멤버 = <code>article_id</code>, 점수 = 최근 1시간 열기 수. 백엔드가 후보·대체 응답을 인기순으로 고를 때 읽을 수 있다 (선택)</td></tr>
-    </tbody>
-  </table></div>
-  <ul>
-    <li><b>숫자 값</b>: HASH 값은 10진수 문자열. 모르는 값은 필드를 쓰지 않고, 추론 서버는 없는 필드를 결측으로 읽는다.</li>
-    <li><b>만료</b>: 버전이 붙은 키는 3시간 뒤 만료 (<code>EXPIRE 10800</code>). 포인터를 바꾼 뒤 이전 버전을 읽던 요청이 끝날 시간을 준다.</li>
-    <li><b>신규 독자·새 기사</b>: 키가 없으면 해당 피처를 결측으로 두고 점수는 낸다. 응답 <code>defaulted</code>에 이유를 적는다.</li>
-    <li><b>복구</b>: 같은 값을 GCS <code>serving/{ver}/</code>에 Parquet로 남긴다. Valkey를 다시 띄우면 마지막 버전을 그 파일에서 채운다.</li>
-  </ul>
-
-  <h3 id="c7">⑦ 기사 생성 → Cloud SQL</h3>
-  <p>아직 규약이 없다. <code>articles</code> 테이블 스키마는 태원 님 몫이다. <code>embed_articles</code>가 읽는 컬럼은 <code>article_id</code>, 제목, 본문, 카테고리, 세부 태그, <code>publisher_id</code>, <code>published_at</code>이다.</p>
-
+  <h2><span class="step">규약</span>인터페이스 규약에서 정할 것 <span class="task">#14</span> <span class="task">#12</span> <span class="task">#15</span></h2>
+  <p>필드 표는 <a href="overview.html#contracts">팀 공통 페이지</a>로 옮겼다. 이 파트가 정하는 곳은 ② 뉴스 백엔드 ↔ 추론 서버, ⑤ BigQuery 테이블, ⑥ Valkey 키 구조다. 아래는 아직 정하지 못한 것이다.</p>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>후보 선정. 팀 자료대로 MVP는 백엔드가 최신·인기순 후보를 보낸다. 멘토님이 말한 리트리벌(독자 벡터로 비슷한 기사 상위 20개)을 넣을 때는 추론 서버가 <code>candidates</code> 없이도 후보를 만들도록 <code>/v2/rank</code>로 넓힌다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>클릭 라벨 관측 기간. 이 안은 <code>served_at</code> 후 30분이다. 가상 독자의 행동 간격을 보고 조정한다. 팀 자료의 "아직 안 정한 것"이다.</p></div>
@@ -758,7 +272,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <p>관계는 impression ⊇ exposure이다. 응답에 들어간 기사 중 화면까지 내려온 것만 exposure가 된다. 행동 기록은 <code>impression_id</code> 하나로 자기 impression을 가리킨다. 독자·기사·위치는 반환 기록에서 찾으므로 프론트가 보낸 값과 어긋날 일이 없다. 1초가 되기 전에 누른 빠른 클릭은 유효 exposure 없이 <code>article_open</code>만 남는데, 이것도 <code>impression_id</code>로 impression에 붙여 학습 데이터에 넣는다 (규약 ⑤).</p>
   <p>이름은 2026-10-31 멘토링 설명을 따른다. 인프레션(impression)은 API 요청으로 내려간 기사 전체이고(예: 20개 요청), 노출(exposure)은 그중 스크롤하며 실제로 화면에 보인 기사다. 11/3 팀 자료에서 이 이름으로 맞췄다.</p>
-  <p>모든 행동 기록에 공통으로 필요한 필드는 <code>event_id</code>, <code>event_type</code>, <code>event_time</code>, <code>impression_id</code>, <code>page_type</code>이다. 필드 전체는 <a href="#contracts">인터페이스 규약</a>에 있다.</p>
+  <p>모든 행동 기록에 공통으로 필요한 필드는 <code>event_id</code>, <code>event_type</code>, <code>event_time</code>, <code>impression_id</code>, <code>page_type</code>이다. 필드 전체는 <a href="overview.html#contracts">인터페이스 규약</a>에 있다.</p>
 
   <h3>피처 정의서 형식</h3>
   <p>피처마다 아래 칸을 채운 것이 <span class="task">#11</span>의 산출물이다. 이 문서가 그대로 피처 공유 방식(<span class="task">#15</span>)의 합의 기준이 된다.</p>
@@ -787,7 +301,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
     <div class="flag"><span class="tag risk">주의할 것</span><p>뉴스 백엔드는 응답마다 반환 기록을 남기고, 프론트엔드는 모든 행동에 <code>impression_id</code>를 실어 보내야 한다. 빠지면 행동이 어느 응답의 몇 번째 칸이었는지 알 수 없어 피드백 연결과 위치 편향 보정이 둘 다 안 된다. 새 탭이나 상세 직접 진입 때 <code>impression_id</code>를 어떻게 복구할지는 팀 자료에서 아직 정하지 않았다.</p></div>
     <div class="flag"><span class="tag unsure">문제·불확실</span><p>모델이 원하는 이벤트와 수집 쪽이 만들 수 있는 이벤트가 다를 수 있다. 우선순위는 impression, exposure, article_open, like 순서로 제안한다.</p></div>
     <div class="flag"><span class="tag risk">주의할 것</span><p>학습-서빙 피처 불일치. 학습은 BigQuery SQL로, 서빙은 다른 코드로 피처를 만들면 값이 어긋난다. 학습과 서빙이 같은 피처 테이블을 읽게 한다. Valkey에는 BigQuery <code>feat</code> 테이블 값을 계산 없이 그대로 복사한다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>피처 공유 방식(<span class="task">#15</span>). BigQuery 피처 테이블 스키마와 Valkey 키 형식(예: <code>rf:{ver}:{reader_id}</code>, <code>af:{ver}:{article_id}</code> 해시, <a href="#contracts">규약 ⑥</a>)·필드 이름을 추론 서버 담당과 합의해야 한다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>피처 공유 방식(<span class="task">#15</span>). BigQuery 피처 테이블 스키마와 Valkey 키 형식(예: <code>rf:{ver}:{reader_id}</code>, <code>af:{ver}:{article_id}</code> 해시, <a href="overview.html#contracts">규약 ⑥</a>)·필드 이름을 추론 서버 담당과 합의해야 한다.</p></div>
     <div class="flag"><span class="tag risk">주의할 것</span><p>온라인 피처 스토어는 Valkey로 정했다 (10/31 멘토링 결정). Valkey가 멈추면 추론 서버가 피처를 못 읽으므로 뉴스 WAS가 인기순 대체 피드로 넘어가야 한다. 매시 적재한 값은 GCS에도 스냅샷으로 남겨, Valkey를 다시 띄울 때 그 파일에서 다시 채운다.</p></div>
     <div class="flag"><span class="tag unsure">문제·불확실</span><p>새 기사는 최대 1시간 늦게 임베딩이 생긴다. 그동안은 최신순·인기순 후보 생성이 새 기사를 후보에 넣어 준다. 더 빨라야 하면 실행 주기를 10분으로 줄인다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>기사 세부 태그(<span class="task">#18</span>)와 자극도 점수를 기사 메타에 넣을 수 있는지 태원 님과 확인한다.</p></div>
@@ -913,7 +427,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
   <p>표를 만들 때 지키는 규칙은 네 가지다.</p>
   <ol>
-    <li><b>한 행 = 유효 exposure가 있는 impression 한 건.</b> 같은 <code>impression_id</code>에 exposure 구간이 여러 개여도 한 행이다. 30분 안에 <code>article_open</code>이 따랐으면 1, 아니면 0이다. 유효 exposure 없이 눌린 빠른 클릭도 그 impression으로 행을 만들어 1로 넣는다. 화면에 안 보인 impression은 0으로 넣지 않는다(못 본 것이지 싫은 것이 아니므로). 표는 <a href="#contracts">규약 ⑤</a>의 <code>train.samples</code> 행 규칙.</li>
+    <li><b>한 행 = 유효 exposure가 있는 impression 한 건.</b> 같은 <code>impression_id</code>에 exposure 구간이 여러 개여도 한 행이다. 30분 안에 <code>article_open</code>이 따랐으면 1, 아니면 0이다. 유효 exposure 없이 눌린 빠른 클릭도 그 impression으로 행을 만들어 1로 넣는다. 화면에 안 보인 impression은 0으로 넣지 않는다(못 본 것이지 싫은 것이 아니므로). 표는 <a href="overview.html#contracts">규약 ⑤</a>의 <code>train.samples</code> 행 규칙.</li>
     <li><b>시점 기준 피처 (포인트 인타임 조인).</b> 노출 시각 이전 데이터로만 피처를 만든다. 멘토님이 실시간 추천에서 가장 중요하다고 강조한 규칙이다. 10월 15일 09시 노출에는 <code>feature_date = 10월 14일</code> 스냅샷을 붙인다.</li>
     <li><b>시간으로 나눠 평가.</b> 무작위로 섞지 않는다. 앞 구간은 학습, 다음 구간은 검증, 마지막 구간은 테스트에 쓴다.</li>
     <li><b>빼는 데이터.</b> 페르소나 컬럼은 학습에 넣지 않는다. 정제 단계에서 봇으로 표시된 사용자도 빼고, 몇 명을 뺐는지 기록한다.</li>
@@ -1023,7 +537,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <div class="tbl"><table>
     <thead><tr><th></th><th>요청 시 점수화 <span class="tag pick">1차 선택</span></th><th>미리 계산해 저장 <span class="tag ext">확장</span></th></tr></thead>
     <tbody>
-      <tr><td>동작</td><td>독자가 피드를 열면 뉴스 백엔드가 후보 기사(최신·인기순)와 <code>reader_id</code>, 시각·기기를 추론 서버에 보냄 → 추론 서버가 Valkey에서 독자 1명 + 후보 피처를 한 번에 조회하고, 메모리에 올려 둔 모델로 점수 → 순서대로 응답 (필드는 <a href="#contracts">인터페이스 규약</a> ②)</td><td>배치가 사용자별 추천 목록을 미리 계산해 저장 → 뉴스 백엔드가 <code>reader_id</code>로 꺼냄 (Valkey에 저장)</td></tr>
+      <tr><td>동작</td><td>독자가 피드를 열면 뉴스 백엔드가 후보 기사(최신·인기순)와 <code>reader_id</code>, 시각·기기를 추론 서버에 보냄 → 추론 서버가 Valkey에서 독자 1명 + 후보 피처를 한 번에 조회하고, 메모리에 올려 둔 모델로 점수 → 순서대로 응답 (필드는 <a href="overview.html#contracts">인터페이스 규약</a> ②)</td><td>배치가 사용자별 추천 목록을 미리 계산해 저장 → 뉴스 백엔드가 <code>reader_id</code>로 꺼냄 (Valkey에 저장)</td></tr>
       <tr><td>장점</td><td>구조가 단순하다, 후보가 적어 지연이 작다, 새 기사가 후보에 바로 들어간다</td><td>응답이 가장 빠르다</td></tr>
       <tr><td>단점</td><td>피처는 배치 주기(1시간)만큼 늦다, Valkey 조회 한 번이 더 든다, 추론 서버가 떠 있어야 한다</td><td>저장소와 배치가 더 필요하다, 접속하지 않는 사용자 몫도 계산한다</td></tr>
     </tbody>
@@ -1042,7 +556,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <p>모델 파일은 GCS에 두고 MLflow 모델 레지스트리가 버전과 단계(Production)를 관리한다. 추론 서버는 켜질 때 Production 버전을 MLflow에서 불러와 메모리에 올린다. 모델을 도커 이미지에 넣지 않으므로 모델을 바꿀 때 이미지를 다시 만들 필요가 없다 (10/31 멘토링 결정). 응답에는 <code>request_id</code>와 <code>model_version</code>을 실어, 뉴스 백엔드의 반환 기록에 남게 한다. 브라우저 행동은 <code>impression_id</code>로 그 기록에 붙는다.</p>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>요청 시 점수화(<span class="task">#20</span>)는 추천안이다. 추론 서버 코드(<span class="task">#14</span>)는 윤모가 맡기로 했고, 배포·호출 분담은 장주현·태원 님 확인이 필요하다. 요청 시 점수화 자체는 10/31 멘토링에서 확정됐다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>뉴스 WAS ↔ 추론 서버 요청·응답 형식은 <a href="#contracts">인터페이스 규약</a> ②에 초안을 적었다. 태원 님이 확인하면 둘이 따로 개발할 수 있다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>뉴스 WAS ↔ 추론 서버 요청·응답 형식은 <a href="overview.html#contracts">인터페이스 규약</a> ②에 초안을 적었다. 태원 님이 확인하면 둘이 따로 개발할 수 있다.</p></div>
     <div class="flag"><span class="tag risk">주의할 것</span><p>새 Production 모델은 서버를 하나씩 새로 띄워(롤링 교체) 불러오게 한다. 한꺼번에 재시작하면 그동안 피드가 인기순으로만 나간다.</p></div>
     <div class="flag"><span class="tag unsure">문제·불확실</span><p>Valkey 조회까지 포함한 응답이 0.1초 안에 드는지 모른다. 멘토님 권고대로 서버가 버티지 못할 때까지 부하 테스트를 해서 확인한다.</p></div>
   </div>
@@ -1202,41 +716,5 @@ var QA = [{"sec": "overview", "sel": null, "term": "추론 서버", "q": "피드
 })();
 </script>
 
-<script>
-(function () {
-  var EDGES = [{"id": "feed_req", "from": "브라우저", "to": "뉴스 WAS", "kind": "data", "data": "피드 요청: reader_id, cursor (첫 요청은 null)", "when": "독자가 피드를 열거나 스크롤할 때", "fmt": "HTTPS GET, 쿠키"}, {"id": "feed_res", "from": "뉴스 WAS", "to": "브라우저", "kind": "data", "data": "request_id, served_at, 기사 목록(article_id, impression_id, position, 제목·카테고리·이미지 등), next_cursor", "when": "피드 요청 응답", "fmt": "JSON"}, {"id": "sim_feed", "from": "가상 독자", "to": "뉴스 WAS", "kind": "data", "data": "가상 독자의 피드 요청. 브라우저와 같은 API를 부른다", "when": "시뮬레이터가 정한 접속 시각", "fmt": "HTTPS GET"}, {"id": "inf_req", "from": "뉴스 WAS", "to": "후보 받기", "kind": "data", "data": "POST /v1/rank: request_id, reader_id, candidates(백엔드가 최신·인기순으로 고른 article_id), context(request_time, device), top_k", "when": "피드 요청마다", "fmt": "내부 HTTP JSON"}, {"id": "cand_score", "from": "후보 받기", "to": "점수화 모델", "kind": "data", "data": "후보 article_id 10~20개", "when": "요청마다 (같은 서버 안)", "fmt": "메모리 안 목록"}, {"id": "score_post", "from": "점수화 모델", "to": "후처리", "kind": "data", "data": "(article_id, pCTR) 목록", "when": "요청마다 (같은 서버 안)", "fmt": "메모리 안 목록"}, {"id": "inf_res", "from": "후처리", "to": "뉴스 WAS", "kind": "data", "data": "ranked[article_id, pctr, rank], defaulted, unscored, model_version, features_as_of", "when": "추론 요청 응답 (500ms 넘거나 503이면 백엔드가 인기순으로 대신, model_version=fallback)", "fmt": "내부 HTTP JSON"}, {"id": "vk_cand", "from": "Valkey", "to": "후보 받기", "kind": "dec", "data": "MVP에서는 오가지 않는다. 후보는 백엔드가 보낸다. 리트리벌로 넓힐 때 독자 벡터로 비슷한 기사를 여기서 찾는다", "when": "리트리벌 확장 때", "fmt": ""}, {"id": "vk_score", "from": "Valkey", "to": "점수화 모델", "kind": "data", "data": "독자 1명 + 후보 기사 피처(독자 벡터, 기사 벡터, CTR 등)와 피처 버전", "when": "요청마다 한 번에 조회 (1~2ms)", "fmt": "Valkey 해시 (rf:{ver}:{reader_id}, af:{ver}:{article_id}, re:, ri:)"}, {"id": "ml_score", "from": "MLflow", "to": "점수화 모델", "kind": "data", "data": "Production 모델 버전과 그 모델 파일의 GCS 위치. 서버가 그 파일을 메모리에 올린다", "when": "추론 서버가 켜질 때 (새 버전은 롤링 재시작)", "fmt": "MLflow 레지스트리 API + 모델 파일"}, {"id": "ev_browser", "from": "브라우저", "to": "로깅 서버", "kind": "data", "data": "행동 기록: exposure(보인 구간, duration_ms), article_open, like, unlike. event_id, event_type, event_time, impression_id, page_type", "when": "발생 즉시 묶어서 전송", "fmt": "HTTPS POST JSON 배열"}, {"id": "ev_sim", "from": "가상 독자", "to": "로깅 서버", "kind": "data", "data": "가상 독자가 만든 exposure·article_open 등 행동 기록 (브라우저와 같은 형식)", "when": "시뮬레이션 중", "fmt": "HTTPS POST JSON 배열"}, {"id": "ev_imp", "from": "뉴스 WAS", "to": "로깅 서버", "kind": "data", "data": "반환 기록(impression): 응답에 넣은 기사마다 request_id, impression_id, reader_id, article_id, position, served_at, score, model_version, features_as_of", "when": "피드 응답을 보낼 때", "fmt": "HTTPS POST JSON"}, {"id": "sub_rw", "from": "뉴스 WAS", "to": "subscriptions·likes", "kind": "data", "data": "구독·좋아요 쓰기(누르는 즉시), 피드 요청 때 구독 목록 읽기", "when": "버튼을 누를 때, 피드 요청 때", "fmt": "SQL"}, {"id": "art_was", "from": "articles", "to": "뉴스 WAS", "kind": "data", "data": "피드·상세 화면에 보여 줄 기사 제목·본문·썸네일 URL", "when": "화면 요청 때", "fmt": "SQL"}, {"id": "gen_art", "from": "기사 생성", "to": "articles", "kind": "data", "data": "생성한 기사(제목, 본문, 카테고리, publisher_id, published_at, 썸네일)", "when": "기사 생성 배치 때", "fmt": "SQL INSERT"}, {"id": "log_gcs", "from": "로깅 서버", "to": "로그 원본", "kind": "data", "data": "반환 기록은 served/, 행동은 actions/ 폴더에 5분 단위 파일로", "when": "5분마다", "fmt": "JSONL gzip (date=/hour=/minute= 경로)"}, {"id": "gcs_sensor", "from": "로그 원본", "to": "GCS 센서", "kind": "dec", "data": "파일 내용은 오지 않는다. 지난 1시간 파티션 12개가 다 왔는지 확인만 한다", "when": "매시 DAG 시작 때", "fmt": "GCS 객체 목록 조회"}, {"id": "gcs_raw", "from": "로그 원본", "to": "raw.*", "kind": "data", "data": "5분 파일들을 raw.served, raw.actions에 적재 (load_raw가 BigQuery load job을 시킨다)", "when": "매시", "fmt": "BigQuery load job"}, {"id": "raw_clean", "from": "raw.*", "to": "clean.*", "kind": "data", "data": "중복 제거·검사·봇 표시 후 impression_id로 반환 기록과 행동을 합친 clean.served, clean.actions (clean_events의 SQL)", "when": "매시", "fmt": "BigQuery SQL"}, {"id": "clean_agg", "from": "clean.*", "to": "agg.*", "kind": "data", "data": "impression마다 결과 한 행(agg.impression_outcome), 기사별 impression·유효 exposure·열기 수, 독자×카테고리 집계", "when": "매시·매일", "fmt": "BigQuery SQL"}, {"id": "agg_feat", "from": "agg.*", "to": "feat.*", "kind": "data", "data": "30일·1시간 창 피처, CTR 같은 비율 (build_features의 SQL)", "when": "매일·매시", "fmt": "BigQuery SQL"}, {"id": "emb_feat", "from": "article_embedding", "to": "feat.*", "kind": "data", "data": "기사 벡터. 사용자가 최근 누른 기사들의 벡터 평균이 사용자 벡터가 된다", "when": "build_features 때", "fmt": "BigQuery SQL (JOIN on article_id)"}, {"id": "feat_train", "from": "feat.*", "to": "train.samples", "kind": "data", "data": "노출 시각 직전 스냅샷의 사용자·기사 피처 (포인트 인타임 조인)", "when": "학습 데이터 만들 때", "fmt": "BigQuery SQL"}, {"id": "clean_train", "from": "clean.*", "to": "train.samples", "kind": "data", "data": "정답 라벨: 유효 exposure가 있는 impression에 30분 안 article_open이면 1, 아니면 0 (빠른 클릭도 1, 안 보인 impression은 제외)", "when": "학습 데이터 만들 때", "fmt": "BigQuery SQL"}, {"id": "art_embed", "from": "articles", "to": "embed_articles", "kind": "data", "data": "지난 실행 이후 들어온 새 기사의 제목·본문과 카테고리·세부 태그·publisher_id·published_at", "when": "매시", "fmt": "SQL 조회"}, {"id": "embed_emb", "from": "embed_articles", "to": "article_embedding", "kind": "data", "data": "기사마다 768칸 벡터 + 임베딩 모델 이름·버전", "when": "매시 (새 기사만)", "fmt": "BigQuery 쓰기"}, {"id": "embed_meta", "from": "embed_articles", "to": "article_meta", "kind": "data", "data": "새 기사의 메타: article_id, 카테고리, 세부 태그, publisher_id, published_at (임베딩과 같은 실행에서 같이 옮긴다)", "when": "매시 (새 기사만)", "fmt": "BigQuery 쓰기"}, {"id": "meta_feat", "from": "article_meta", "to": "feat.*", "kind": "data", "data": "기사 카테고리·언론사·발행 시각. 카테고리 선호, 구독 언론사 여부, 경과 시간 피처의 재료", "when": "build_features 때", "fmt": "BigQuery SQL (JOIN on article_id)"}, {"id": "feat_export", "from": "feat.*", "to": "export_serving", "kind": "data", "data": "최신 사용자·기사 피처", "when": "피처 갱신 직후", "fmt": "BigQuery 조회"}, {"id": "export_vk", "from": "export_serving", "to": "Valkey", "kind": "data", "data": "최신 피처를 새 버전 키로 쓴 뒤 현재 버전 포인터만 교체", "when": "피처 갱신 직후 (매시)", "fmt": "Valkey 쓰기"}, {"id": "export_gcs", "from": "export_serving", "to": "모델·스냅샷", "kind": "data", "data": "Valkey에 넣은 값의 사본 (Valkey 재시작 때 다시 채우는 원본)", "when": "피처 갱신 직후", "fmt": "Parquet 파일"}, {"id": "train_in", "from": "train.samples", "to": "train_model", "kind": "data", "data": "학습 데이터 표 (시간순으로 학습·검증·테스트 구간)", "when": "재학습 때", "fmt": "BigQuery 조회 → DataFrame"}, {"id": "train_ml", "from": "train_model", "to": "MLflow", "kind": "data", "data": "파라미터, AUC 같은 지표, 모델 버전 등록. 검증을 통과하면 Production으로 올린다", "when": "재학습 끝날 때", "fmt": "MLflow API"}, {"id": "train_gcs", "from": "train_model", "to": "모델·스냅샷", "kind": "data", "data": "학습된 LightGBM 모델 파일 (MLflow는 이 위치만 기록한다)", "when": "재학습 끝날 때", "fmt": "모델 파일"}, {"id": "o_sensor", "from": "GCS 센서", "to": "load_raw", "kind": "order", "data": "데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다", "when": "", "fmt": ""}, {"id": "o_load", "from": "load_raw", "to": "clean_events", "kind": "order", "data": "데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다", "when": "", "fmt": ""}, {"id": "o_clean", "from": "clean_events", "to": "agg_hourly·daily", "kind": "order", "data": "데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다", "when": "", "fmt": ""}, {"id": "o_agg", "from": "agg_hourly·daily", "to": "build_features", "kind": "order", "data": "데이터는 오가지 않는다. 앞 작업이 성공하면 다음 작업이 시작된다", "when": "", "fmt": ""}, {"id": "o_build", "from": "build_features", "to": "export_serving", "kind": "order", "data": "데이터는 오가지 않는다. 피처 계산이 끝나면 적재를 시작한다", "when": "", "fmt": ""}, {"id": "o_train", "from": "build_features", "to": "train_model", "kind": "order", "data": "데이터는 오가지 않는다. 피처 계산이 끝나면 재학습 주기에 맞춰 학습을 시작한다", "when": "", "fmt": ""}];
-  var CONTRACTS = {"feed_req": [["①", "피드 요청", "ct-feed-req", "c134"]], "sim_feed": [["①", "피드 요청", "ct-feed-req", "c134"]], "feed_res": [["①", "피드 응답", "ct-feed-res", "c134"]], "inf_req": [["②", "요청 필드", "ct-rank-req", "c2"], ["②", "주소·응답 시간", "ct-rank-info", "c2"]], "inf_res": [["②", "응답 필드", "ct-rank-res", "c2"], ["②", "reason 코드", "ct-rank-reason", "c2"], ["②", "상태 코드", "ct-rank-status", "c2"]], "ev_browser": [["③", "행동 기록", "ct-actions", "c134"]], "ev_sim": [["③", "행동 기록", "ct-actions", "c134"]], "ev_imp": [["③", "반환 기록", "ct-served", "c134"]], "log_gcs": [["④", "저장 형식", "ct-gcs", "c134"]], "gcs_raw": [["⑤", "raw 층", "ct-raw", "c5"]], "raw_clean": [["⑤", "clean.served", "ct-clean-served", "c5"], ["⑤", "clean.actions", "ct-clean-actions", "c5"]], "clean_agg": [["⑤", "agg.impression_outcome", "ct-outcome", "c5"], ["⑤", "agg 층", "ct-aggfeat", "c5", "agg."]], "agg_feat": [["⑤", "feat 층", "ct-aggfeat", "c5", "feat."]], "emb_feat": [["⑤", "feat.article_embedding", "ct-aggfeat", "c5", "feat.article_embedding"]], "embed_emb": [["⑤", "feat.article_embedding", "ct-aggfeat", "c5", "feat.article_embedding"]], "embed_meta": [["⑤", "feat.article_meta", "ct-aggfeat", "c5", "feat.article_meta"]], "meta_feat": [["⑤", "feat.article_meta", "ct-aggfeat", "c5", "feat.article_meta"]], "clean_train": [["⑤", "train.samples 행 규칙", "ct-train-rule", "c5"]], "feat_train": [["⑤", "train.samples 컬럼", "ct-train-cols", "c5"]], "train_in": [["⑤", "train.samples 컬럼", "ct-train-cols", "c5"]], "export_vk": [["⑥", "Valkey 키", "ct-valkey", "c6"]], "vk_score": [["⑥", "Valkey 키", "ct-valkey", "c6"]], "feat_export": [["⑤", "feat 층", "ct-aggfeat", "c5", "feat."]]};
-  var byId = {}; EDGES.forEach(function (e) { byId[e.id] = e; });
-  var info = document.getElementById("ov-info");
-  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
-  function pick(id) {
-    var e = byId[id]; if (!e) return;
-    document.querySelectorAll(".ov-edge.on, .ov-all tr.on").forEach(function (n) { n.classList.remove("on"); });
-    document.querySelectorAll('.ov-edge[data-e="' + id + '"], .ov-all tr[data-e="' + id + '"]').forEach(function (n) { n.classList.add("on"); });
-    var h = '<b>' + esc(e.from) + ' → ' + esc(e.to) + '</b>' + (e.kind === "data" ? "" : ' <span style="color:var(--muted)">(데이터 없음)</span>');
-    h += '<dl><dt>데이터</dt><dd>' + esc(e.data) + '</dd>';
-    if (e.when) h += '<dt>언제</dt><dd>' + esc(e.when) + '</dd>';
-    if (e.fmt) h += '<dt>형식</dt><dd>' + esc(e.fmt) + '</dd>';
-    info.innerHTML = h + '</dl>';
-    if (id === "gen_art") info.insertAdjacentHTML("beforeend", '<div class="ov-c"><b>규약 ⑦</b> 아직 규약이 없다 (태원 님 몫). <a href="#c7">규약 보기</a></div>');
-    (CONTRACTS[id] || []).forEach(function (c) {
-      var src = document.getElementById(c[2]); if (!src) return;
-      var t = src.cloneNode(true); t.removeAttribute("id");
-      if (c[4]) t.querySelectorAll("tbody tr").forEach(function (r) { if (r.cells[0].textContent.indexOf(c[4]) !== 0) r.remove(); });
-      var d = document.createElement("div"); d.className = "ov-c";
-      d.innerHTML = '<b>규약 ' + c[0] + ' ' + esc(c[1]) + '</b> <a href="#' + c[3] + '">규약 전체 보기</a><div class="tbl"></div>';
-      d.querySelector(".tbl").appendChild(t);
-      info.appendChild(d);
-    });
-  }
-  document.querySelectorAll(".ov-edge, .ov-badge").forEach(function (g) {
-    g.addEventListener("click", function () { pick(g.dataset.e); });
-    g.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(g.dataset.e); } });
-  });
-  document.querySelectorAll(".ov-all tr[data-e]").forEach(function (tr) {
-    tr.addEventListener("click", function () { pick(tr.dataset.e); document.getElementById("ov-svg").scrollIntoView({block: "nearest"}); });
-  });
-})();
-</script>
 </body>
 </html>
