@@ -30,9 +30,9 @@
   --unsure: #b9a4f0; --unsure-soft: #2c2445; --pick: #7fd19c; --pick-soft: #18331f; color-scheme: dark; }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); font: 15px/1.7 var(--body); margin: 0; }
-.wrap { max-width: 920px; margin: 0 auto; padding-block: 40px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+.wrap { max-width: none; margin: 0; padding-block: 16px 60px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
 header h1 { font-size: 30px; line-height: 1.25; margin: 0 0 6px; font-weight: 700; text-wrap: balance; }
-header p { margin: 0; color: var(--muted); max-width: 68ch; }
+header p { margin: 0; color: var(--muted); }
 .meta { font: 12px var(--mono); color: var(--muted); letter-spacing: .02em; margin-bottom: 10px; }
 .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
@@ -54,7 +54,7 @@ section h2 { font-size: 19px; margin: 0; display: flex; flex-wrap: wrap; align-i
 a.step { text-decoration: none; border-bottom: 1px dashed var(--accent); }
 a.step:hover, a.step:focus-visible { background: var(--accent-soft); }
 section h3 { font-size: 15px; margin: 6px 0 0; }
-section p { margin: 0; max-width: 72ch; }
+section p { margin: 0; }
 ul, ol { margin: 0; padding-left: 20px; }
 li + li { margin-top: 2px; }
 code { font: 13px var(--mono); background: var(--bg); padding: 1px 5px; border-radius: 4px; }
