@@ -741,7 +741,7 @@ var TASKS = {"1": "GCP 계정·프로젝트, Terraform", "2": "Helm: Airflow, �
     panel.hidden = true; clearFocus();
     if (HASH[location.hash]) history.replaceState(null, "", location.pathname + location.search);
   }
-  function openCt(c) {
+  function openCt(c, quiet) {
     var l = LABELS.concat(VIEWS).filter(function (x) { return x[0] === c; })[0];
     var src = document.querySelector('#store [data-ct="' + c + '"]'); if (!l || !src) return;
     clearFocus();
@@ -754,7 +754,7 @@ var TASKS = {"1": "GCP 계정·프로젝트, Terraform", "2": "Helm: Airflow, �
     var h = t.querySelector("h3"); if (h && t.firstElementChild === h) h.remove();
     info.appendChild(t); show(l[2]);
     var want = Object.keys(HASH).filter(function (k) { return HASH[k] === c && k !== "#c134"; })[0];
-    if (want) history.replaceState(null, "", want);
+    if (want && !quiet) history.replaceState(null, "", want);
   }
   function pick(id) {
     var e = byId[id]; if (!e) return;
@@ -816,6 +816,9 @@ var TASKS = {"1": "GCP 계정·프로젝트, Terraform", "2": "Helm: Airflow, �
   });
   function fromHash() { if (HASH[location.hash]) openCt(HASH[location.hash]); }
   window.addEventListener("hashchange", fromHash); fromHash();
+  /* On wide screens the diagram cannot use the full width, so fill the rest with the flow order */
+  var bar = document.querySelector(".ov-bar").offsetHeight;
+  if (panel.hidden && innerWidth - (innerHeight - bar - 40) * 1070 / 660 >= 600) openCt("walk", true);
 })();
 </script>
 </body>
