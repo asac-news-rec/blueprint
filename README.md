@@ -10,7 +10,7 @@ SKP AI DE 1기 개인화 뉴스 추천 팀의 영역별 청사진이다. `main`�
 | overview.html | 전체 그림·인터페이스 규약 | 공동 (초안 윤모) |
 | taewon.html | 뉴스 생성·서비스 | 태원 |
 | seho.html | 프론트엔드·행동 수집 | 세호 |
-| yunmo.html | 처리·피처·모델 | 윤모 |
+| yoonmo.html | 처리·피처·모델 | 윤모 |
 | juhyun.html, infra_v2.png | 청사진 정리·인프라 구성도·툴 카탈로그 | 장주현 |
 | wbs.html | 작업 나열표 28개 | 장주현 |
 

@@ -5,7 +5,7 @@
 import io, json, base64, os, sys
 
 R = sys.argv[1] if len(sys.argv) > 1 else "."
-names = ['index', 'overview', 'taewon', 'seho', 'yunmo', 'juhyun', 'wbs']
+names = ['index', 'overview', 'taewon', 'seho', 'yoonmo', 'juhyun', 'wbs']
 pages = {}
 for n in names:
     pages[n] = io.open(f'{R}/{n}.html', encoding='utf-8').read()

@@ -639,9 +639,9 @@ html, body { height: 100%; }
       <tr><td><code>is_bot</code>이 표시된 독자, <code>model_version="fallback"</code></td><td>봇은 뺀다. 대체 응답은 쓰되 <code>model_version</code>으로 구분</td><td></td><td></td></tr>
     </tbody>
   </table></div>
-  <p>피처 컬럼(<code>r_</code>, <code>a_</code>, <code>ra_</code>, <code>ctx_</code>로 시작)은 <a href="yunmo.html#s2">STEP 2</a>의 피처와 하나씩 맞고, 추론 서버도 같은 이름·같은 계산의 입력을 만든다. 이 이름 목록이 학습과 서빙 사이의 규약이다.</p>
+  <p>피처 컬럼(<code>r_</code>, <code>a_</code>, <code>ra_</code>, <code>ctx_</code>로 시작)은 <a href="yoonmo.html#s2">STEP 2</a>의 피처와 하나씩 맞고, 추론 서버도 같은 이름·같은 계산의 입력을 만든다. 이 이름 목록이 학습과 서빙 사이의 규약이다.</p>
   <div class="tbl"><table id="ct-train-cols">
-    <thead><tr><th>컬럼</th><th>타입</th><th>뜻 (<a href="yunmo.html#s2">STEP 2</a> 피처)</th><th>서빙 때 출처</th></tr></thead>
+    <thead><tr><th>컬럼</th><th>타입</th><th>뜻 (<a href="yoonmo.html#s2">STEP 2</a> 피처)</th><th>서빙 때 출처</th></tr></thead>
     <tbody>
       <tr><td><code>impression_id</code>, <code>reader_id</code>, <code>article_id</code>, <code>served_at</code>, <code>served_date</code>, <code>model_version</code></td><td>(served와 같음)</td><td>식별·분석용. 모델 입력 아님</td><td>–</td></tr>
       <tr><td><code>label</code>, <code>label_source</code></td><td>INT64, STRING</td><td>정답과 출처 (위 표)</td><td>–</td></tr>
@@ -660,7 +660,7 @@ html, body { height: 100%; }
       <tr><td><code>ra_valid_exposure_cnt</code>, <code>ra_impression_cnt</code></td><td>INT64</td><td>이 기사를 이미 본 횟수, 이미 받은 횟수</td><td>Valkey <code>re</code>, <code>ri</code></td></tr>
       <tr><td><code>ctx_hour</code>, <code>ctx_dow</code></td><td>INT64</td><td>요청 시각의 시(0~23)·요일(0=월), 한국 시간</td><td><code>context.request_time</code></td></tr>
       <tr><td><code>ctx_device</code></td><td>STRING (범주형)</td><td>기기</td><td><code>context.device</code></td></tr>
-      <tr><td><code>ctx_position</code></td><td>INT64</td><td>노출 위치. 서빙 때는 1로 고정해 위치 효과를 뺀다 (<a href="yunmo.html#s5">STEP 5</a>)</td><td>상수 1</td></tr>
+      <tr><td><code>ctx_position</code></td><td>INT64</td><td>노출 위치. 서빙 때는 1로 고정해 위치 효과를 뺀다 (<a href="yoonmo.html#s5">STEP 5</a>)</td><td>상수 1</td></tr>
     </tbody>
   </table></div>
 
