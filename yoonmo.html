@@ -421,14 +421,14 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <p>서비스에 쓰는 모델은 <b>우리 서비스 기록으로만</b> 학습한다. 가상 독자가 우리 화면에서 우리 한국어 기사를 보고 남긴 행동 기록에, 같은 <code>article_id</code>의 기사 메타(Cloud SQL)와 사용자 피처를 붙여 표 하나로 만든다. MIND는 영어 기사와 클릭 로그가 한 세트로 와서 코드 점검과 논문 수치 비교에만 쓰고, 거기서 학습한 모델은 서비스에 쓰지 않는다(STEP 4).</p>
   <div class="chain" aria-label="학습 데이터 한 줄">
     <div class="node"><b>impression 결과</b><span>누가·언제·어떤 기사·몇 번째 칸, 유효 exposure·열기 여부</span></div><span class="arr">+</span>
-    <div class="node"><b>사용자 피처</b><span>노출 직전 스냅샷</span></div><span class="arr">+</span>
+    <div class="node"><b>사용자 피처</b><span>추천 때 실제로 쓴 스냅샷</span></div><span class="arr">+</span>
     <div class="node"><b>기사 피처</b><span>카테고리·경과 시간·임베딩</span></div><span class="arr">→</span>
     <div class="node main"><b>학습 데이터 한 줄</b><span>정답: 눌렀으면 1, 아니면 0</span></div>
   </div>
   <p>표를 만들 때 지키는 규칙은 네 가지다.</p>
   <ol>
     <li><b>한 행 = 유효 exposure가 있는 impression 한 건.</b> 같은 <code>impression_id</code>에 exposure 구간이 여러 개여도 한 행이다. 30분 안에 <code>article_open</code>이 따랐으면 1, 아니면 0이다. 유효 exposure 없이 눌린 빠른 클릭도 그 impression으로 행을 만들어 1로 넣는다. 화면에 안 보인 impression은 0으로 넣지 않는다(못 본 것이지 싫은 것이 아니므로). 표는 <a href="overview.html#contracts">규약 ⑤</a>의 <code>train.samples</code> 행 규칙.</li>
-    <li><b>시점 기준 피처 (포인트 인타임 조인).</b> 노출 시각 이전 데이터로만 피처를 만든다. 멘토님이 실시간 추천에서 가장 중요하다고 강조한 규칙이다. 10월 15일 09시 노출에는 <code>feature_date = 10월 14일</code> 스냅샷을 붙인다.</li>
+    <li><b>시점 기준 피처 (포인트 인타임 조인).</b> 추천 시점에 쓸 수 있던 데이터로만 피처를 붙인다. 멘토님이 실시간 추천에서 가장 중요하다고 강조한 규칙이다. 반환 기록의 <code>features_as_of</code>와 같은 <code>snapshot_time</code>을 붙이므로, 11시 피처가 준비되기 전인 11:05 추천에는 10시 피처가 붙는다.</li>
     <li><b>시간으로 나눠 평가.</b> 무작위로 섞지 않는다. 앞 구간은 학습, 다음 구간은 검증, 마지막 구간은 테스트에 쓴다.</li>
     <li><b>빼는 데이터.</b> 페르소나 컬럼은 학습에 넣지 않는다. 정제 단계에서 봇으로 표시된 사용자도 빼고, 몇 명을 뺐는지 기록한다.</li>
   </ol>
