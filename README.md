@@ -16,6 +16,11 @@ SKP AI DE 1기 개인화 뉴스 추천 팀의 영역별 청사진이다. `main`�
 
 자기 파일만 고쳐서 PR을 올린다. 페이지 사이 링크는 `seho.html`처럼 파일 이름으로 건다.
 
+## 용어
+
+- 공통 규약: `overview.html`의 인터페이스 규약 ①~⑦. 단계마다 주고받는 값과 필드를 번호별 표로 정리한 것이다. `https://blueprint.yoonmo335.workers.dev/overview`에서 번호를 눌러 볼 수 있다.
+- 청사진 규약 ③: 그중 뉴스 백엔드 → 로깅 서버의 `served`와 브라우저 → 로깅 서버의 `actions` 필드 표다 (`overview.html#c3`).
+
 ## 내려받아 보는 한 파일 버전
 
 ```bash
