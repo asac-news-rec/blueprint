@@ -201,7 +201,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
   <p>필드 표는 <a href="overview.html#contracts">팀 공통 페이지</a>로 옮겼다. 이 파트가 정하는 곳은 ② 뉴스 백엔드 ↔ 추론 서버, ⑤ BigQuery 테이블, ⑥ Valkey 키 구조다. 아래는 아직 정하지 못한 것이다.</p>
   <div class="flags">
     <div class="flag"><span class="tag decide">결정 필요</span><p>후보 선정. 팀 자료대로 MVP는 백엔드가 최신·인기순 후보를 보낸다. 멘토님이 말한 리트리벌(독자 벡터로 비슷한 기사 상위 20개)을 넣을 때는 추론 서버가 <code>candidates</code> 없이도 후보를 만들도록 <code>/v2/rank</code>로 넓힌다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>클릭 라벨 관측 기간. 이 안은 <code>served_at</code> 후 30분이다. 가상 독자의 행동 간격을 보고 조정한다. 팀 자료의 "아직 안 정한 것"이다.</p></div>
+    <div class="flag"><span class="tag pick">정함</span><p>클릭 라벨 관측 기간. 상한을 두지 않는다. 그 impression에 <code>article_open</code>이 있으면 1이다. 노출 뒤 0.1초 안 클릭은 fraud click으로 뺀다(11/12·11/15 멘토링).</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>구독 피처(<code>ra_subscribed</code>). 팀 자료 ①에는 좋아요 API만 있고 언론사 구독은 없다. 구독 기능이 빠지면 이 피처도 빼고 17개로 간다. 체류 10초 상한도 팀 자료에서 없어졌으므로, <code>read_ms</code>를 피처에 쓸 때 상한을 따로 정한다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>Cloud Run의 뉴스 백엔드가 GKE 내부망의 추론 서버를 부르는 길. 외부에 공개하지 않으려면 Cloud Run에서 VPC로 나가는 설정과 GKE 내부 로드밸런서가 필요하다. 장주현 님 <span class="task">#2</span>에서 정한다.</p></div>
     <div class="flag"><span class="tag unsure">문제·불확실</span><p>Valkey 메모리. 기사 5천 개, 독자 1만 명이면 임베딩까지 50MB 정도로 추정한다. 포인터를 바꾸는 동안 두 버전이 함께 있어 그 두 배가 필요하다. 가상 독자 규모가 정해지면 다시 계산한다.</p></div>
@@ -210,12 +210,12 @@ table.wbs tr:target td { background: var(--decide-soft); }
 
 <section id="s1">
   <h2><span class="step">STEP 1</span>평가 지표 정의 <span class="task">#23</span></h2>
-  <p>팀 합의대로 CTR을 먼저 정의하고 순위 지표(nDCG@K)는 그 다음에 붙인다. CTR은 계산이 단순하고 baseline 피드만 있어도 바로 잴 수 있기 때문이다.</p>
+  <p>팀 합의대로 PCTR과 CTR을 먼저 정의하고 순위 지표(nDCG@K)는 그 다음에 붙인다. PCTR은 모델 목표이고, CTR은 서비스 지표라 계산이 단순해 baseline 피드만 있어도 바로 잴 수 있기 때문이다.</p>
   <div class="tbl"><table>
     <thead><tr><th>순서</th><th>지표</th><th>계산</th><th>쓰는 곳</th></tr></thead>
     <tbody>
-      <tr><td>1차</td><td>CTR</td><td>열기(<code>article_open</code>) 수 ÷ 유효 exposure 수 (독자·기사·모델 버전·위치별)</td><td>baseline 비교, 대시보드, 가상 독자 실험</td></tr>
-      <tr><td>1차</td><td>제공 기준 CTR</td><td>열기 수 ÷ impression 수</td><td>CTR과 같이 보고 차이 확인 (세호 님 안의 served-item CTR)</td></tr>
+      <tr><td>1차</td><td>PCTR (모델 목표)</td><td><code>article_open</code>이 있는 impression 수 ÷ 전체 impression 수</td><td>모델 학습·평가, 추천 정렬</td></tr>
+      <tr><td>1차</td><td>CTR (서비스 지표)</td><td>열기 수 ÷ 유효 exposure 수 (독자·기사·모델 버전·위치별)</td><td>baseline 비교, 대시보드, 위치 편향 확인</td></tr>
       <tr><td>1차</td><td>화면 도달률</td><td>유효 exposure가 있는 impression 수 ÷ impression 수 (위치별)</td><td>아래 칸까지 실제로 보는지, 위치 편향의 크기</td></tr>
       <tr><td>1차</td><td>AUC</td><td>클릭한 기사에 안 한 기사보다 높은 점수를 줄 확률</td><td>CTR 모델 오프라인 평가</td></tr>
       <tr><td>이후</td><td>nDCG@K, MRR</td><td>클릭한 기사가 목록 위쪽에 있을수록 높은 점수</td><td>순위 품질 평가 (MIND와 같은 지표)</td></tr>
@@ -225,7 +225,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
     </tbody>
   </table></div>
   <div class="flags">
-    <div class="flag"><span class="tag decide">결정 필요</span><p>CTR의 분모를 exposure로 할지 impression으로 할지 팀이 정해야 한다. exposure 기준(세호 님 안: 카드 50% 이상·1초)은 실제로 본 기사만 세고, impression 기준은 아래로 내리지 않아 못 본 기사도 0으로 센다. 1차는 exposure 기준으로 제안하고 두 값을 같이 보여 준다.</p></div>
+    <div class="flag"><span class="tag pick">정함</span><p>PCTR은 impression 기준이다. P(click | impression) = <code>article_open</code>이 있는 impression 수 ÷ 전체 impression 수. 11/15 멘토링에서 정했다. exposure 기준 CTR(<code>article_open</code> 수 ÷ 유효 exposure 수)은 서비스 지표로 따로 본다. impression 기준은 화면에 안 보인 기사도 0으로 세므로, 위치 편향과 화면 도달률은 exposure 기준과 같이 본다.</p></div>
     <div class="flag"><span class="tag decide">결정 필요</span><p>최적화 목표를 클릭 하나로 둘지, 체류 시간을 섞을지 정해야 한다. 클릭만 쫓으면 자극적인 제목이 위로 올라온다.</p></div>
     <div class="flag"><span class="tag unsure">문제·불확실</span><p>합성 데이터에서 나온 성능 숫자는 실제 독자에게서의 성능을 뜻하지 않는다. 발표에서 어떻게 해석할지 멘토님께 확인한다.</p></div>
   </div>
@@ -267,10 +267,10 @@ table.wbs tr:target td { background: var(--decide-soft); }
       <tr><td>기록하는 곳</td><td>뉴스 백엔드 반환 기록 (<code>served/</code>), 응답을 보낼 때</td><td>브라우저 행동 기록 (<code>actions/</code>), 보이는 구간이 끝날 때</td></tr>
       <tr><td>조건</td><td>응답에 들어가면 1건</td><td>목록: 카드 50% 이상 + 탭 보임 + 스크롤 0.3초 멈춤으로 구간 시작. 1초 미만 구간도 원본에 저장하고, 분석에서 연속 1초 이상이면 유효 exposure</td></tr>
       <tr><td>필드</td><td><code>request_id</code>, <code>impression_id</code>, <code>reader_id</code>, <code>article_id</code>, <code>position</code>, <code>served_at</code>, <code>score</code>, <code>model_version</code></td><td><code>event_id</code>, <code>impression_id</code>, <code>page_type</code>, <code>event_time</code>, <code>duration_ms</code>, <code>ended_at</code></td></tr>
-      <tr><td>쓰는 곳</td><td>제공 기준 CTR, 화면 도달률, 위치 정보의 기준</td><td>CTR 분모, 학습 데이터 한 행 (STEP 5)</td></tr>
+      <tr><td>쓰는 곳</td><td>PCTR, 화면 도달률, 위치 정보의 기준</td><td>CTR 분모, 학습 데이터 한 행 (STEP 5)</td></tr>
     </tbody>
   </table></div>
-  <p>관계는 impression ⊇ exposure이다. 응답에 들어간 기사 중 화면까지 내려온 것만 exposure가 된다. 행동 기록은 <code>impression_id</code> 하나로 자기 impression을 가리킨다. 독자·기사·위치는 반환 기록에서 찾으므로 프론트가 보낸 값과 어긋날 일이 없다. 1초가 되기 전에 누른 빠른 클릭은 유효 exposure 없이 <code>article_open</code>만 남는데, 이것도 <code>impression_id</code>로 impression에 붙여 학습 데이터에 넣는다 (규약 ⑤).</p>
+  <p>관계는 impression ⊇ exposure이다. 응답에 들어간 기사 중 화면까지 내려온 것만 exposure가 된다. 행동 기록은 <code>impression_id</code> 하나로 자기 impression을 가리킨다. 독자·기사·위치는 반환 기록에서 찾으므로 프론트가 보낸 값과 어긋날 일이 없다. 노출 뒤 0.1초 안에 찍힌 <code>article_open</code>은 사람이 누른 클릭이 아니므로 정제 단계에서 뺀다. 기준은 그 impression의 첫 exposure 시작이고, exposure가 없으면 <code>served_at</code>이다. 그 impression은 label 0으로 남는다 (11/12 멘토링, 규약 ⑤).</p>
   <p>이름은 2026-10-31 멘토링 설명을 따른다. 인프레션(impression)은 API 요청으로 내려간 기사 전체이고(예: 20개 요청), 노출(exposure)은 그중 스크롤하며 실제로 화면에 보인 기사다. 11/3 팀 자료에서 이 이름으로 맞췄다.</p>
   <p>모든 행동 기록에 공통으로 필요한 필드는 <code>event_id</code>, <code>event_type</code>, <code>event_time</code>, <code>impression_id</code>, <code>page_type</code>이다. 필드 전체는 <a href="overview.html#contracts">인터페이스 규약</a>에 있다.</p>
 
@@ -324,7 +324,7 @@ table.wbs tr:target td { background: var(--decide-soft); }
     <thead><tr><th>DAG</th><th>주기</th><th>입력 → 출력</th><th>하는 일</th></tr></thead>
     <tbody>
       <tr><td><code>load_raw</code></td><td>매시</td><td>GCS <code>served/</code>, <code>actions/</code> → <code>raw.served</code>, <code>raw.actions</code></td><td>지난 1시간의 5분 파티션 12개를 적재</td></tr>
-      <tr><td><code>clean_events</code></td><td>매시</td><td><code>raw</code> → <code>clean.served</code>, <code>clean.actions</code></td><td>반환 기록은 <code>impression_id</code>, 행동은 <code>event_id</code>로 중복 제거. 필수 필드·스키마 검사, 시간대 통일, 봇 규칙 표시, <code>impression_id</code>로 둘을 합침 (짝 없는 행동은 따로 보관)</td></tr>
+      <tr><td><code>clean_events</code></td><td>매시</td><td><code>raw</code> → <code>clean.served</code>, <code>clean.actions</code></td><td>반환 기록은 <code>impression_id</code>, 행동은 <code>event_id</code>로 중복 제거. 필수 필드·스키마 검사, 시간대 통일, 봇 규칙 표시, 노출 뒤 0.1초 안 <code>article_open</code> 제거(fraud click), <code>impression_id</code>로 둘을 합침 (짝 없는 행동은 따로 보관)</td></tr>
       <tr><td><code>agg_hourly</code></td><td>매시</td><td><code>clean</code> → <code>agg.impression_outcome</code>, <code>agg.article_hourly</code></td><td>impression마다 유효 exposure·열기·체류·좋아요 결과를 한 행으로 묶고(라벨의 재료), 기사별 impression·유효 exposure·열기·CTR을 집계 (인기순 baseline의 재료)</td></tr>
       <tr><td><code>agg_daily</code></td><td>매일</td><td><code>clean</code> → <code>agg.reader_daily</code>, <code>agg.reader_cat_daily</code></td><td>독자별, 독자×카테고리별 하루 집계</td></tr>
       <tr><td><code>build_features</code></td><td>매일·매시</td><td><code>agg</code>, <code>feat.article_meta</code>, <code>feat.article_embedding</code> → <code>feat.reader</code>, <code>feat.article</code>, <code>feat.reader_article</code></td><td>30일 창 피처 계산, <code>feature_date</code>로 스냅샷 저장</td></tr>
@@ -427,14 +427,14 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </div>
   <p>표를 만들 때 지키는 규칙은 네 가지다.</p>
   <ol>
-    <li><b>한 행 = 유효 exposure가 있는 impression 한 건.</b> 같은 <code>impression_id</code>에 exposure 구간이 여러 개여도 한 행이다. 30분 안에 <code>article_open</code>이 따랐으면 1, 아니면 0이다. 유효 exposure 없이 눌린 빠른 클릭도 그 impression으로 행을 만들어 1로 넣는다. 화면에 안 보인 impression은 0으로 넣지 않는다(못 본 것이지 싫은 것이 아니므로). 표는 <a href="overview.html#contracts">규약 ⑤</a>의 <code>train.samples</code> 행 규칙.</li>
+    <li><b>한 행 = impression 한 건.</b> 같은 <code>impression_id</code>에 exposure 구간이 여러 개여도 한 행이다. 그 impression에 <code>article_open</code>이 있으면 1, 없으면 0이다. 화면에 안 보인 impression(exposure 없음)도 0으로 넣는다. 노출 뒤 0.1초 안 <code>article_open</code>은 fraud click으로 빼고 0으로 둔다. 표는 <a href="overview.html#contracts">규약 ⑤</a>의 <code>train.samples</code> 행 규칙.</li>
     <li><b>시점 기준 피처 (포인트 인타임 조인).</b> 추천 시점에 쓸 수 있던 데이터로만 피처를 붙인다. 멘토님이 실시간 추천에서 가장 중요하다고 강조한 규칙이다. 반환 기록의 <code>features_as_of</code>와 같은 <code>snapshot_time</code>을 붙이므로, 11시 피처가 준비되기 전인 11:05 추천에는 10시 피처가 붙는다.</li>
     <li><b>시간으로 나눠 평가.</b> 무작위로 섞지 않는다. 앞 구간은 학습, 다음 구간은 검증, 마지막 구간은 테스트에 쓴다.</li>
     <li><b>빼는 데이터.</b> 페르소나 컬럼은 학습에 넣지 않는다. 정제 단계에서 봇으로 표시된 사용자도 빼고, 몇 명을 뺐는지 기록한다.</li>
   </ol>
   <div class="flags">
     <div class="flag"><span class="tag risk">주의할 것</span><p>데이터 누수. 노출 이후의 클릭이 피처에 섞이면 학습 성능은 높게 나오지만 서비스에서는 맞지 않는다. 조인 날짜 규칙을 테스트로 고정한다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>라벨 기준. 체류 시간이 아주 짧은 클릭을 0으로 볼지 실험으로 정한다. 클릭을 기다리는 관측 기간(30분 제안)도 정해야 한다.</p></div>
+    <div class="flag"><span class="tag decide">결정 필요</span><p>라벨 기준. 노출 뒤 0.1초 안 클릭은 fraud click으로 빼기로 했다. 체류 시간이 아주 짧은 클릭을 0으로 볼지는 실험으로 정한다.</p></div>
     <div class="flag"><span class="tag risk">주의할 것</span><p>클래스 불균형. CTR이 낮으면 0이 1보다 훨씬 많다. 음성 샘플링 비율과 확률 보정 방법이 필요하다.</p></div>
     <div class="flag"><span class="tag unsure">문제·불확실</span><p>위치 편향. 위에 있어서 눌린 효과를 빼야 기사 자체의 매력을 배운다. 학습 때 위치를 피처로 넣고 서빙 때 1번 자리로 고정하는 방법을 쓰지만 효과는 실험해 봐야 안다.</p></div>
   </div>
