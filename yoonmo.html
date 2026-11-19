@@ -226,9 +226,22 @@ table.wbs tr:target td { background: var(--decide-soft); }
   </table></div>
   <div class="flags">
     <div class="flag"><span class="tag pick">정함</span><p>PCTR은 impression 기준이다. P(click | impression) = <code>article_open</code>이 있는 impression 수 ÷ 전체 impression 수. 11/15 멘토링에서 정했다. exposure 기준 CTR(<code>article_open</code> 수 ÷ 유효 exposure 수)은 서비스 지표로 따로 본다. impression 기준은 화면에 안 보인 기사도 0으로 세므로, 위치 편향과 화면 도달률은 exposure 기준과 같이 본다.</p></div>
-    <div class="flag"><span class="tag decide">결정 필요</span><p>최적화 목표를 클릭 하나로 둘지, 체류 시간을 섞을지 정해야 한다. 클릭만 쫓으면 자극적인 제목이 위로 올라온다.</p></div>
+    <div class="flag"><span class="tag pick">정함</span><p>최적화 목표는 MVP에서 클릭(PCTR) 하나로 둔다. 체류·좋아요·재방문을 목적에 섞는 것은 MVP 이후로 미룬다. 클릭만 쫓으면 자극적인 제목이 위로 올라오므로, 그때는 별도 지표로 확인한다.</p></div>
     <div class="flag"><span class="tag unsure">문제·불확실</span><p>합성 데이터에서 나온 성능 숫자는 실제 독자에게서의 성능을 뜻하지 않는다. 발표에서 어떻게 해석할지 멘토님께 확인한다.</p></div>
   </div>
+
+  <h3>PCTR과 CTR은 일치해야 하나</h3>
+  <p>일치시키지 않는다. PCTR은 모델이 impression마다 예측하는 P(click | impression)이고, CTR은 서비스에서 유효 exposure로 나눈 클릭 비율이다. 분모와 관측 조건이 달라서 두 값이 같을 이유가 없다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>PCTR</th><th>CTR</th></tr></thead>
+    <tbody>
+      <tr><td>분자</td><td><code>article_open</code>이 있는 impression 수</td><td><code>article_open</code> 수</td></tr>
+      <tr><td>분모</td><td>전체 impression 수</td><td>유효 exposure 수</td></tr>
+      <tr><td>쓰는 곳</td><td>모델 학습·평가, 후보 정렬</td><td>대시보드, baseline 비교, 위치 편향 확인</td></tr>
+      <tr><td>같이 볼 것</td><td colspan="2">화면 도달률(유효 exposure ÷ impression)과 위치별 CTR. 두 값 차이가 위치·노출·후보 구성 때문인지 확인한다.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="flag"><span class="tag pick">정함</span><p>모델 목표는 PCTR, 서비스 지표는 CTR로 나눈다. PCTR이 실제 클릭률과 어긋나면 calibration으로 보정한다. PCTR은 pointwise다. impression 한 건마다 P(click)을 예측하고, 후보를 점수순으로 정렬한다. pairwise·listwise와 체류·좋아요·재방문을 섞는 목적은 MVP 이후에 검토한다.</p></div>
 </section>
 
 <section id="s2">
