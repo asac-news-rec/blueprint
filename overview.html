@@ -503,7 +503,7 @@ html, body { height: 100%; }
     <tbody>
       <tr><td><code>request_id</code></td><td>string</td><td>필수</td><td>이번 목록 응답 번호. 반환 기록과 같은 값</td></tr>
       <tr><td><code>reader_id</code></td><td>string</td><td>필수</td><td>Valkey 독자 피처 조회 키</td></tr>
-      <tr><td><code>candidates</code></td><td>array&lt;string&gt;</td><td>필수</td><td>점수 매길 <code>article_id</code> 목록. 20~30개 권장 (11/3 멘토링), 최대 200</td></tr>
+      <tr><td><code>candidates</code></td><td>array&lt;string&gt;</td><td>필수</td><td>점수 매길 <code>article_id</code> 목록. 20~30개 권장 (11/3 멘토링), 최대 200. 후보를 기사마다 따로 보내지 않고 한 요청에 묶는다. 응답 목표는 P99 200ms다 (11/19 멘토링)</td></tr>
       <tr><td><code>context.request_time</code></td><td>string</td><td>필수</td><td>백엔드가 요청을 받은 시각. 경과 시간·시간대 피처의 기준이고 반환 기록의 <code>served_at</code>과 같은 값</td></tr>
       <tr><td><code>context.device</code></td><td>string</td><td>선택</td><td><code>mobile</code> | <code>desktop</code> | <code>tablet</code> | <code>null</code>. <code>ctx_device</code> 피처</td></tr>
       <tr><td><code>top_k</code></td><td>int</td><td>선택 (기본 = 후보 수)</td><td>상위 몇 개를 돌려받을지</td></tr>
