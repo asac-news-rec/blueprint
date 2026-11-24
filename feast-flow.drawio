@@ -1,1 +1,89 @@
-<mxfile host="app.diagrams.net"><diagram id="feast-flow" name="로그 → 추론 서버"><mxGraphModel dx="1000" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="700" pageHeight="560" math="0" shadow="0"><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="log" value="&lt;b&gt;로깅 서버 → PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;served·actions 로그&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" vertex="1" parent="1"><mxGeometry x="30" y="30" width="200" height="52" as="geometry"/></mxCell><mxCell id="gcs" value="&lt;b&gt;GCS 원본&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;export_behavior_logs DAG&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" vertex="1" parent="1"><mxGeometry x="30" y="100" width="200" height="52" as="geometry"/></mxCell><mxCell id="raw" value="&lt;b&gt;BigQuery raw&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;load_raw (아직 없음)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#444441;dashed=1;" vertex="1" parent="1"><mxGeometry x="30" y="170" width="200" height="52" as="geometry"/></mxCell><mxCell id="clean" value="&lt;b&gt;BigQuery clean&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;clean_events (아직 없음)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#444441;dashed=1;" vertex="1" parent="1"><mxGeometry x="30" y="240" width="200" height="52" as="geometry"/></mxCell><mxCell id="src" value="&lt;b&gt;BigQuery 원천 표&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;offline, 지금은 dev_yoonmo&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" vertex="1" parent="1"><mxGeometry x="30" y="310" width="200" height="52" as="geometry"/></mxCell><mxCell id="defs" value="&lt;b&gt;definitions.py&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;feature view 4개&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#444441;" vertex="1" parent="1"><mxGeometry x="270" y="30" width="170" height="52" as="geometry"/></mxCell><mxCell id="gha" value="&lt;b&gt;GitHub Actions&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;main 머지 때 feast apply&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;" vertex="1" parent="1"><mxGeometry x="270" y="100" width="170" height="52" as="geometry"/></mxCell><mxCell id="reg" value="&lt;b&gt;GCS registry&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;정의 + 적재 구간&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" vertex="1" parent="1"><mxGeometry x="480" y="100" width="170" height="52" as="geometry"/></mxCell><mxCell id="mat" value="&lt;b&gt;Airflow materialize&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;매시, 작업 이미지 Pod&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;" vertex="1" parent="1"><mxGeometry x="270" y="310" width="170" height="52" as="geometry"/></mxCell><mxCell id="valkey" value="&lt;b&gt;Valkey&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;online, 값 복사본&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" vertex="1" parent="1"><mxGeometry x="480" y="310" width="170" height="52" as="geometry"/></mxCell><mxCell id="srv" value="&lt;b&gt;추론 서버 /v1/rank&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;독자 1 + 후보 200&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;" vertex="1" parent="1"><mxGeometry x="300" y="430" width="180" height="56" as="geometry"/></mxCell><mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" edge="1" parent="1" source="log" target="gcs"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" edge="1" parent="1" source="gcs" target="raw"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" edge="1" parent="1" source="raw" target="clean"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" edge="1" parent="1" source="clean" target="src"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" edge="1" parent="1" source="defs" target="gha"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" edge="1" parent="1" source="gha" target="reg"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" edge="1" parent="1" source="src" target="mat"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" edge="1" parent="1" source="mat" target="valkey"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e9" value="정의 읽기 · 적재 구간 쓰기" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;startArrow=classic;exitX=0.88;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="mat" target="reg"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="420" y="200"/><mxPoint x="565" y="200"/></Array></mxGeometry></mxCell><mxCell id="e10" value="요청마다 값" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="valkey" target="srv"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e11" value="시작 때 + 10분마다 정의" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="reg" target="srv"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="665" y="126"/><mxPoint x="665" y="470"/></Array></mxGeometry></mxCell><mxCell id="legend" value="초록 = 저장소, 보라 = 실행, 회색 = 코드, 점선 = 아직 없음" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#5F5E5A;" vertex="1" parent="1"><mxGeometry x="140" y="510" width="400" height="24" as="geometry"/></mxCell></root></mxGraphModel></diagram></mxfile>
+<mxfile host="app.diagrams.net">
+  <diagram id="lbKH3Jnoab4Y7_fT2W7h" name="Page-3">
+    <mxGraphModel dx="1430" dy="927" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="UR807mlnu6A-JHR0uNzA-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" value="&lt;b&gt;로깅 서버 → PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;served·actions 로그&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="200" x="-141" y="-47" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" value="&lt;b&gt;GCS 원본&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;export_behavior_logs DAG&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="200" x="-141" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#444441;dashed=1;" value="&lt;b&gt;BigQuery raw&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;load_raw (아직 없음)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="200" x="30" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#444441;dashed=1;" value="&lt;b&gt;BigQuery clean&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;clean_events (아직 없음)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="200" x="30" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" value="&lt;b&gt;BigQuery 원천 표&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;offline, 지금은 dev_yoonmo&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="200" x="30" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#444441;" value="&lt;b&gt;definitions.py&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;feature view 4개&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="170" x="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;" value="&lt;b&gt;GitHub Actions&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;main 머지 때 feast apply&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="170" x="270" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" value="&lt;b&gt;GCS registry&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;정의 + 적재 구간&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="170" x="480" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;" value="&lt;b&gt;Airflow materialize&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;매시, 작업 이미지 Pod&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="170" x="270" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" value="&lt;b&gt;Valkey&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;online, 값 복사본&lt;/font&gt;" vertex="1">
+          <mxGeometry height="52" width="170" x="480" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fontSize=13;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;" value="&lt;b&gt;추론 서버 /v1/rank&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;독자 1 + 후보 200&lt;/font&gt;" vertex="1">
+          <mxGeometry height="56" width="180" x="300" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-12" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" target="UR807mlnu6A-JHR0uNzA-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-13" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" target="UR807mlnu6A-JHR0uNzA-3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-14" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" target="UR807mlnu6A-JHR0uNzA-4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-15" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" target="UR807mlnu6A-JHR0uNzA-5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-16" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" target="UR807mlnu6A-JHR0uNzA-7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-17" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" target="UR807mlnu6A-JHR0uNzA-8" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-18" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" target="UR807mlnu6A-JHR0uNzA-9" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-19" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;" target="UR807mlnu6A-JHR0uNzA-10" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-20" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;startArrow=classic;exitX=0.88;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="UR807mlnu6A-JHR0uNzA-8" value="정의 읽기 · 적재 구간 쓰기">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="420" y="200" />
+              <mxPoint x="565" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-21" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;" target="UR807mlnu6A-JHR0uNzA-11" value="요청마다 값">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-22" edge="1" parent="1" source="UR807mlnu6A-JHR0uNzA-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=11;strokeColor=#5F5E5A;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;" target="UR807mlnu6A-JHR0uNzA-11" value="시작 때 + 10분마다 정의">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="665" y="126" />
+              <mxPoint x="665" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UR807mlnu6A-JHR0uNzA-23" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#5F5E5A;" value="초록 = 저장소, 보라 = 실행, 회색 = 코드, 점선 = 아직 없음" vertex="1">
+          <mxGeometry height="24" width="400" x="140" y="510" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
